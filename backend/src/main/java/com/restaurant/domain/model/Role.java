@@ -13,14 +13,13 @@ import java.util.Objects;
 @Setter
 @ToString
 @Entity
-@Table(name = "roles")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Role implements GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "roles_id")
+    @Column(name = "role_id")
     @JsonIgnore
     private Long id;
 

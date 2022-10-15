@@ -1,7 +1,6 @@
 package com.restaurant.domain.model;
 
 import lombok.*;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -51,10 +50,11 @@ public class User implements UserDetails {
     private LocalDateTime updatedAt;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "user_roles",
+    @JoinTable(name = "user_role",
             joinColumns = { @JoinColumn(name = "user_uid")},
-            inverseJoinColumns = { @JoinColumn(name = "roles_id") })
+            inverseJoinColumns = { @JoinColumn(name = "role_id") })
     private Collection<Role> authorities = new HashSet<>();
+
 
     public User(UUID uid, String username, String password, Collection<Role> authorities) {
         this.uid = uid;

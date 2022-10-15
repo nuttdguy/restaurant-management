@@ -2,8 +2,10 @@ package com.restaurant.exception.api;
 
 import com.restaurant.exception.*;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.JDBCException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -16,6 +18,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolationException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.HashMap;
 import java.util.List;
@@ -78,11 +81,12 @@ public class ApiErrorHandler extends ResponseEntityExceptionHandler {
                 .body(new ApiError<>("Token not found", List.of(ex.getLocalizedMessage())));
     }
 
-    @ExceptionHandler(TokenExpiredException.class)
-    public ResponseEntity<ApiError<String>> handleTokenExpiredException(WebRequest request, TokenExpiredException ex) {
+    @ExceptionHandler({TokenExpiredException.class, TokenExistsException.class})
+    public <T extends RuntimeException> ResponseEntity<ApiError<String>> handleTokenExpiredException(
+            WebRequest request, T ex) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ApiError<>("Token expired", List.of(ex.getLocalizedMessage())));
+                .body(new ApiError<>("Token exists or is expired", List.of(ex.getLocalizedMessage())));
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -99,8 +103,12 @@ public class ApiErrorHandler extends ResponseEntityExceptionHandler {
                 .body(new ApiError<>("Method argument type mismatch", List.of(details)));
     }
 
-    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
-    public ResponseEntity<ApiError<String>> handleSQLIntegrityConstraintException(WebRequest request, SQLIntegrityConstraintViolationException ex) {
+    @ExceptionHandler({
+            SQLIntegrityConstraintViolationException.class,
+            ConstraintViolationException.class,
+            DataIntegrityViolationException.class})
+    public <T extends JDBCException> ResponseEntity<ApiError<String>> handleSQLIntegrityConstraintException(
+            WebRequest request, T ex) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ApiError<>("SQL Constraint Violation", List.of(ex.getLocalizedMessage())));

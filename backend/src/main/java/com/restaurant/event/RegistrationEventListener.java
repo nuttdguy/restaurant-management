@@ -8,13 +8,17 @@ import com.restaurant.email.EmailService;
 import com.restaurant.repository.IRegistrationTokenRepo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.context.ApplicationListener;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -23,27 +27,17 @@ import java.util.UUID;
 public class RegistrationEventListener implements ApplicationListener<RegistrationEvent> {
 
     private final EmailService emailService;
-    private final IRegistrationTokenRepo tokenRepo;
 
     @Async
     @Override
-    @Transactional
     public void onApplicationEvent(RegistrationEvent event) {
         log.trace("onApplicationEvent - generating and saving the registration token");
-
-        // create verification token for user with link
-        User user = (User) event.getSource();
-        UUID token = UUID.randomUUID();
-        String url = event.getEvent_url() + token.toString();
-
-        // save the registration token
-        RegistrationToken registrationToken = new RegistrationToken(user, token);
-        log.trace("Saving the registration token {}", registrationToken.getExpiration());
-        tokenRepo.save(registrationToken);
 
         try {
 
             log.trace("Building the email");
+            User user = (User) event.getSource();
+            String url = event.getEvent_url();
 
             Email email = Email.builder.setTo(EmailCredential.TO)
                     .setFrom(EmailCredential.FROM)

@@ -137,7 +137,7 @@ public class UserService {
                 throw new AccountNotActiveException("An account was found for " + registerRequest.username() +
                         " -> Please verify your email and activate your account");
             }
-            log.trace("User found and has already been activated {}", registerRequest.username());
+            log.trace("User exists and is active {}", registerRequest.username());
             throw new UserExistsException("User "+ registerRequest.username()+" already exists. Please login instead.");
         }
         return toUserFrom(registerRequest);

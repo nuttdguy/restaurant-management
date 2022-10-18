@@ -1,45 +1,25 @@
 import React from 'react'
-import { SettingsSuggest, Language } from '@mui/icons-material/';
+import styled from "styled-components";
 
-import {
-  Container,
-  Wrapper,
-  TopLeft,
-  TopRight,
-  Logo,
-  IconContainer,
-  IconBadge,
-  IconAvatar
-} from "./TopbarStyles";
+const Title = styled.h1`
+  height: 60px;
+  font-size: 36px;
+  font-weight: 300;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
 
 
-export const Topbar = () => {
+const Topbar = () => {
 
   return (
-    <Container>
-      <Wrapper>
-
-        <TopLeft>
-          <Logo>Resturant Management</Logo>
-        </TopLeft>
-
-        <TopRight>
-          <IconContainer>
-            <Language sx={{ fontSize: 42 }} />
-            <IconBadge > EN </IconBadge>
-          </IconContainer>
-          <IconContainer>
-            <SettingsSuggest sx={{ fontSize: 42 }} />
-          </IconContainer>
-          <IconContainer>
-            <IconAvatar src="https://i.pravatar.cc/42" />
-          </IconContainer>
-        </TopRight>
-
-      </Wrapper>
-    </Container>
+    <>
+      <Title>Resturant Management</Title>
+    </>
   )
 }
 
 
-// export default Topbar;
+export default Topbar;

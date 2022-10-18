@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 const Container = styled.div`
   width: 100vw;
-  height: 80px;
+  height: 60px;
   background-color: white;
   position: sticky;
   top: 0;
@@ -12,7 +12,7 @@ const Container = styled.div`
 
 const Wrapper = styled.div`
   height: 100%;
-  padding: 8px 20px;
+  padding: 10px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;

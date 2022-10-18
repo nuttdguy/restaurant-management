@@ -22,8 +22,8 @@ public class TokenService {
 
     private IRegistrationTokenRepo registerTokenRepo;
 
-    public RegistrationToken findRegisterTokenById(String uuid) {
-        return registerTokenRepo.findById(UUID.fromString(uuid))
+    public RegistrationToken findRegisterTokenById(UUID uuid) {
+        return registerTokenRepo.findById(uuid)
                 .orElseThrow(
                     () -> new TokenNotFoundException(format("Token %s not found", uuid)));
     }

@@ -1,8 +1,6 @@
-import React from 'react';
-
+import React from 'react'
 
 import {
-  Container,
   Title,
   Form,
   Detail,
@@ -12,10 +10,9 @@ import {
 } from "./BusinessStyles";
 
 
-const Business = () => {
+const BusinessEdit = () => {
   return (
-
-    <Container>
+    <>
       <Title>Business</Title>
       <Form >
         <Detail>
@@ -93,9 +90,8 @@ const Business = () => {
         </Detail>
 
       </Form>
-    </Container>
-  );
+    </>
+  )
 }
 
-export default Business;
-
+export default BusinessEdit

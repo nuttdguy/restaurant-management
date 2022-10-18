@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
-// import { AuthContext } from "../api/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 
+// import styles to use for this component
 import {
   Container,
   Wrapper,
@@ -14,25 +14,36 @@ import {
   Error
 } from "./LoginStyles";
 
+
+// functional login component
 const Login = () => {
-  const [fields, setFields] = useState({
+  const [inputs, setInputs] = useState({
     username: "",
     password: ""
-  })
-  const [error, setError] = useState(false);
+  }); // controlled inputs for state
+  const [error, setError] = useState(false); // controlled error object for handing errors 
 
+  // returns the imperative method for changing the location
   const navigate = useNavigate();
 
+  // Accepts a context object (the value returned from `React.createContext`) and returns the current
+  // context value, as given by the nearest context provider for the given context.
+  // return the custom AuthContextProvider with login, logout and its state from the App context
+  const { login } = useContext(AuthContext);
+
+  // func to handle state changes
   const handleOnChange = (e) => {
-    setFields((previousState) => ({ ...previousState, [e.target.name]: e.target.value }))
+    setInputs((previousState) => ({ ...previousState, [e.target.name]: e.target.value }))
   }
 
+  // func to handle form submit
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // prevent the form from submitting
     try {
-      // await login(fields)
-      navigate("/");
+      await login(inputs); // call the login method with the inputs from this form
+      navigate("/admin"); // change the router location / navigate to url 
     } catch (err) {
+      console.log(err);
       setError(err.response.data)
     }
   }
@@ -41,7 +52,7 @@ const Login = () => {
   return (
     <Container>
       <Wrapper>
-        <Title>SIGN IN</Title>
+        <Title>LOGIN</Title>
         <Form onSubmit={handleSubmit}>
           <Input
             required
@@ -60,7 +71,7 @@ const Login = () => {
             name="password"
             onChange={handleOnChange}
           />
-          {error && <Error>An account exists for {fields.username} </Error>}
+          {error && <Error>An account exists for {inputs.username} </Error>}
           <LinkTo><Link to="/register">DON'T HAVE AN ACCOUNT? REGISTER </Link></LinkTo>
           <Button type="submit" >LOGIN </Button>
         </Form>

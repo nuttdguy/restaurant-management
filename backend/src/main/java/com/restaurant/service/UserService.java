@@ -1,7 +1,11 @@
 package com.restaurant.service;
 
+import com.restaurant.domain.dto.request.ForgotPasswordRequest;
+import com.restaurant.domain.dto.request.LoginRequest;
 import com.restaurant.domain.dto.request.RegisterRequest;
+import com.restaurant.domain.dto.request.ResetPasswordRequest;
 import com.restaurant.domain.dto.response.CreateUserResponse;
+import com.restaurant.domain.dto.response.JwtResponse;
 import com.restaurant.domain.dto.response.UserVerifiedResponse;
 import com.restaurant.domain.mapper.UserMapper;
 import com.restaurant.domain.model.RegistrationToken;
@@ -9,6 +13,8 @@ import com.restaurant.domain.model.Role;
 import com.restaurant.domain.model.RoleType;
 import com.restaurant.event.RegistrationEvent;
 import com.restaurant.exception.TokenExpiredException;
+import com.restaurant.exception.UserNotFoundException;
+import com.restaurant.jwt.JwtUtil;
 import com.restaurant.repository.IUserRepo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +22,8 @@ import com.restaurant.domain.model.User;
 import com.restaurant.exception.AccountNotActiveException;
 import com.restaurant.exception.UserExistsException;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.ValidationException;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,7 +45,8 @@ import static java.lang.String.format;
 @AllArgsConstructor
 public class UserService {
 
-    private final String REGISTER_URL_SUFFIX = "/user/verify/";
+    private final String REGISTER_URL_SUFFIX = "/auth/verify/";
+    private final JwtUtil jwtUtil;
     private final TokenService tokenService;
     private final IUserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
@@ -76,7 +86,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserVerifiedResponse verifyRegistration(String theToken) {
+    public UserVerifiedResponse verifyRegistration(UUID theToken) {
         log.trace("RegistrationService - verifyRegistrationToken");
 
         RegistrationToken registrationToken = tokenService.findRegisterTokenById(theToken);
@@ -135,7 +145,7 @@ public class UserService {
             if (!user.get().isEnabled()) {
                 log.trace("User found, but has not been activated / enabled");
                 throw new AccountNotActiveException("An account was found for " + registerRequest.username() +
-                        " -> Please verify your email and activate your account");
+                        " -> Please verify your email and activate your account.");
             }
             log.trace("User exists and is active {}", registerRequest.username());
             throw new UserExistsException("User "+ registerRequest.username()+" already exists. Please login instead.");
@@ -172,4 +182,44 @@ public class UserService {
                 request.getContextPath();
     }
 
+    public JwtResponse loginUser(LoginRequest loginRequest) {
+        log.trace("LoginService - loginUser");
+
+        log.trace("Fetching the user");
+        User user = userRepo.findByUsername(loginRequest.username())
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(format("%s not found", loginRequest.username())));
+
+        log.trace("passwordEncoder.matches");
+        if (!passwordEncoder.matches(loginRequest.password(), user.getPassword())) {
+            throw new BadCredentialsException("Password is not valid");
+        }
+
+        log.trace("extract the granted authorities");
+        List<String> roles = user.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority).toList();
+
+        String jwt = jwtUtil.generateJwtToken(user);
+        log.trace("generate jwt token with user details {}", jwt);
+
+        // todo - enable when understanding how this works
+        log.trace("create a refresh token ");
+//        RefreshToken refreshToken = refreshTokenService.createRefreshToken(UUID.randomUUID());
+
+        log.trace("Sending jwt response");
+        return new JwtResponse("Bearer ",
+                jwt,
+                UUID.randomUUID().toString(),
+                user.getUsername(),
+                roles);
+    }
+
+
+    public Object forgotPassword(ForgotPasswordRequest forgotPasswordRequest, HttpServletRequest request) {
+        return null;
+    }
+
+    public Object resetPassword(ResetPasswordRequest resetPasswordRequest, String thePwdResetToken) {
+        return null;
+    }
 }

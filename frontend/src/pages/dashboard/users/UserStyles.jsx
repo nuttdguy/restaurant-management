@@ -1,9 +1,5 @@
 import styled from "styled-components";
 
-const Container = styled.div`
-  flex: 4;
-`;
-
 const Title = styled.h1`
   /* width: 100vw; */
 `;
@@ -72,7 +68,6 @@ const Button = styled.button`
 `;
 
 export {
-  Container,
   Title,
   Form,
   Detail,

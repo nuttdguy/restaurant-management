@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 const Container = styled.div`
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh - 80px);
   background: linear-gradient(
       rgba(255, 255, 255, 0.5),
       rgba(255, 255, 255, 0.5)
@@ -74,6 +74,10 @@ const LinkTo = styled.span`
   cursor: pointer;
 `;
 
+const Error = styled.span`
+  color: red;
+`;
+
 export {
   Container,
   Wrapper,
@@ -83,5 +87,6 @@ export {
   InputFull,
   Agreement,
   Button,
-  LinkTo
+  LinkTo,
+  Error
 }

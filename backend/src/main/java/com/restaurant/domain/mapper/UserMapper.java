@@ -6,13 +6,15 @@ import com.restaurant.domain.dto.response.UserVerifiedResponse;
 import com.restaurant.domain.model.Role;
 import com.restaurant.domain.model.RoleType;
 import com.restaurant.domain.model.User;
-import org.springframework.beans.BeanUtils;
 
 public class UserMapper {
 
     public static User toUserFrom(RegisterRequest registerRequest) {
         User user = new User();
-        BeanUtils.copyProperties(registerRequest, user);
+        user.setUsername(registerRequest.username());
+        user.setFirstName(registerRequest.firstName());
+        user.setLastName(registerRequest.lastName());
+        user.setPassword(registerRequest.password());
         Role role1 = new Role(RoleType.PUBLIC_USER);
         Role role2 = new Role(RoleType.REGISTERED_USER);
         user.getAuthorities().add(role1);

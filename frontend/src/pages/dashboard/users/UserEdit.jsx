@@ -1,7 +1,6 @@
 import React from "react";
 
 import {
-  Container,
   Title,
   Form,
   Detail,
@@ -10,10 +9,9 @@ import {
   Button
 } from "./UserStyles";
 
-const User = () => {
+const UserEdit = () => {
   return (
-
-    <Container>
+    <>
       <Title>User Profile</Title>
       <Form >
         <Detail>
@@ -36,8 +34,8 @@ const User = () => {
           <Button>Submit</Button>
         </Detail>
       </Form>
-    </Container>
+    </>
   );
 }
 
-export default User;
+export default UserEdit;

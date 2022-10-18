@@ -1,5 +1,11 @@
+export { default as Home } from "./Home";
 export { default as Login } from "./login/Login";
 export { default as Register }  from "./register/Register";
-export { default as User } from "./profile/User";
-export { default as Business } from "./profile/Business";
-export { default as Dashboard } from "./dashboard/Dashboard.jsx";
+export { default as RegisterAgreement }  from "./register/RegisterAgreement";
+export { default as UserEdit } from "./dashboard/users/UserEdit";
+export { default as UserHome } from "./dashboard/users/UserHome";
+export { default as BusinessHome } from "./dashboard/business/BusinessHome";
+export { default as BusinessEdit } from "./dashboard/business/BusinessEdit";
+export { default as BusinessListing } from "./dashboard/business/BusinessListing";
+export { default as Dashboard } from "./dashboard/Dashboard";
+export { default as ItemsList } from "./dashboard/items/ItemsList";

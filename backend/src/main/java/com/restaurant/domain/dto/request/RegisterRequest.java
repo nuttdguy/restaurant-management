@@ -29,12 +29,4 @@ public record RegisterRequest (
         this(username, firstName, lastName, password, confirmPassword, new HashSet<>());
     }
 
-    public RegisterRequest(
-            String username,
-            String firstName,
-            String lastName,
-            String password
-    ) {
-        this(username, firstName, lastName, password, password, new HashSet<>());
-    }
 }

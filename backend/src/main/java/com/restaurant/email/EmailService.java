@@ -9,7 +9,6 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
@@ -60,7 +59,7 @@ public class EmailService {
         MimeMessageHelper message = getMimeMessageHelper(theEmail, mimeMessage);
 
         log.trace("Converting email to text {}", theEmail);
-        String emailContent = "";
+        String emailContent;
 
         try {
             emailContent = getContentFromTemplate(theEmail.getTemplateModel(), template);

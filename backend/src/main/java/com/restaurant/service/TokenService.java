@@ -1,17 +1,11 @@
 package com.restaurant.service;
 
 import com.restaurant.domain.model.RegistrationToken;
-import com.restaurant.exception.TokenExistsException;
 import com.restaurant.exception.TokenNotFoundException;
-import com.restaurant.exception.UserExistsException;
 import com.restaurant.repository.IRegistrationTokenRepo;
 import lombok.AllArgsConstructor;
-import org.hibernate.exception.ConstraintViolationException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLException;
-import java.util.Optional;
 import java.util.UUID;
 
 import static java.lang.String.format;

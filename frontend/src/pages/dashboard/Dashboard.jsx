@@ -2,6 +2,7 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import styled from 'styled-components';
 import Sidebar from "../../components/sidebar/Sidebar";
+import Topbar from "../../components/topbar/Topbar";
 
 
 const Container = styled.div`
@@ -19,13 +20,15 @@ const SidebarContainer = styled.article`
 // [max] [min] [ideal size];
 const ContentContainer = styled.article`
   flex: 4;
-  background-color: rgb(223, 221, 255);
+  /* background-color: rgb(223, 221, 255); */
   top: 70px;
 `
 
 const Dashboard = () => {
+
   return (
     <>
+      <Topbar />
       <Container>
         <SidebarContainer>
           <Sidebar />

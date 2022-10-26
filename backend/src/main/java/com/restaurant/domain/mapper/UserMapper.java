@@ -1,29 +1,27 @@
 package com.restaurant.domain.mapper;
 
-import com.restaurant.domain.dto.request.RegisterRequest;
+import com.restaurant.domain.dto.request.RegisterUserTo;
 import com.restaurant.domain.dto.response.CreateUserResponse;
 import com.restaurant.domain.dto.response.UserVerifiedResponse;
-import com.restaurant.domain.model.Role;
-import com.restaurant.domain.model.RoleType;
 import com.restaurant.domain.model.User;
+
 
 public class UserMapper {
 
-    public static User toUserFrom(RegisterRequest registerRequest) {
+    private UserMapper() {}
+
+    public static User toUserFrom(RegisterUserTo registerUserTo) {
         User user = new User();
-        user.setUsername(registerRequest.username());
-        user.setFirstName(registerRequest.firstName());
-        user.setLastName(registerRequest.lastName());
-        user.setPassword(registerRequest.password());
-        Role role1 = new Role(RoleType.PUBLIC_USER);
-        Role role2 = new Role(RoleType.REGISTERED_USER);
-        user.getAuthorities().add(role1);
-        user.getAuthorities().add(role2);
+        user.setUsername(registerUserTo.username());
+        user.setFirstName(registerUserTo.firstName());
+        user.setLastName(registerUserTo.lastName());
+        user.setPassword(registerUserTo.password());
         return user;
     }
 
     public static CreateUserResponse toCreateUserFrom(User user) {
         return new CreateUserResponse(
+                user.getUuid(),
                 user.getUsername(),
                 user.getFirstName(),
                 user.getLastName()
@@ -32,6 +30,7 @@ public class UserMapper {
 
     public static UserVerifiedResponse toUserVerifiedResponseFrom(User user) {
         return new UserVerifiedResponse(
+                user.getUuid(),
                 user.getUsername(),
                 user.getFirstName(),
                 user.getLastName()

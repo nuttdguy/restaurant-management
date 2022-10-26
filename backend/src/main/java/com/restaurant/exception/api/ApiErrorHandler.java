@@ -17,6 +17,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
 import java.sql.SQLIntegrityConstraintViolationException;
@@ -31,26 +32,44 @@ import static java.util.Optional.ofNullable;
 @ControllerAdvice
 public class ApiErrorHandler extends ResponseEntityExceptionHandler {
 
+    // START :: HANDLER FOR SECURITY / FILTER CHAIN  ::
     @ExceptionHandler({ AuthenticationException.class })
     public ResponseEntity<ApiError<String>> handleAuthenticationException(Exception ex) {
 
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(new ApiError<>("Authentication failed", List.of(ex.getLocalizedMessage())));
+                .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
     }
 
     @ExceptionHandler({ AccessDeniedException.class })
     public ResponseEntity<ApiError<String>> handleAccessDeniedException(Exception ex) {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(new ApiError<>("Access denied", List.of(ex.getLocalizedMessage())));
+                .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
     }
+
+
+    // START :: RUNTIME EXCEPTIONS FOR API AND METHODS
+    @ExceptionHandler(FileFormatException.class)
+    public ResponseEntity<ApiError<String>> handleFileFormatException (WebRequest request, FileFormatException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
+    }
+
 
     @ExceptionHandler(value = {UserNotFoundException.class})
     public ResponseEntity<ApiError<String>> handleNotFoundException(WebRequest request, UserNotFoundException ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(new ApiError<>("Not found", List.of(ex.getLocalizedMessage())));
+                .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
+    }
+
+    @ExceptionHandler(value = {EntityNotFoundException.class})
+    public ResponseEntity<ApiError<String>> handleEntityFoundException(WebRequest request, EntityNotFoundException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
     }
 
     @ExceptionHandler(value = {AccountNotActiveException.class})
@@ -64,21 +83,21 @@ public class ApiErrorHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ApiError<String>> handleUserExistsException(WebRequest request, UserExistsException ex) {
         return ResponseEntity
                 .status(HttpStatus.FOUND)
-                .body(new ApiError<>("User exists", List.of(ex.getLocalizedMessage())));
+                .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiError<String>> handleBadCredentialsException(WebRequest request, BadCredentialsException ex) {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(new ApiError<>("Bad Credentials", List.of(ex.getLocalizedMessage())));
+                .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
     }
 
     @ExceptionHandler(TokenNotFoundException.class)
     public ResponseEntity<ApiError<String>> handleTokenNotFoundException(WebRequest request, TokenNotFoundException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new ApiError<>("Token not found", List.of(ex.getLocalizedMessage())));
+                .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
     }
 
     @ExceptionHandler({TokenExpiredException.class, TokenExistsException.class})
@@ -86,7 +105,15 @@ public class ApiErrorHandler extends ResponseEntityExceptionHandler {
             WebRequest request, T ex) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ApiError<>("Token exists or is expired", List.of(ex.getLocalizedMessage())));
+                .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
+    }
+
+    @ExceptionHandler({IllegalStateException.class})
+    public <T extends Exception> ResponseEntity<ApiError<String>> handleIllegalStateException(
+            WebRequest request, T ex) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)

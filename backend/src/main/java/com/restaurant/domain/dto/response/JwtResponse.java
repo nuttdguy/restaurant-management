@@ -1,13 +1,14 @@
 package com.restaurant.domain.dto.response;
 
-import java.util.List;
+
+import java.util.UUID;
 
 public record JwtResponse(
         String type,
         String token,
         String refreshToken,
         String username,
-        List<String> roles) {
+        UUID id) {
 
     public JwtResponse {
         if (type == null) {

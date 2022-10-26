@@ -10,6 +10,7 @@ const App = () => {
 
   return (
     <RouterProvider router={AppRouter}> 
+    
     </RouterProvider>
   )
 }

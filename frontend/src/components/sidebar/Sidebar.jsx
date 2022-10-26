@@ -1,96 +1,121 @@
 import React, { useContext } from "react";
-import { Link, useNavigate, redirect } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 
 import {
   LineStyle,
-  Inventory,
   LocalDining,
   ModeEdit,
   MenuBook,
   Logout
 } from "@mui/icons-material";
 
+// styled components being used for this component
 import {
   Wrapper,
   Menu,
-  MenuTitle,
   MenuList,
   MenuItemEvent,
-  MenuIcon
+  MenuIcon,
+  MenuTitle
 } from "./SidebarStyles";
 
+// inline style for react-router-dom Link component
 const liStyle = {
   "textDecoration": "none"
 }
 
-const Sidebar = () => {
-  const { logout } = useContext(AuthContext);
-  const navigate = useNavigate();
+const iconSize = {
+  "width": "18px",
+  "height": "18px",
+  "padding": "0px 8px"
+}
 
+
+const links = {
+  home: "/admin/restaurant",
+  create: "/admin/restaurant/create",
+  edit: "/admin/restaurant/edit",
+  item: "/admin/restaurant/items",
+  addItem: "/admin/restaurant/items/create",
+  editItem: "/admin/restaurant/items/edit"
+}
+
+const dataMemo = {
+  uuid: "",
+  username: "",
+  restaurantName: "",
+  restaurantId: "",
+}
+
+const Sidebar = () => {
+  // const [links] = useState(linksMemo);
+  const { logout } = useContext(AuthContext); // extract the login function from the AuthContext
+  const navigate = useNavigate(); // returns an iterative method for changing location
+
+  // method to handle logout - clears local storage and changes location to login
   const handleLogout = async () => {
     try {
       await logout();
-      navigate("/login");
-      // navigate({ to: "/login", options: { relative: "/" } });
+      navigate("/login")
     } catch (err) {
       console.log(err.response.data)
     }
   }
 
-  // extract location from url
-  const home = "/admin/business/janedoe";
-  const edit = home + "/edit";
-  const listingUrl = home + "/listing";
-  const itemsUrl = listingUrl + "/1/items";
-  const itemsAddUrl = itemsUrl + "/create";
 
+  // html to transpile and render
   return (
     <Wrapper>
       <Menu>
-        <MenuTitle>
-          Menu
-        </MenuTitle>
+        <MenuTitle>Dashboard</MenuTitle>
         <MenuList>
-          <Link style={liStyle} to={home}>
+          <Link style={liStyle} to={links.home}>
             <MenuItemEvent>
-              <MenuIcon>
-                <LineStyle /> Home
+              <MenuIcon >
+                <LineStyle style={iconSize} /> Home
               </MenuIcon>
             </MenuItemEvent>
           </Link>
-          <Link style={liStyle} to={edit}>
+          <Link style={liStyle} to={links.create}>
             <MenuItemEvent>
-              <MenuIcon>
-                <ModeEdit /> Edit
+              <MenuIcon >
+                <ModeEdit style={iconSize} /> Add Restaurant
               </MenuIcon>
             </MenuItemEvent>
           </Link>
-          <Link style={liStyle} to={listingUrl}>
+          {/* <Link style={liStyle} to={links.edit}>
             <MenuItemEvent>
-              <MenuIcon>
-                <Inventory /> Listing
+              <MenuIcon  >
+                <ModeEdit style={iconSize} /> Edit Restaurant
+              </MenuIcon>
+            </MenuItemEvent>
+          </Link> */}
+          <Link style={liStyle} to={links.item}>
+            <MenuItemEvent>
+              <MenuIcon >
+                <MenuBook style={iconSize} /> View Items
               </MenuIcon>
             </MenuItemEvent>
           </Link>
-          <Link style={liStyle} to={itemsUrl}>
+          <Link style={liStyle} to={links.addItem}>
             <MenuItemEvent>
-              <MenuIcon>
-                <MenuBook /> Items
+              <MenuIcon >
+                <LocalDining style={iconSize} /> Add Item
               </MenuIcon>
             </MenuItemEvent>
           </Link>
-          <Link style={liStyle} to={itemsAddUrl}>
+          {/* <Link style={liStyle} to={links.editItem}>
             <MenuItemEvent>
-              <MenuIcon>
-                <LocalDining /> Add Item
+              <MenuIcon >
+                <LocalDining style={iconSize} /> Edit Item
               </MenuIcon>
             </MenuItemEvent>
-          </Link>
-          <Link onClick={handleLogout} style={liStyle}>
+          </Link> */}
+          <Link onClick={handleLogout} to={"/logout"} style={liStyle}>
             <MenuItemEvent>
-              <MenuIcon>
-                <Logout /> Logout
+              <MenuIcon >
+                <Logout style={iconSize} /> Logout
               </MenuIcon>
             </MenuItemEvent>
           </Link>

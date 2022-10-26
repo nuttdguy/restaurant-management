@@ -2,7 +2,7 @@ package com.restaurant.domain.dto.request;
 
 import javax.validation.constraints.NotBlank;
 
-public record RefreshTokenRequest(
+public record RefreshTokenTo(
         @NotBlank String refreshToken
 ) {
 }

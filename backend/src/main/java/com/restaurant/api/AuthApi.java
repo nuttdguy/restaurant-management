@@ -1,9 +1,9 @@
 package com.restaurant.api;
 
-import com.restaurant.domain.dto.request.ForgotPasswordRequest;
-import com.restaurant.domain.dto.request.LoginRequest;
-import com.restaurant.domain.dto.request.RegisterRequest;
-import com.restaurant.domain.dto.request.ResetPasswordRequest;
+import com.restaurant.domain.dto.request.ForgotPasswordTo;
+import com.restaurant.domain.dto.request.LoginTo;
+import com.restaurant.domain.dto.request.RegisterUserTo;
+import com.restaurant.domain.dto.request.ResetPasswordTo;
 import com.restaurant.domain.dto.response.CreateUserResponse;
 import com.restaurant.service.UserService;
 import lombok.AllArgsConstructor;
@@ -26,11 +26,11 @@ public class AuthApi {
     private UserService userService;
 
     @PostMapping("/register")
-    public CreateUserResponse registerUser(@RequestBody @Validated RegisterRequest registerRequest,
+    public CreateUserResponse registerUser(@RequestBody @Validated RegisterUserTo registerUserTo,
                                            final HttpServletRequest httpServletRequest) {
 
-        log.trace("RegistrationController - registerUser");
-        return userService.registerUser(registerRequest, httpServletRequest);
+        log.trace("RegistrationController - registerUserTo");
+        return userService.registerUser(registerUserTo, httpServletRequest);
     }
 
     @GetMapping("/verify/{theToken}")
@@ -41,26 +41,26 @@ public class AuthApi {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Object> loginUser(@RequestBody @Valid LoginRequest loginRequest) {
+    public ResponseEntity<Object> loginUser(@RequestBody @Valid LoginTo loginTo) {
         log.trace("Login controller - loginUser");
-        return ResponseEntity.ok(userService.loginUser(loginRequest));
+        return ResponseEntity.ok(userService.loginUser(loginTo));
     }
 
 
-    @PostMapping("/login/password/forgot")
-    public ResponseEntity<Object> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest,
+//    @PostMapping("/login/password/forgot")
+    public ResponseEntity<Object> forgotPassword(@RequestBody ForgotPasswordTo forgotPasswordTo,
                                                  final HttpServletRequest request) {
 
         log.trace("Login controller - forgotPassword");
-        return ResponseEntity.ok(userService.forgotPassword(forgotPasswordRequest, request));
+        return ResponseEntity.ok(userService.forgotPassword(forgotPasswordTo, request));
 
     }
 
-    @PostMapping("/login/password/reset/{thePwdResetToken}")
-    public ResponseEntity<Object> resetPassword(@RequestBody @Validated ResetPasswordRequest resetPasswordRequest,
+//    @PostMapping("/login/password/reset/{thePwdResetToken}")
+    public ResponseEntity<Object> resetPassword(@RequestBody @Validated ResetPasswordTo resetPasswordTo,
                                                 @PathVariable("thePwdResetToken") String thePwdResetToken ) {
         log.trace("Login controller - changePassword");
-        return ResponseEntity.ok(userService.resetPassword(resetPasswordRequest, thePwdResetToken));
+        return ResponseEntity.ok(userService.resetPassword(resetPasswordTo, thePwdResetToken));
 
     }
 

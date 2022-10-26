@@ -1,11 +1,11 @@
 import React from "react";
 import axios from "axios";
+
 import { createContext, useEffect, useState } from "react";
 
 
 // create context to contain auth functions and user identity
 export const AuthContext = createContext(); // calling method to create a react context object
-
 
 // ** requires this context to be a higher order func over main APP context
 // create a provider function that will provide the functionality
@@ -18,18 +18,22 @@ export const AuthContextProvider = ({children}) => {
 
   // create an async function to fetch the user from an external resource
   const login = async (inputs) => {
-    const res = await axios.post("auth/login", inputs);
+    const res = await axios.post("/auth/login", inputs);
     setCurrentUser(res.data);
+    // console.log("Auth Context = login = " + currentUser);
   }
 
   // create an async function to logout the user of an external resource
   const logout = async (inputs) => {
-    await axios.post("auth/logout");
+    await axios.post("/auth/logout");
     setCurrentUser(null);
   }
 
+
+
   // utilize react useEffect to watch for state changes
   useEffect(() => {
+    // console.log("Auth Context = setting the user to local storage = " + currentUser)
     localStorage.setItem("user", JSON.stringify(currentUser));
   }, [currentUser] ); // calls this function whenever currentUser object changes
 

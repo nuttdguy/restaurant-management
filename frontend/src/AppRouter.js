@@ -7,16 +7,16 @@ import {
 import { 
   Home,
   Register, 
-  Login, 
-  BusinessHome, 
-  BusinessEdit,
-  Dashboard,
-  BusinessListing,
   RegisterAgreement,
-  ItemsList
+  Login, 
+  Dashboard,
+  RestaurantHome, 
+  AddRestaurant,
+  EditRestaurant,
+  ItemsList,
+  AddItem,
+  EditItem,
 } from "./pages/index.js";
-
-
 
 
 export const AppRouter = createBrowserRouter(
@@ -26,6 +26,7 @@ export const AppRouter = createBrowserRouter(
     children: 
     [
       {
+        index: true,
         path: "register",
         element: <Register />,
       },
@@ -51,38 +52,31 @@ export const AppRouter = createBrowserRouter(
       },
       {
         path: "admin",
-        element: <Dashboard />,
+        element:<Dashboard />,
         children: [{
-          path: "/admin/business/:businessName",
-          element: <BusinessHome />,
+          index: true,
+          path: "/admin/restaurant",
+          element: <RestaurantHome />,
         },
         {
-          path: "/admin/business/:businessName/edit",
-          element: <BusinessEdit />
+          path: "/admin/restaurant/create",
+          element: <AddRestaurant />
         }, 
         {
-          path: "/admin/business/:businessName/listing",
-          element: <BusinessListing />
-        },
+          path: "/admin/restaurant/edit/",
+          element: <EditRestaurant />
+        }, 
         {
-          path: "/admin/business/:businessName/listing/create",
-          element:  <h1>Path to create a business listing - B.E. /business/:name/listing/:id </h1>
-        },
-        {
-          path: "/admin/business/:businessName/listing/:id/edit",
-          element: <h1>Path to edit a business listing - B.E. /business/:name/listing/:id</h1>
-        },
-        {
-          path: "/admin/business/:businessName/listing/:id/items",
+          path: "/admin/restaurant/items",
           element: <ItemsList />
         },
         {
-          path: "/admin/business/:businessName/listing/:id/items/create",
-          element: <h1>Path to to create a single item </h1>
+          path: "/admin/restaurant/items/create",
+          element: <AddItem />
         },
         {
-          path: "/admin/business/:businessName/listing/:id/items/:id",
-          element: <h1>Path to to edit a singe item </h1>
+          path: "/admin/restaurant/items/edit",
+          element: <EditItem />
         },
       ]
       },

@@ -28,7 +28,7 @@ public class RegistrationToken  {
 
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_uid",
+    @JoinColumn(name = "user_uuid",
             nullable = false,
             foreignKey = @ForeignKey(name = "FK_REGISTRATION_TOKEN_USER"))
     public User user;

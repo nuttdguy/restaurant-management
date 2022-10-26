@@ -18,10 +18,12 @@ import {
 // functional login component
 const Login = () => {
   const [inputs, setInputs] = useState({
+    id: "",
     username: "",
     password: ""
   }); // controlled inputs for state
   const [error, setError] = useState(false); // controlled error object for handing errors 
+  const [errorMessage, setErrorMessage] = useState("");
 
   // returns the imperative method for changing the location
   const navigate = useNavigate();
@@ -39,12 +41,13 @@ const Login = () => {
   // func to handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault(); // prevent the form from submitting
+    let to = "/admin/restaurant";
     try {
       await login(inputs); // call the login method with the inputs from this form
-      navigate("/admin"); // change the router location / navigate to url 
+      navigate(to); // change the router location / navigate to url 
     } catch (err) {
-      console.log(err);
-      setError(err.response.data)
+      setError(true)
+      setErrorMessage(err.response.data.message)
     }
   }
 
@@ -71,7 +74,7 @@ const Login = () => {
             name="password"
             onChange={handleOnChange}
           />
-          {error && <Error>An account exists for {inputs.username} </Error>}
+          {error && <Error>{errorMessage}</Error>}
           <LinkTo><Link to="/register">DON'T HAVE AN ACCOUNT? REGISTER </Link></LinkTo>
           <Button type="submit" >LOGIN </Button>
         </Form>

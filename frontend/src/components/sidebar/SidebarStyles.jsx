@@ -8,9 +8,9 @@ const Menu = styled.div`
 
 `;
 
-const MenuTitle = styled.div`
-  font-size: 28px;
-  color: darkblue;
+const MenuTitle = styled.label`
+  font-size: 15px;
+  color: gray;
 `;
 
 const MenuList = styled.ul`
@@ -19,6 +19,7 @@ const MenuList = styled.ul`
 `;
 
 const MenuItem = styled.li`
+  font-size: 12px;
   padding: 6px;
   cursor: pointer;
   border-radius: 6px;
@@ -36,7 +37,7 @@ const MenuItemEvent = styled(MenuItem)`
 
 const MenuIcon = styled.span`
   margin-right: 6px;
-  font-size: 18px;
+  font-size: 12px;
 `;
 
 export {

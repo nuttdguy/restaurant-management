@@ -3,8 +3,13 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+
+# project
 /src/main/resources/application-dev.yml
 EmailCredential.java
+*.gz
+*.log
+*.txt
 
 ### STS ###
 .apt_generated

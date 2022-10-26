@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from "styled-components";
 
+
 const Title = styled.h1`
   height: 60px;
   font-size: 36px;
@@ -12,11 +13,11 @@ const Title = styled.h1`
 `
 
 
-const Topbar = () => {
+const Topbar = ({ user }) => {
 
   return (
     <>
-      <Title>Resturant Management</Title>
+      <Title>Restaurant Management {user ? ":: " + user.username : ""} </Title>
     </>
   )
 }

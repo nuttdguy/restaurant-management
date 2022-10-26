@@ -1,17 +1,16 @@
 package com.restaurant.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Type;
-import org.springframework.data.annotation.LastModifiedDate;
+import org.hibernate.annotations.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -26,8 +25,8 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Type(type = "org.hibernate.type.UUIDCharType")
-    @Column(name = "user_uid")
-    private UUID uid;
+    @Column(name = "user_uuid")
+    private UUID uuid;
 
     @Column(name = "username")
     private String username;
@@ -45,19 +44,29 @@ public class User implements UserDetails {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @LastModifiedDate
+    @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "user_role",
-            joinColumns = { @JoinColumn(name = "user_uid")},
-            inverseJoinColumns = { @JoinColumn(name = "role_id") })
-    private Collection<Role> authorities = new HashSet<>();
+    @ManyToMany(
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY)
+    @JoinTable(name = "user_roles",
+            joinColumns = { @JoinColumn(name = "user_uuid", referencedColumnName = "user_uuid")},
+            inverseJoinColumns = { @JoinColumn(name = "role_id", referencedColumnName = "role_id") })
+    @ToString.Exclude
+    @JsonIgnore
+    private Set<Role> authorities = new HashSet<>();
 
 
-    public User(UUID uid, String username, String password, Collection<Role> authorities) {
-        this.uid = uid;
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    @ToString.Exclude
+    private Set<Restaurant> restaurants = new HashSet<>();
+
+
+    public User(UUID uuid, String username, String password, Set<Role> authorities) {
+        this.uuid = uuid;
         this.username = username;
         this.password = password;
         this.authorities = authorities;
@@ -69,7 +78,7 @@ public class User implements UserDetails {
                 .collect(Collectors.toSet());
 
         return new User(
-                user.getUid(),
+                user.getUuid(),
                 user.getUsername(),
                 user.getPassword(),
                 authorities);

@@ -57,7 +57,6 @@ const Register = () => {
                 setErrorMessage("");
                 setError(false);
             } catch (err) {
-                console.log(err);
                 setError(true)
                 setErrorMessage(err.response.data.message)
             }
@@ -65,7 +64,6 @@ const Register = () => {
     }
 
     const handleChange = (e) => {
-
         setInputs((prev) => ({ ...prev, [e.target.name]: "" + [e.target.value] }))
     }
 
@@ -82,7 +80,7 @@ const Register = () => {
                     <InputFull
                         required
                         minLength={4}
-                        maxLength={20}
+                        maxLength={60}
                         name={"username"}
                         type={"email"}
                         onChange={handleChange}
@@ -92,6 +90,7 @@ const Register = () => {
                         maxLength={20}
                         name={"firstName"}
                         type={"text"}
+                        onChange={handleChange}
                         placeholder="first name" />
                     <Input
                         minLength={4}

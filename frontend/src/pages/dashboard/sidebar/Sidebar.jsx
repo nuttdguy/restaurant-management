@@ -10,9 +10,8 @@ import {
   DashboardCustomizeOutlined,
 } from "@mui/icons-material";
 
-import { MenuList, MenuItem } from "./SidebarStyles";
-
-import { DBSectionHeader, DBSidebarWrap } from "../views/styles/layoutStyles";
+import { DBSectionHeader } from "../views/styles/layoutStyles";
+import { MenuList, MenuItem, MenuLabel } from "./SidebarStyles";
 
 // inline style for react-router-dom Link component
 const linkStyle = {
@@ -20,6 +19,7 @@ const linkStyle = {
   magrin: "0",
   textDecoration: "none",
   color: "#000",
+  fontWeight: "500",
 };
 
 const navPath = {
@@ -39,7 +39,7 @@ export const Sidebar = () => {
   };
 
   return (
-    <DBSidebarWrap>
+    <>
       <DBSectionHeader>
         <Link style={linkStyle} to="/restaurant/new">
           <DashboardCustomizeOutlined />
@@ -50,26 +50,26 @@ export const Sidebar = () => {
       <MenuList>
         <MenuItem>
           <Link style={linkStyle} to={navPath.overview}>
-            <ShowChart /> Overview
+            <ShowChart /> <MenuLabel>Overview</MenuLabel>
           </Link>
         </MenuItem>
 
         <MenuItem>
           <Link style={linkStyle} to={navPath.all}>
-            <Storefront /> Restaurants
+            <Storefront /> <MenuLabel>Restaurants</MenuLabel>
           </Link>
         </MenuItem>
         <MenuItem>
           <Link style={linkStyle} to={navPath.dishes}>
-            <LocalDining /> Items
+            <LocalDining /> <MenuLabel>Items</MenuLabel>
           </Link>
         </MenuItem>
         <MenuItem>
           <Link onClick={handleLogout} to={navPath.logout} style={linkStyle}>
-            <Logout /> Logout
+            <Logout /> <MenuLabel>Logout</MenuLabel>
           </Link>
         </MenuItem>
       </MenuList>
-    </DBSidebarWrap>
+    </>
   );
 };

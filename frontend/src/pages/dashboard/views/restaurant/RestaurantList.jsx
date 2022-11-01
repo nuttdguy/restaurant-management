@@ -8,15 +8,8 @@ import {
 } from "../../../../redux/resources/restaurantResource";
 
 import { AddBoxOutlined, DeleteOutline, Edit } from "@mui/icons-material";
-import { DBSectionWrap, DBSectionHeader } from "../styles/layoutStyles";
-
-import {
-  // Wrapper,
-  // MenuTitle,
-  DataTable,
-  ActionCell,
-  DeleteButton,
-} from "../styles/RestaurantStyle";
+import { DBSectionHeader, DBContentInfoWrap } from "../styles/layoutStyles";
+import { DataTable, ActionCell, DeleteButton } from "../styles/RestaurantStyle";
 
 const linkStyle = {
   // textDecoration: "none",
@@ -129,16 +122,16 @@ export const RestaurantList = () => {
   ];
 
   return (
-    <DBSectionWrap>
+    <>
       <DBSectionHeader>
-        Restaurants
+        <h3>Restaurants</h3>
         <Link style={linkStyle} to="/restaurant/new">
           <AddBoxOutlined />
         </Link>
       </DBSectionHeader>
       {/* {JSON.stringify(restaurants)} */}
-      <DataTable>
-        <div style={{ height: 300, width: "100%" }}>
+      <DBContentInfoWrap>
+        <DataTable>
           <DataGrid
             // checkboxSelection
             columnVisibilityModel={columnVisibility}
@@ -151,9 +144,9 @@ export const RestaurantList = () => {
             pageSize={5}
             rowsPerPageOptions={[5]}
           />
-        </div>
-      </DataTable>
+        </DataTable>
+      </DBContentInfoWrap>
       {/* </FlexItem> */}
-    </DBSectionWrap>
+    </>
   );
 };

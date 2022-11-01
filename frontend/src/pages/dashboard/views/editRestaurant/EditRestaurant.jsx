@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { editRestaurant } from "../../../../redux/resources/restaurantResource";
+import { DBSectionHeader, DBContentInfoWrap } from "../styles/layoutStyles";
 
 import {
   Wrapper,
@@ -38,8 +39,10 @@ export const EditRestaurant = () => {
   };
 
   return (
-    <Wrapper>
-      <MenuTitle>Edit Restaurant</MenuTitle>
+    <>
+      <DBSectionHeader>
+        <h3>Edit Restaurant</h3>
+      </DBSectionHeader>
       {/* <Form id="registrationForm" encType="multipart/form-data"> */}
       <Form
         id="editRestaurantForm"
@@ -195,6 +198,6 @@ export const EditRestaurant = () => {
           </FlexItem>
         </FlexGroup>
       </Form>
-    </Wrapper>
+    </>
   );
 };

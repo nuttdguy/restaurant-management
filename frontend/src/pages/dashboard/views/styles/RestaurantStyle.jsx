@@ -1,37 +1,10 @@
 import styled from "styled-components";
 
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  /* padding: 0 12px 0 20px; */
-  height: calc(100vh - 100px);
-
-  flex: 4;
-  position: sticky;
-  top: 100px;
-`;
-
-const MenuTitle = styled.h3`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  margin: 3px 0px 12px 0px;
-  padding: 0 0 3px 0;
-  border-bottom: 1px solid gray;
-
-  font-size: 1.3em;
-  color: darkblue;
-  text-transform: uppercase;
-  letter-spacing: 1.2pt;
-  border-bottom: 1px solid gray;
-`;
-
 // TABLE STYLES - RESTAURANT LIST STYLES
 const DataTable = styled.div`
-  display: flex;
-  height: 600px;
-  /* padding: 20px; */
+  padding: 20px 10px;
+  width: 100%;
+  height: 50vh;
 `;
 
 const DataTableTitle = styled.div`
@@ -125,11 +98,11 @@ const SubmitButton = styled.button`
 `;
 
 export {
-  Wrapper,
+  // Wrapper,
   Form,
   FlexGroup,
   FlexItem,
-  MenuTitle,
+  // MenuTitle,
   Label,
   Input,
   SubmitButton,

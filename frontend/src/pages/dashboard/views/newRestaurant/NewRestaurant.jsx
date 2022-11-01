@@ -1,10 +1,9 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { registerRestaurant } from "../../../../redux/resources/restaurantResource";
+import { DBSectionHeader, DBContentInfoWrap } from "../styles/layoutStyles";
 
 import {
-  Wrapper,
-  MenuTitle,
   Form,
   FlexGroup,
   FlexItem,
@@ -37,8 +36,10 @@ export const NewRestaurant = () => {
   };
 
   return (
-    <Wrapper>
-      <MenuTitle>New Restaurant</MenuTitle>
+    <>
+      <DBSectionHeader>
+        <h3> New Restaurant </h3>
+      </DBSectionHeader>
       <Form
         onSubmit={handleSubmit}
         id="registrationForm"
@@ -195,6 +196,6 @@ export const NewRestaurant = () => {
           </FlexItem>
         </FlexGroup>
       </Form>
-    </Wrapper>
+    </>
   );
 };

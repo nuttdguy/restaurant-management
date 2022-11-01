@@ -5,6 +5,7 @@ import styled from "styled-components";
 const DBMainSectionWrap = styled.section`
   display: flex;
   flex-direction: column;
+  gap: 10px;
 `;
 
 //  navbar inherits parents cloumn flow; child elements use this flex definition
@@ -14,15 +15,20 @@ const DBNavWrap = styled.section`
   position: sticky;
   top: 0;
   z-index: 999;
+
+  padding: 0 12px 0 20px;
+  border-radius: 10px;
+  -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+  box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
 `;
 
 // wrap the component sections of the dashbaord, i.e. [sidebar, content]
 const DBSectionWrap = styled.section`
   display: flex;
   flex-direction: row;
-  /* padding: 0 12px 0 20px; */
   height: calc(100vh - 100px);
 
+  padding: 0 12px 0 20px;
   position: sticky;
   top: 100px;
 `;
@@ -33,7 +39,12 @@ const DBSidebarWrap = styled.section`
   flex-direction: column;
   flex: 1;
 
-  padding: 0 10px;
+  gap: 10px;
+  padding: 10px;
+
+  border-radius: 10px;
+  -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+  box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
 `;
 
 // set wdith of wrap to 4; set display to flex so that child elements will follow this wraps flow
@@ -41,6 +52,13 @@ const DBMainContentWrap = styled.section`
   display: flex;
   flex-direction: column;
   flex: 4;
+
+  gap: 10px;
+  padding: 10px;
+
+  border-radius: 10px;
+  -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+  box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
 `;
 
 // wrap content info in order to space elements equally amongst column
@@ -53,8 +71,9 @@ const DBContentInfoWrap = styled.div`
 const DBSectionHeader = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
 
+  gap: 10px;
+  padding: 10px;
   border-bottom: 1px solid gray;
 
   font-size: 1.3rem;

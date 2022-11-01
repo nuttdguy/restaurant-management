@@ -138,7 +138,7 @@ export const RestaurantList = () => {
       </DBSectionHeader>
       {/* {JSON.stringify(restaurants)} */}
       <DataTable>
-        <div style={{ height: 400, width: "100%" }}>
+        <div style={{ height: 300, width: "100%" }}>
           <DataGrid
             // checkboxSelection
             columnVisibilityModel={columnVisibility}

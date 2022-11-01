@@ -1,6 +1,10 @@
 import React from "react";
-import Chart from "./chart/Chart";
-import { Container } from "./ChartInfoStyle";
+import styled from "styled-components";
+import Chart from "./Chart";
+
+const Container = styled.div`
+  flex: 1 0 100%;
+`;
 
 const stats = [
   {
@@ -41,7 +45,7 @@ const stats = [
   },
 ];
 
-export const OverviewInfo = () => {
+export const ChartInfo = () => {
   return (
     <Container>
       <Chart data={stats} dataKey="Sales" title="Sales Performance" />

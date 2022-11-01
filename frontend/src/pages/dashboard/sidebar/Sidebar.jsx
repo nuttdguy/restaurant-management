@@ -9,7 +9,6 @@ import {
   ShowChart,
 } from "@mui/icons-material";
 
-// styled components being used for this component
 import { Wrapper, MenuTitle, MenuList, MenuItem } from "./SidebarStyles";
 
 // inline style for react-router-dom Link component

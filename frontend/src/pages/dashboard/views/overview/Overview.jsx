@@ -1,17 +1,17 @@
 import React from "react";
-import { OverviewInfo } from "../../../components/info/overview/OverviewInfo";
-import { SaleInfo } from "../../../components/info/sale/SaleInfo";
-import { SummaryInfo } from "../../../components/info/summary/SummaryInfo";
+import { OverviewInfo } from "../../../components/chartInfo/ChartInfo";
+import { SaleInfo } from "../../../components/info/saleInfo/SaleInfo";
+import { SummaryInfo } from "../../../components/info/summaryInfo/SummaryInfo";
 import styled from "styled-components";
 
 const Container = styled.section`
-  border: 1px solid gray;
+  display: flex;
+  flex-direction: column;
   flex: 4;
 `;
 
 const FlexWrap = styled.div`
-  border: 1px solid gray;
-  display: flex;
+  display: inline-flex;
   justify-content: space-evenly;
 `;
 

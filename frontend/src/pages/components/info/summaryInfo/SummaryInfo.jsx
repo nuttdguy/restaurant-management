@@ -13,7 +13,7 @@ export const SummaryInfo = () => {
   return (
     <>
       <FlexItemWrapper>
-        <Header>Sales:</Header>
+        <Header>Summary:</Header>
         <FlexItem>
           {/* <SaleDataIcon> */}
           <Title>current revenue:</Title>

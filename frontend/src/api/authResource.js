@@ -34,7 +34,7 @@ const login = async (dispatch, user) => {
     const res = await publicRequest.post("/auth/login", user);
     dispatch(loginSuccess(res.data));
   } catch (err) {
-    // console.log(err.response.data);
+    console.log(err.response.data?.message);
     dispatch(loginFailure(err.response.data?.message));
   }
 };

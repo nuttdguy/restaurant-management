@@ -1,6 +1,6 @@
 import React from "react";
-import Chart from "../../chart/Chart";
-import { Container } from "./OverviewInfoStyle";
+import Chart from "./chart/Chart";
+import { Container } from "./ChartInfoStyle";
 
 const stats = [
   {

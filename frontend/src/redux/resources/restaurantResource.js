@@ -24,7 +24,7 @@ const registerRestaurant = async (dispatch, formData) => {
     );
     dispatch(registerSuccess(res.data));
   } catch (err) {
-    dispatch(registerFailure(err.response?.data?.message));
+    dispatch(registerFailure(err.response.data?.message));
   }
 };
 
@@ -35,19 +35,19 @@ const getRestaurants = async (dispatch, username) => {
     // console.log("Done fetching list of restaurants ", res.data);
     dispatch(getRestaurantSuccess(res.data));
   } catch (err) {
-    dispatch(getRestaurantFailure(err.response?.data?.message));
+    dispatch(getRestaurantFailure(err.response.data?.message));
   }
 };
 
 const editRestaurant = async (dispatch, dish) => {
   dispatch(editStart());
   try {
-    const res = await authorizedRequest.put("/restaurant/edit", dish);
+    const res = await authorizedRequest.putForm("/restaurant/edit", dish);
     // console.log("Done editing restaurant dish ...");
     dispatch(editSuccess(res.data));
   } catch (err) {
     // console.log("Something when wrong editing restaurant dish ...");
-    dispatch(editFailure(err.response?.data?.message));
+    dispatch(editFailure(err.response.data?.message));
   }
 };
 
@@ -59,7 +59,7 @@ const removeRestaurant = async (dispatch, restaurantId) => {
     dispatch(removeRestaurantSuccess(res.data));
   } catch (err) {
     // console.log("Something when wrong editing restaurant dish ...");
-    dispatch(removeRestaurantFailure(err.response?.data?.message));
+    dispatch(removeRestaurantFailure(err.response.data?.message));
   }
 };
 

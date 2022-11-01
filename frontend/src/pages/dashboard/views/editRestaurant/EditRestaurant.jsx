@@ -2,11 +2,9 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { editRestaurant } from "../../../../redux/resources/restaurantResource";
-import { DBSectionHeader, DBContentInfoWrap } from "../styles/layoutStyles";
+import { DBSectionHeader } from "../styles/layoutStyles";
 
 import {
-  Wrapper,
-  MenuTitle,
   Form,
   FlexGroup,
   FlexItem,
@@ -32,8 +30,11 @@ export const EditRestaurant = () => {
     const dataValues = Object.fromEntries(data); // convert into js object
     dataValues.id = id; // add restaurant id
 
-    console.log("dataValues = ", dataValues);
-    editRestaurant(dispatch, dataValues);
+    // console.log("dataValues = ", dataValues);
+    editRestaurant(dispatch, {
+      data: JSON.stringify(dataValues),
+      image: document.querySelector("#image").files[0],
+    });
 
     e.target.reset();
   };
@@ -43,13 +44,12 @@ export const EditRestaurant = () => {
       <DBSectionHeader>
         <h3>Edit Restaurant</h3>
       </DBSectionHeader>
-      {/* <Form id="registrationForm" encType="multipart/form-data"> */}
       <Form
         id="editRestaurantForm"
         onSubmit={handleSubmit}
         encType="multipart/form-data"
       >
-        {"restaurant:" + JSON.stringify(restaurant)}
+        {/* {"restaurant:" + JSON.stringify(restaurant)} */}
         <FlexGroup>
           <FlexItem>
             <Label>Name</Label>
@@ -187,7 +187,7 @@ export const EditRestaurant = () => {
               minLength={1}
               maxLength={10}
               name={"image"}
-              type="text"
+              type="file"
               placeholder={restaurant?.image}
             />
           </FlexItem>

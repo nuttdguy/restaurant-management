@@ -7,41 +7,26 @@ import {
   removeRestaurant,
 } from "../../../../redux/resources/restaurantResource";
 
+import { AddBoxOutlined, DeleteOutline, Edit } from "@mui/icons-material";
+import { DBSectionWrap, DBSectionHeader } from "../styles/layoutStyles";
+
 import {
-  Wrapper,
-  MenuTitle,
+  // Wrapper,
+  // MenuTitle,
   DataTable,
   ActionCell,
   DeleteButton,
 } from "../styles/RestaurantStyle";
-import { AddBoxOutlined, DeleteOutline, Edit } from "@mui/icons-material";
 
 const linkStyle = {
-  textDecoration: "none",
-  color: "darkblue",
-  fontSize: "16px",
-  fontWeight: "400",
-  padding: "5px",
-  borderRadius: "5px",
-  cursor: "pointer",
+  // textDecoration: "none",
+  // color: "darkblue",
+  // fontSize: "16px",
+  // fontWeight: "400",
+  // padding: "5px",
+  // borderRadius: "5px",
+  // cursor: "pointer",
 };
-
-// const restaurantMemo = {
-//   id: "",
-//   restaurantName: "",
-//   alias: "",
-//   url: "",
-//   phone: "",
-//   description: "",
-//   category: "",
-//   address1: "",
-//   address2: "",
-//   city: "",
-//   state: "",
-//   zip: "",
-//   country: "",
-//   image: "",
-// };
 
 export const RestaurantList = () => {
   const dispatch = useDispatch();
@@ -144,14 +129,14 @@ export const RestaurantList = () => {
   ];
 
   return (
-    <Wrapper>
-      <MenuTitle>
+    <DBSectionWrap>
+      <DBSectionHeader>
         Restaurants
         <Link style={linkStyle} to="/restaurant/new">
           <AddBoxOutlined />
         </Link>
-      </MenuTitle>
-      {JSON.stringify(restaurants)}
+      </DBSectionHeader>
+      {/* {JSON.stringify(restaurants)} */}
       <DataTable>
         <div style={{ height: 400, width: "100%" }}>
           <DataGrid
@@ -169,6 +154,6 @@ export const RestaurantList = () => {
         </div>
       </DataTable>
       {/* </FlexItem> */}
-    </Wrapper>
+    </DBSectionWrap>
   );
 };

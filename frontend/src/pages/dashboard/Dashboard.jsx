@@ -1,22 +1,29 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import styled from "styled-components";
 import { Navbar } from "../components/navbar/Navbar";
 import { Sidebar } from "../../pages/dashboard/sidebar/Sidebar";
-
-const FlexContainer = styled.section`
-  display: flex;
-  flex-direction: row;
-`;
+import {
+  DBMainSectionWrap,
+  DBNavWrap,
+  DBSectionWrap,
+  DBSidebarWrap,
+  DBMainContentWrap,
+} from "./views/styles/layoutStyles";
 
 export const Dashboard = () => {
   return (
-    <>
-      <Navbar />
-      <FlexContainer>
-        <Sidebar />
-        <Outlet />
-      </FlexContainer>
-    </>
+    <DBMainSectionWrap>
+      <DBNavWrap>
+        <Navbar />
+      </DBNavWrap>
+      <DBSectionWrap>
+        <DBSidebarWrap>
+          <Sidebar />
+        </DBSidebarWrap>
+        <DBMainContentWrap>
+          <Outlet />
+        </DBMainContentWrap>
+      </DBSectionWrap>
+    </DBMainSectionWrap>
   );
 };

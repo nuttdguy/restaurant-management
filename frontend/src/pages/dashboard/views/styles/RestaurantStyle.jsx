@@ -1,12 +1,67 @@
 import styled from "styled-components";
 
 const Wrapper = styled.div`
-  padding: 0 12px 0 20px;
+  display: flex;
+  flex-direction: column;
+  /* padding: 0 12px 0 20px; */
+  height: calc(100vh - 100px);
+
   flex: 4;
-  height: calc(100vh - 120px);
-  background-color: rgb(251, 251, 255);
   position: sticky;
-  top: 120px;
+  top: 100px;
+`;
+
+const MenuTitle = styled.h3`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin: 3px 0px 12px 0px;
+  padding: 0 0 3px 0;
+  border-bottom: 1px solid gray;
+
+  font-size: 1.3em;
+  color: darkblue;
+  text-transform: uppercase;
+  letter-spacing: 1.2pt;
+  border-bottom: 1px solid gray;
+`;
+
+// TABLE STYLES - RESTAURANT LIST STYLES
+const DataTable = styled.div`
+  display: flex;
+  height: 600px;
+  /* padding: 20px; */
+`;
+
+const DataTableTitle = styled.div`
+  width: 100%;
+  font-size: 24px;
+  color: gray;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const ActionCell = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 15px;
+`;
+
+const EditButton = styled.div`
+  padding: 2px 5px;
+  border-radius: 5px;
+  color: darkblue;
+  border: 1px dotted rgba(0, 0, 139, 0.596);
+  cursor: pointer;
+`;
+
+const DeleteButton = styled.div`
+  padding: 2px 5px;
+  color: darkred;
+  cursor: pointer;
 `;
 
 const Form = styled.form`
@@ -58,17 +113,6 @@ const Input = styled.input`
   }
 `;
 
-const MenuTitle = styled.h3`
-  margin: 3px 0px 12px 0px;
-  padding: 8px 0;
-  text-transform: uppercase;
-  letter-spacing: 1.2pt;
-  color: darkblue;
-  padding-bottom: 6px;
-  border-bottom: 1px solid gray;
-  border-top: 1px solid gray;
-`;
-
 const SubmitButton = styled.button`
   width: 40%;
   height: 44px;
@@ -77,42 +121,6 @@ const SubmitButton = styled.button`
   text-transform: uppercase;
   background-color: darkblue;
   color: white;
-  cursor: pointer;
-`;
-
-// TABLE STYLES
-const DataTable = styled.div`
-  height: 600px;
-  padding: 20px;
-`;
-
-const DataTableTitle = styled.div`
-  width: 100%;
-  font-size: 24px;
-  color: gray;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const ActionCell = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 15px;
-`;
-
-const EditButton = styled.div`
-  padding: 2px 5px;
-  border-radius: 5px;
-  color: darkblue;
-  border: 1px dotted rgba(0, 0, 139, 0.596);
-  cursor: pointer;
-`;
-
-const DeleteButton = styled.div`
-  padding: 2px 5px;
-  color: darkred;
   cursor: pointer;
 `;
 

@@ -1,12 +1,10 @@
 import React from "react";
-import { NavContainer, NavWrapper, NavTitle } from "./NavbarStyles";
+import { NavTitle } from "./NavbarStyles";
 
 export const Navbar = () => {
   return (
-    <NavContainer>
-      <NavWrapper>
-        <NavTitle>Restaurant Management</NavTitle>
-      </NavWrapper>
-    </NavContainer>
+    <>
+      <NavTitle>Restaurant Management</NavTitle>
+    </>
   );
 };

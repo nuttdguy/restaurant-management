@@ -11,22 +11,11 @@ import { AddBoxOutlined, DeleteOutline, Edit } from "@mui/icons-material";
 import { DBSectionHeader, DBContentInfoWrap } from "../styles/layoutStyles";
 import { DataTable, ActionCell, DeleteButton } from "../styles/RestaurantStyle";
 
-const linkStyle = {
-  // textDecoration: "none",
-  // color: "darkblue",
-  // fontSize: "16px",
-  // fontWeight: "400",
-  // padding: "5px",
-  // borderRadius: "5px",
-  // cursor: "pointer",
-};
-
 export const RestaurantList = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const restaurants = useSelector((state) => state.restaurant.restaurants);
   const username = useSelector((state) => state.userAuth.currentUser?.username);
-  // const username = JSON.parse(localStorage.getItem("user"))?.username;
   const [columnVisibility, setColumnVisibility] = useState({
     alias: false,
     url: false,
@@ -40,76 +29,50 @@ export const RestaurantList = () => {
     image: false,
   });
 
-  const handleDelete = (restaurantId) => {
+  const handleDelete = (restaurantId) =>
     removeRestaurant(dispatch, restaurantId);
+
+  const locationPath = () =>
+    location.pathname.slice(0, location.pathname.lastIndexOf("/"));
+
+  const fullAddress = (params) => {
+    return `${params.row.address1}, ${params.row.city}, ${params.row.state}, ${params.row.zip}`;
   };
 
   useEffect(() => {
     getRestaurants(dispatch, username);
   }, [dispatch, username]);
 
-  function fullAddress(params) {
-    return `${params.row.address1}, ${params.row.city}, ${params.row.state}, ${params.row.zip}`;
-  }
-
   const columns = [
     { field: "id", headerName: "ID", align: "left", flex: 1 },
-    {
-      field: "name",
-      headerName: "Name",
-      align: "left",
-      flex: 2,
-    },
-    {
-      field: "alias",
-      headerName: "Alias",
-      align: "left",
-      flex: 1,
-    },
-    {
-      field: "url",
-      headerName: "url",
-      align: "left",
-      flex: 1,
-    },
-    {
-      field: "description",
-      headerName: "description",
-      align: "left",
-      flex: 1,
-    },
-    { field: "category", headerName: "category", align: "left", flex: 1 },
+    { field: "name", headerName: "Name", align: "left", flex: 1 },
+    { field: "alias", headerName: "Alias", align: "left" },
+    { field: "url", headerName: "url", align: "left" },
+    { field: "description", headerName: "description", align: "left" },
+    { field: "category", headerName: "category", align: "left" },
     {
       field: "address",
       headerName: "Address",
       align: "left",
       flex: 2,
-      valueGetter: fullAddress,
+      valueGetter: (params) => fullAddress(params),
     },
     { field: "phone", headerName: "phone", align: "left", flex: 1 },
-    { field: "address1", headerName: "Address1", align: "left", flex: 1 },
-    { field: "address2", headerName: "Address2", align: "left", flex: 1 },
-    { field: "city", headerName: "City ", align: "left", flex: 1 },
-    { field: "state", headerName: "State", align: "left", flex: 1 },
-    { field: "zip", headerName: "Zip", align: "left", flex: 1 },
-    { field: "image", headerName: "image", align: "left", flex: 1 },
+    { field: "address1", headerName: "Address1", align: "left" },
+    { field: "address2", headerName: "Address2", align: "left" },
+    { field: "city", headerName: "City ", align: "left" },
+    { field: "state", headerName: "State", align: "left" },
+    { field: "zip", headerName: "Zip", align: "left" },
+    { field: "image", headerName: "image", align: "left" },
     {
       field: "actions",
       headerName: "Actions",
-      flex: 1,
       align: "center",
+      flex: 1,
       renderCell: (params) => {
         return params.id === "" ? null : (
           <ActionCell>
-            <Link
-              style={linkStyle}
-              to={
-                location.pathname.slice(0, location.pathname.lastIndexOf("/")) +
-                "/" +
-                params.id +
-                "/edit"
-              }
-            >
+            <Link to={`${locationPath()}/${params.id}/edit`}>
               <Edit>edit</Edit>
             </Link>
             <DeleteButton onClick={() => handleDelete(params.id)}>
@@ -125,7 +88,7 @@ export const RestaurantList = () => {
     <>
       <DBSectionHeader>
         <h3>Restaurants</h3>
-        <Link style={linkStyle} to="/restaurant/new">
+        <Link to="/restaurant/new">
           <AddBoxOutlined />
         </Link>
       </DBSectionHeader>
@@ -146,7 +109,6 @@ export const RestaurantList = () => {
           />
         </DataTable>
       </DBContentInfoWrap>
-      {/* </FlexItem> */}
     </>
   );
 };

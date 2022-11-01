@@ -31,7 +31,7 @@ const fetchDishes = async (dispatch, username) => {
 const newDish = async (dispatch, dish) => {
   dispatch(newDishStart());
   try {
-    // console.log("Creating new dish ...");
+    console.log("Creating new dish ... ", dish);
     const res = await authorizedRequest.postForm(
       "/restaurant/dish/create",
       dish

@@ -36,10 +36,10 @@ const userAuthSlice = createSlice({
       state.isApiError = false;
       state.apiErrorMessage = null;
     },
-    logoutFailure: (state, action) => {
+    logoutFailure: (state) => {
       state.isSuccess = false;
       state.isApiError = true;
-      state.apiErrorMessage = action.payload;
+      state.apiErrorMessage = null;
     },
     registerStart: (state) => {
       state.isSuccess = false;

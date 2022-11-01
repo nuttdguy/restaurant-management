@@ -16,6 +16,6 @@ public record RestaurantResponse(
         String state,
         String zip,
         String country,
-        String img
+        String photo
 ) {
 }

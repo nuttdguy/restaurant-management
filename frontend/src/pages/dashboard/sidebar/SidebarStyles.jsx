@@ -22,8 +22,11 @@ const MenuItem = styled.li`
 `;
 
 const MenuLabel = styled.label`
-  padding-left: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   color: black;
+  cursor: pointer;
 `;
 
 export { MenuList, MenuItem, MenuLabel };

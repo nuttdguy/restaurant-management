@@ -94,7 +94,7 @@ public class DataInitializer implements CommandLineRunner {
             restaurant.setState(state);
             restaurant.setZip(zip);
             restaurant.setCountry(country);
-            restaurant.setImg(imageUrl);
+            restaurant.setPhoto(imageUrl);
             restaurant.setPhone(phone);
             restaurant.setHasLicense(true);
             restaurant.setActive(true);

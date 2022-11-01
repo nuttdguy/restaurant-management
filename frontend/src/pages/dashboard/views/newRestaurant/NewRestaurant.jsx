@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { registerRestaurant } from "../../../../redux/resources/restaurantResource";
-import { DBSectionHeader, DBContentInfoWrap } from "../styles/layoutStyles";
+import { DBSectionHeader } from "../styles/layoutStyles";
 
 import {
   Form,
@@ -14,16 +14,30 @@ import {
 
 export const NewRestaurant = () => {
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.userAuth.currentUser);
+  const [isSuccess, setIsSuccess] = useState(
+    useSelector((state) => state.restaurant.isSuccess)
+  );
+  const [message, setMessage] = useState(null);
+
+  useEffect(() => {
+    console.log(isSuccess);
+    if (isSuccess) {
+      setIsSuccess(isSuccess);
+      setMessage("Resaurant successfully created");
+      setTimeout(() => {
+        setMessage(null);
+        setIsSuccess(!isSuccess);
+      });
+    }
+  }, [isSuccess, message]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const data = new FormData(e.target);
     const dataValues = Object.fromEntries(data);
+    dataValues.username = user.username;
 
-    dataValues.username = JSON.parse(localStorage.getItem("user")).username;
-    console.log("registration data to submit", dataValues);
-
-    console.log("Submitting restaurant registration");
     registerRestaurant(dispatch, {
       data: JSON.stringify(dataValues),
       license: document.querySelector("#license").files[0],
@@ -45,6 +59,7 @@ export const NewRestaurant = () => {
         id="registrationForm"
         encType="multipart/form-data"
       >
+        {isSuccess ? <p>{message}</p> : null}
         <FlexGroup>
           <FlexItem>
             <Label>Name</Label>
@@ -196,6 +211,7 @@ export const NewRestaurant = () => {
           </FlexItem>
         </FlexGroup>
       </Form>
+      {/* <FlexItem>{image == null ? null : processImage}</FlexItem> */}
     </>
   );
 };

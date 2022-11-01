@@ -50,23 +50,35 @@ export const Sidebar = () => {
       <MenuList>
         <MenuItem>
           <Link style={linkStyle} to={navPath.overview}>
-            <ShowChart /> <MenuLabel>Overview</MenuLabel>
+            <MenuLabel>
+              {" "}
+              <ShowChart /> Overview
+            </MenuLabel>
           </Link>
         </MenuItem>
 
         <MenuItem>
           <Link style={linkStyle} to={navPath.all}>
-            <Storefront /> <MenuLabel>Restaurants</MenuLabel>
+            <MenuLabel>
+              <Storefront />
+              Restaurants
+            </MenuLabel>
           </Link>
         </MenuItem>
         <MenuItem>
           <Link style={linkStyle} to={navPath.dishes}>
-            <LocalDining /> <MenuLabel>Items</MenuLabel>
+            <MenuLabel>
+              <LocalDining />
+              Items
+            </MenuLabel>
           </Link>
         </MenuItem>
         <MenuItem>
           <Link onClick={handleLogout} to={navPath.logout} style={linkStyle}>
-            <Logout /> <MenuLabel>Logout</MenuLabel>
+            <MenuLabel>
+              <Logout />
+              Logout
+            </MenuLabel>
           </Link>
         </MenuItem>
       </MenuList>

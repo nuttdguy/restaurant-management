@@ -60,8 +60,10 @@ public class RestaurantService {
         return toGetRestaurantByNameFrom(restaurantRepo.findAllByName(restaurantName));
     }
 
-    public Set<Dish> getAllRestaurantDishesByOwnerName(String username) {
-        log.trace("RestaurantService - getAllRestaurantDishesByOwnerName");
+    public Set<Dish> getAllDishesByOwnerName(String username) {
+        log.trace("RestaurantService - getAllDishesByOwnerName");
+
+        log.trace("Finding all restaurants owned by {}", username);
         Set<Restaurant> restaurants = restaurantRepo.findByUserUsername(username);
 
         Set<Dish> dishes = new HashSet<>();
@@ -120,13 +122,21 @@ public class RestaurantService {
         throw new UserNotFoundException(format("Failed to create Restaurant. %s is not valid user", createRestaurantTo.username()));
     }
 
-    public RestaurantResponse editRestaurant(UpdateRestaurantTo updateRestaurantTo) {
+    public RestaurantResponse editRestaurant(String restaurantJson, MultipartFile restaurantPhoto) throws JsonProcessingException {
         log.trace("Restaurant Service - editRestaurant");
+
+        ObjectMapper objMapper = new ObjectMapper();
+        UpdateRestaurantTo updateRestaurantTo = objMapper.readValue(restaurantJson, UpdateRestaurantTo.class);
+
+        log.trace("Getting the restaurant to update");
         Restaurant restaurant = restaurantRepo
                 .findById(updateRestaurantTo.id())
                 .orElseThrow(() -> new EntityNotFoundException(format("%s not found", updateRestaurantTo.restaurantName())));
 
+        log.trace("Preparing to update");
         restaurantRepo.save(updateRestaurantProperties(updateRestaurantTo, restaurant));
+
+        log.trace("Done updating the restaurant");
         return toRestaurantResponse(restaurant);
     }
 

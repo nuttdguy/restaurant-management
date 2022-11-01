@@ -42,7 +42,7 @@ public class RestaurantMapper {
                 restaurant.getState(),
                 restaurant.getZip(),
                 restaurant.getCountry(),
-                restaurant.getImg()
+                restaurant.getPhoto()
         );
     }
 

@@ -1,8 +1,7 @@
 import React, { useState } from "react";
+import { DBSectionHeader } from "../styles/layoutStyles";
 
 import {
-  Wrapper,
-  MenuTitle,
   Form,
   FlexGroup,
   FlexItem,
@@ -15,8 +14,10 @@ export const EditDish = () => {
   // const dishes = useSelector((state) => state.dish.dishes);
 
   return (
-    <Wrapper>
-      <MenuTitle>New Dish</MenuTitle>
+    <>
+      <DBSectionHeader>
+        <h3>New Dish</h3>
+      </DBSectionHeader>
       <Form id="registrationForm" encType="multipart/form-data">
         <FlexGroup>
           <FlexItem>
@@ -70,6 +71,6 @@ export const EditDish = () => {
           </FlexItem>
         </FlexGroup>
       </Form>
-    </Wrapper>
+    </>
   );
 };

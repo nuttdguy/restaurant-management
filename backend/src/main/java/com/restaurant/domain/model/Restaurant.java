@@ -41,7 +41,7 @@ public class Restaurant {
     private String zip;
     private String country;
 
-    private String img;
+    private String photo;
     private Boolean hasLicense;
     private Boolean active;
 

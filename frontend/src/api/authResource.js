@@ -43,9 +43,9 @@ const logout = async (dispatch, user) => {
   dispatch(logoutStart());
   try {
     const res = await authorizedRequest.authorizedRequest("/auth/logout", user);
-    dispatch(logoutSuccess(res.data));
+    dispatch(logoutSuccess(res?.data));
   } catch (err) {
-    dispatch(logoutFailure(err.response.data?.message));
+    dispatch(logoutFailure(err.response?.data?.message));
   }
 };
 

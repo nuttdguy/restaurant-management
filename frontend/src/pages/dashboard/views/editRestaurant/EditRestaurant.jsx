@@ -59,7 +59,7 @@ export const EditRestaurant = () => {
               maxLength={60}
               name={"restaurantName"}
               type="text"
-              placeholder={restaurant?.name}
+              placeholder={restaurant.name}
             />
           </FlexItem>
           <FlexItem>
@@ -70,7 +70,7 @@ export const EditRestaurant = () => {
               maxLength={60}
               name={"alias"}
               type="text"
-              placeholder={restaurant?.name}
+              placeholder={restaurant.name}
             />
           </FlexItem>
           <FlexItem>
@@ -80,7 +80,7 @@ export const EditRestaurant = () => {
               maxLength={100}
               name={"url"}
               type="email"
-              placeholder={restaurant?.url}
+              placeholder={restaurant.url}
             />
           </FlexItem>
           <FlexItem>
@@ -91,7 +91,7 @@ export const EditRestaurant = () => {
               maxLength={60}
               name={"phone"}
               type="tel"
-              placeholder={restaurant?.phone}
+              placeholder={restaurant.phone}
             />
           </FlexItem>
         </FlexGroup>
@@ -103,7 +103,7 @@ export const EditRestaurant = () => {
               maxLength={100}
               name={"description"}
               type="text"
-              placeholder={restaurant?.description}
+              placeholder={restaurant.description}
             />
           </FlexItem>
           <FlexItem>
@@ -113,7 +113,7 @@ export const EditRestaurant = () => {
               maxLength={100}
               name={"category"}
               type="text"
-              placeholder={restaurant?.category}
+              placeholder={restaurant.category}
             />
           </FlexItem>
         </FlexGroup>
@@ -126,7 +126,7 @@ export const EditRestaurant = () => {
               maxLength={50}
               name={"address1"}
               type="text"
-              placeholder={restaurant?.address1}
+              placeholder={restaurant.address1}
             />
           </FlexItem>
           <FlexItem>
@@ -136,7 +136,7 @@ export const EditRestaurant = () => {
               maxLength={50}
               name={"address2"}
               type="text"
-              placeholder={restaurant?.address2}
+              placeholder={restaurant.address2}
             />
           </FlexItem>
         </FlexGroup>
@@ -148,7 +148,7 @@ export const EditRestaurant = () => {
               maxLength={50}
               name={"city"}
               type="text"
-              placeholder={restaurant?.city}
+              placeholder={restaurant.city}
             />
           </FlexItem>
           <FlexItem>
@@ -158,7 +158,7 @@ export const EditRestaurant = () => {
               maxLength={50}
               name={"state"}
               type="text"
-              placeholder={restaurant?.state}
+              placeholder={restaurant.state}
             />
           </FlexItem>
           <FlexItem>
@@ -168,7 +168,7 @@ export const EditRestaurant = () => {
               maxLength={50}
               name={"zip"}
               type="text"
-              placeholder={restaurant?.zip}
+              placeholder={restaurant.zip}
             />
           </FlexItem>
           <FlexItem>
@@ -178,17 +178,18 @@ export const EditRestaurant = () => {
               maxLength={10}
               name={"country"}
               type="text"
-              placeholder={restaurant?.country}
+              placeholder={restaurant.country}
             />
           </FlexItem>
           <FlexItem>
             <Label>Image</Label>
             <Input
+              id={"image"}
               minLength={1}
               maxLength={10}
               name={"image"}
               type="file"
-              placeholder={restaurant?.image}
+              placeholder={restaurant.image}
             />
           </FlexItem>
         </FlexGroup>

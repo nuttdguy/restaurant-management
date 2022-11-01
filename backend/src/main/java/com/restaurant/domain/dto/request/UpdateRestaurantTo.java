@@ -1,11 +1,15 @@
 package com.restaurant.domain.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.UUID;
 
 public record UpdateRestaurantTo(
         UUID id,
         String restaurantName,
+        @JsonIgnore String alias,
         String url,
+        String phone,
         String category,
         String description,
         String address1,
@@ -13,9 +17,8 @@ public record UpdateRestaurantTo(
         String city,
         String state,
         String zip,
-        String phone,
         String country,
-        String image,
-        String username
+        @JsonIgnore String image,
+        @JsonIgnore String username
 ) {
 }

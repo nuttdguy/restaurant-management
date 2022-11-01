@@ -2,10 +2,9 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { newDish } from "../../../../redux/resources/dishResource";
 import { getRestaurants } from "../../../../redux/resources/restaurantResource";
+import { DBSectionHeader } from "../styles/layoutStyles";
 
 import {
-  Wrapper,
-  MenuTitle,
   Form,
   FlexGroup,
   FlexItem,
@@ -19,11 +18,12 @@ import {
 export const NewDish = () => {
   const dispatch = useDispatch();
   const restaurants = useSelector((state) => state.restaurant?.restaurants);
+  const user = useSelector((state) => state.userAuth.currentUser);
 
   useEffect(() => {
-    const username = JSON.parse(localStorage.getItem("user"))?.username;
-    getRestaurants(dispatch, username);
-  }, [dispatch]);
+    // const username = JSON.parse(localStorage.getItem("user"))?.username;
+    getRestaurants(dispatch, user.username);
+  }, [dispatch, user.username]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -31,10 +31,9 @@ export const NewDish = () => {
     // convert form data into js object
     const data = new FormData(e.target);
     const dataValues = Object.fromEntries(data);
+    dataValues.username = user.username;
 
-    // extract user from local store
-    dataValues.username = JSON.parse(localStorage.getItem("user")).username;
-
+    // console.log(user);
     newDish(dispatch, {
       data: JSON.stringify(dataValues),
       image: document.querySelector("#image").files[0],
@@ -44,8 +43,10 @@ export const NewDish = () => {
   };
 
   return (
-    <Wrapper>
-      <MenuTitle>New Dish</MenuTitle>
+    <>
+      <DBSectionHeader>
+        <h3>New Dish</h3>
+      </DBSectionHeader>
       <Form
         onSubmit={handleSubmit}
         id="newDishForm"
@@ -147,6 +148,6 @@ export const NewDish = () => {
           </FlexItem>
         </FlexGroup>
       </Form>
-    </Wrapper>
+    </>
   );
 };

@@ -1,12 +1,21 @@
 import styled from "styled-components";
 
-const Wrapper = styled.div`
-  padding: 0 12px 0 20px;
-  flex: 4;
-  height: calc(100vh - 120px);
-  background-color: rgb(251, 251, 255);
-  position: sticky;
-  top: 120px;
+const DataTable = styled.div`
+  padding: 20px 10px;
+  width: 100%;
+  height: 50vh;
+`;
+
+const DeleteButton = styled.div`
+  padding: 2px 5px;
+  color: darkred;
+  cursor: pointer;
+`;
+
+const ActionCell = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 15px;
 `;
 
 const Form = styled.form`
@@ -28,17 +37,6 @@ const FlexGroup = styled.div`
 const FlexItem = styled.div`
   flex: 50%;
   margin: 6px 0;
-`;
-
-const MenuTitle = styled.h3`
-  margin: 3px 0px 12px 0px;
-  padding: 8px 0;
-  text-transform: uppercase;
-  letter-spacing: 1.2pt;
-  color: darkblue;
-  padding-bottom: 6px;
-  border-bottom: 1px solid gray;
-  border-top: 1px solid gray;
 `;
 
 const Label = styled.label`
@@ -89,35 +87,16 @@ const SubmitButton = styled.button`
   cursor: pointer;
 `;
 
-const DeleteButton = styled.div`
-  padding: 2px 5px;
-  color: darkred;
-  cursor: pointer;
-`;
-
-const ActionCell = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 15px;
-`;
-
-const DataTable = styled.div`
-  height: 600px;
-  padding: 20px;
-`;
-
 export {
-  Wrapper,
+  DataTable,
+  DeleteButton,
+  ActionCell,
   Form,
   FlexGroup,
   FlexItem,
-  MenuTitle,
   Label,
   Input,
   Select,
   SelectOption,
   SubmitButton,
-  DeleteButton,
-  ActionCell,
-  DataTable,
 };

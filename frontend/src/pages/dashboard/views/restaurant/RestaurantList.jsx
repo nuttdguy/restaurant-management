@@ -26,8 +26,28 @@ export const RestaurantList = () => {
     city: false,
     state: false,
     zip: false,
-    image: false,
+    photo: false,
   });
+
+  // [
+  //   {
+  //     id: "831eaf9d-fb5f-4052-9065-4837559fa3d8",
+  //     name: "daytime_place",
+  //     alias: null,
+  //     url: "daytimeplace@restaurant.com",
+  //     phone: "000-000-00000",
+  //     category: "Burgers",
+  //     description:
+  //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque egestas semper consequat. Cras congue, sapien a hendrerit tempor, tortor quam volutpat justo, quis maximus neque ex at urna. ",
+  //     address1: "Matterson St.",
+  //     address2: null,
+  //     city: "New Hope",
+  //     state: "MN",
+  //     zip: "55555",
+  //     country: "USA",
+  //     img: "https://picsum.photos/200/300",
+  //   },
+  // ];
 
   const handleDelete = (restaurantId) =>
     removeRestaurant(dispatch, restaurantId);
@@ -45,7 +65,7 @@ export const RestaurantList = () => {
 
   const columns = [
     { field: "id", headerName: "ID", align: "left", flex: 1 },
-    { field: "name", headerName: "Name", align: "left", flex: 1 },
+    { field: "name", headerName: "Name", align: "left", flex: 2 },
     { field: "alias", headerName: "Alias", align: "left" },
     { field: "url", headerName: "url", align: "left" },
     { field: "description", headerName: "description", align: "left" },
@@ -54,7 +74,7 @@ export const RestaurantList = () => {
       field: "address",
       headerName: "Address",
       align: "left",
-      flex: 2,
+      flex: 3,
       valueGetter: (params) => fullAddress(params),
     },
     { field: "phone", headerName: "phone", align: "left", flex: 1 },
@@ -63,7 +83,6 @@ export const RestaurantList = () => {
     { field: "city", headerName: "City ", align: "left" },
     { field: "state", headerName: "State", align: "left" },
     { field: "zip", headerName: "Zip", align: "left" },
-    { field: "image", headerName: "image", align: "left" },
     {
       field: "actions",
       headerName: "Actions",

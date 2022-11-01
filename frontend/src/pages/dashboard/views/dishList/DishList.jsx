@@ -1,40 +1,30 @@
 import React, { useEffect } from "react";
-import { DataGrid } from "@mui/x-data-grid";
 import { Link, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { AddBoxOutlined, DeleteOutline, Edit } from "@mui/icons-material";
-import { Wrapper, MenuTitle, DataTable } from "../styles/DishStyle";
 
-import { ActionCell, DeleteButton } from "../styles/DishStyle";
+import { DataGrid } from "@mui/x-data-grid";
+import { AddBoxOutlined, DeleteOutline, Edit } from "@mui/icons-material";
+import { DataTable, ActionCell, DeleteButton } from "../styles/DishStyle";
+import { DBSectionHeader, DBContentInfoWrap } from "../styles/layoutStyles";
+
 import {
   fetchDishes,
   removeDish,
 } from "../../../../redux/resources/dishResource";
 
-const linkStyle = {
-  textDecoration: "none",
-  color: "darkblue",
-  fontSize: "16px",
-  fontWeight: "400",
-  padding: "5px",
-  borderRadius: "5px",
-  cursor: "pointer",
-};
-
 export const DishList = () => {
   const dispatch = useDispatch();
-  const dishes = useSelector((state) => state.dish.dishes);
-  const username = JSON.parse(localStorage.getItem("user"))?.username;
-
   const location = useLocation();
+  const dishes = useSelector((state) => state.dish.dishes);
+  const user = useSelector((state) => state.userAuth.currentUser);
 
   const handleDelete = async (dishId) => {
     removeDish(dispatch, dishId);
   };
 
   useEffect(() => {
-    fetchDishes(dispatch, username);
-  }, [dispatch, username]);
+    fetchDishes(dispatch, user.username);
+  }, [dispatch, user.username]);
 
   const columns = [
     { field: "id", headerName: "ID", align: "left", flex: 1 },
@@ -56,7 +46,6 @@ export const DishList = () => {
         return params.id === "" ? null : (
           <ActionCell>
             <Link
-              style={linkStyle}
               to={
                 location.pathname.slice(0, location.pathname.lastIndexOf("/")) +
                 "/edit/" +
@@ -75,16 +64,16 @@ export const DishList = () => {
   ];
 
   return (
-    <Wrapper>
-      <MenuTitle>
-        Dish Items
-        <Link style={linkStyle} to="/restaurant/dishes/new">
+    <>
+      <DBSectionHeader>
+        <h3>Dish Items</h3>
+        <Link to="/restaurant/dishes/new">
           <AddBoxOutlined />
         </Link>
-      </MenuTitle>
-      {/* {JSON.stringify(dishes)} */}
-      <DataTable>
-        <div style={{ height: 400, width: "100%" }}>
+      </DBSectionHeader>
+      {JSON.stringify(dishes)}
+      <DBContentInfoWrap>
+        <DataTable>
           {dishes === {} ? null : (
             <DataGrid
               // checkboxSelection
@@ -94,8 +83,8 @@ export const DishList = () => {
               rowsPerPageOptions={[5]}
             />
           )}
-        </div>
-      </DataTable>
-    </Wrapper>
+        </DataTable>
+      </DBContentInfoWrap>
+    </>
   );
 };

@@ -15,12 +15,13 @@ import {
 
 import { authorizedRequest } from "../../api/apiResource";
 
-const registerRestaurant = async (dispatch, formData) => {
+const registerRestaurant = async (dispatch, restaurant) => {
   dispatch(registerStart());
   try {
+    console.log("Registering restaurant ... ", restaurant);
     const res = await authorizedRequest.postForm(
       "/restaurant/create",
-      formData
+      restaurant
     );
     dispatch(registerSuccess(res.data));
   } catch (err) {

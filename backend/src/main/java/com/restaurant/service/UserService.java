@@ -12,6 +12,7 @@ import com.restaurant.domain.model.Role;
 import com.restaurant.domain.model.RoleType;
 import com.restaurant.event.RegistrationEvent;
 import com.restaurant.exception.TokenExpiredException;
+import com.restaurant.exception.UserNotFoundException;
 import com.restaurant.jwt.JwtUtil;
 import com.restaurant.repository.IRoleRepo;
 import com.restaurant.repository.IUserRepo;
@@ -57,9 +58,14 @@ public class UserService {
                 .orElseThrow(() -> new UsernameNotFoundException(format("%s not found", username)));
     }
 
+    public User findById(UUID id) {
+        return userRepo.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(format("User was not found for id %s", id)));
+    }
+
     public CreateUserResponse registerUser(RegisterUserTo registerUserTo,
                                            HttpServletRequest httpServletRequest) {
-        log.trace("UserService - registerUserTo");
+        log.trace("UserService - registerUser");
         log.trace("Create a new user from request or throw if user is found");
         hasMatchingPassword(registerUserTo);
         User newUser = extractUserThrowIfFound(registerUserTo);
@@ -86,7 +92,7 @@ public class UserService {
     }
 
     public UserVerifiedResponse verifyRegistration(UUID theToken) {
-        log.trace("RegistrationService - verifyRegistrationToken");
+        log.trace("UserService - verifyRegistrationToken");
 
         RegistrationToken registrationToken = tokenService.findRegisterTokenById(theToken);
 
@@ -118,21 +124,6 @@ public class UserService {
 
         }
         return registrationToken;
-    }
-
-    public int deleteUser(String username) {
-        userRepo.delete(userRepo
-                .findByUsername(username)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException(format("Delete failed because user %s was not found", username))));
-        return 1;
-    }
-
-    public int deleteUser(UUID uuid) {
-        userRepo.delete(userRepo
-                .findById(uuid)
-                .orElseThrow(() -> new UsernameNotFoundException(format("Delete failed because user of id %s was not found", uuid))));
-        return 1;
     }
 
     private User extractUserThrowIfFound(RegisterUserTo registerUserTo) {
@@ -181,7 +172,7 @@ public class UserService {
     }
 
     public JwtResponse loginUser(LoginTo loginTo) throws BadCredentialsException {
-        log.trace("LoginService - loginUser");
+        log.trace("UserService - loginUser");
 
         log.trace("Fetching the user");
         User user = userRepo.findByUsername(loginTo.username())
@@ -217,7 +208,6 @@ public class UserService {
                 user.getUuid());
     }
 
-
     public Object forgotPassword(ForgotPasswordTo forgotPasswordTo, HttpServletRequest request) {
         return null;
     }
@@ -225,4 +215,20 @@ public class UserService {
     public Object resetPassword(ResetPasswordTo resetPasswordTo, String thePwdResetToken) {
         return null;
     }
+
+    public int deleteUser(String username) {
+        userRepo.delete(userRepo
+                .findByUsername(username)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(format("Delete failed because user %s was not found", username))));
+        return 1;
+    }
+
+    public String deleteUser(UUID uuid) {
+        userRepo.delete(userRepo.findById(uuid)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(format("Failed to delete user because user of id %s does not exist", uuid))));
+        return "Success";
+    }
+
 }

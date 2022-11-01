@@ -2,7 +2,7 @@ package com.restaurant.domain.mapper;
 
 import com.restaurant.domain.dto.request.CreateRestaurantTo;
 import com.restaurant.domain.dto.request.UpdateRestaurantTo;
-import com.restaurant.domain.dto.response.CreateRestaurantResponse;
+import com.restaurant.domain.dto.response.RestaurantResponse;
 import com.restaurant.domain.dto.response.GetRestaurantByName;
 import com.restaurant.domain.model.Restaurant;
 import com.restaurant.domain.model.User;
@@ -27,11 +27,13 @@ public class RestaurantMapper {
         return restaurant;
     }
 
-    public static CreateRestaurantResponse toAddEditRestaurantResponseFrom(Restaurant restaurant) {
-        return new CreateRestaurantResponse(
+    public static RestaurantResponse toRestaurantResponse(Restaurant restaurant) {
+        return new RestaurantResponse(
                 restaurant.getUuid(),
                 restaurant.getName(),
+                restaurant.getAlias(),
                 restaurant.getUrl(),
+                restaurant.getPhone(),
                 restaurant.getCategory(),
                 restaurant.getDescription(),
                 restaurant.getAddress1(),
@@ -39,19 +41,15 @@ public class RestaurantMapper {
                 restaurant.getCity(),
                 restaurant.getState(),
                 restaurant.getZip(),
-                restaurant.getPhone(),
                 restaurant.getCountry(),
-                restaurant.getImgUrl(),
-                restaurant.getUser().getUsername()
+                restaurant.getImg()
         );
     }
 
-    public static Restaurant updateRestaurantProperties(UpdateRestaurantTo request, Restaurant old) {
-        Restaurant updated = new Restaurant();
-        BeanUtils.copyProperties(request, updated);
-        BeanUtils.copyProperties(old, updated); // transfer old
-        log.trace("Transferred request properties {}", updated);
-        return updated;
+    public static Restaurant updateRestaurantProperties(UpdateRestaurantTo updateData, Restaurant old) {
+        BeanUtils.copyProperties(updateData, old);
+        log.trace("Transferred request properties {}", old);
+        return old;
     }
 
     public static Set<GetRestaurantByName> toGetRestaurantByNameFrom(Set<Restaurant> restaurants) {

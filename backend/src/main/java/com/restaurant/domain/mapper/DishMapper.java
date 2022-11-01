@@ -12,7 +12,7 @@ public class DishMapper {
 
     public static Dish toDishFrom(CreateDishTo createDishTo) {
         Dish dish = new Dish();
-        dish.setName(createDishTo.itemName());
+        dish.setName(createDishTo.dishName());
         dish.setDescription(createDishTo.description());
         dish.setPrice(new BigDecimal(String.valueOf(createDishTo.price())));
         dish.setIngredients(createDishTo.ingredients());

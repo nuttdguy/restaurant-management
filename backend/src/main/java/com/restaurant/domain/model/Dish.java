@@ -1,15 +1,14 @@
 package com.restaurant.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 
 @Entity
@@ -17,6 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
+@ToString
 public class Dish {
 
     @Id
@@ -35,4 +35,30 @@ public class Dish {
     @JsonIgnore
     private Restaurant restaurant;
 
+    @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL)
+    @Fetch(value = FetchMode.SUBSELECT) // one query mode
+    @JsonIgnore
+    @ToString.Exclude
+    private Set<Image> images = new HashSet<>();
+
+    public void addImage(Image image) {
+        this.images.add(image);
+    }
+
+    public void removeImage(Image image) {
+        this.images.remove(image);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Dish dish = (Dish) o;
+        return id != null && Objects.equals(id, dish.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

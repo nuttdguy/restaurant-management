@@ -26,8 +26,7 @@ public class SafetyLicense {
     @Column(name = "license", nullable = false, length = 10000000)
     private byte[] license;
 
-    @OneToOne
-    @JoinColumn(name = "restaurant_uuid")
+    @OneToOne(mappedBy = "safetyLicense")
     private Restaurant restaurant;
 
 }

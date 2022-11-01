@@ -8,6 +8,7 @@ import java.util.UUID;
 public record CreateRestaurantTo(
         @JsonIgnore UUID id,
         @NotBlank String restaurantName,
+        String alias,
         String url,
         String category,
         String description,
@@ -19,6 +20,7 @@ public record CreateRestaurantTo(
         String phone,
         String country,
         @JsonIgnore String license,
+        @JsonIgnore String image,
         String username
 ) {
 

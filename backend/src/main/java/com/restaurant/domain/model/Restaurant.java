@@ -2,17 +2,19 @@ package com.restaurant.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "restaurants")
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
@@ -26,7 +28,9 @@ public class Restaurant {
     private UUID uuid;
 
     private String name;
+    private String alias;
     private String url;
+    private String phone;
     private String category;
 
     private String description;
@@ -35,10 +39,9 @@ public class Restaurant {
     private String city;
     private String state;
     private String zip;
-    private String phone;
     private String country;
 
-    private String imgUrl;
+    private String img;
     private Boolean hasLicense;
     private Boolean active;
 
@@ -47,9 +50,30 @@ public class Restaurant {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @OneToOne
+    @JoinColumn(name = "license_id")
+    private SafetyLicense safetyLicense;
+
     @ManyToOne
     @JoinColumn(name = "user_uuid")
     @JsonIgnore
     private User user;
 
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
+    @Fetch(value = FetchMode.SUBSELECT)
+    @ToString.Exclude
+    private Set<Dish> dishes = new HashSet<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Restaurant that = (Restaurant) o;
+        return uuid != null && Objects.equals(uuid, that.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

@@ -1,9 +1,6 @@
 package com.restaurant;
 
-import com.restaurant.domain.model.Restaurant;
-import com.restaurant.domain.model.Role;
-import com.restaurant.domain.model.RoleType;
-import com.restaurant.domain.model.User;
+import com.restaurant.domain.model.*;
 import com.restaurant.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +35,12 @@ public class DataInitializer implements CommandLineRunner {
     final String imageUrl = "https://picsum.photos/200/300";
     final String phone = "000-000-00000";
 
+    final List<String> dishNamesDesc = List.of("Spaghetti", "Steak", "Fries", "Potatoes", "Noodles", "Cheesecake", "Pie", "Crab");
+    final List<Double> dishPrices = List.of(9.99, 10.99, 2.99, 4.99, 8.00, 4.00, 2.00);
+    final List<String> dishIngredients = List.of("Noodles, Tomato, Salt ",
+            "Beef, Salt", "Potato, Salt", "Potato, Butter", "Cream Cheese, Milk", "Wheat, Strawberry, Sugar", "Crab");
+
+    final List<String> imageNames = List.of("a", "b", "c", "d", "e", "f", "g", "h");
 
     @Autowired private IRoleRepo roleRepo;
     @Autowired private IUserRepo userRepo;
@@ -57,6 +61,8 @@ public class DataInitializer implements CommandLineRunner {
         // initialize lists
         List<User> users = new ArrayList<>();
         List<Restaurant> restaurants = new ArrayList<>();
+        List<Dish> dishes = new ArrayList<>();
+        List<Image> images = new ArrayList<>();
 
         // create role instances, add to a list to persist
         Role roleRegistered = new Role(RoleType.REGISTERED_USER);
@@ -75,10 +81,6 @@ public class DataInitializer implements CommandLineRunner {
             user.setEnabled(true);
             user.setCreatedAt(LocalDateTime.now());
             user.setUpdatedAt(LocalDateTime.now());
-            user.getAuthorities().add(roleRegistered);
-            user.getAuthorities().add(rolePublic);
-            users.add(user);
-
 
             Restaurant restaurant = new Restaurant();
             String businessName = businessNames.get(i).replace(" ", "_").toLowerCase();
@@ -92,30 +94,58 @@ public class DataInitializer implements CommandLineRunner {
             restaurant.setState(state);
             restaurant.setZip(zip);
             restaurant.setCountry(country);
-            restaurant.setImgUrl(imageUrl);
+            restaurant.setImg(imageUrl);
             restaurant.setPhone(phone);
             restaurant.setHasLicense(true);
             restaurant.setActive(true);
             restaurant.setCreatedAt(LocalDateTime.now());
             restaurant.setUpdatedAt(LocalDateTime.now());
 
+            Dish dish = new Dish();
+            dish.setName(dishNamesDesc.get(i));
+            dish.setDescription(dishNamesDesc.get(i));
+            dish.setPrice(BigDecimal.valueOf(dishPrices.get(i)));
+            dish.setIngredients(dishIngredients.get(i));
+
+            Image image = new Image();
+            image.setName(imageNames.get(i) + ".png");
+
+            user.addRole(roleRegistered);
+            user.addRole(rolePublic);
+            users.add(user); // add user to list
+
             restaurant.setUser(user); // associate the user to the restaurant
+            user.addRestaurant(restaurant); // associate user to the restaurant
             restaurants.add(restaurant); // add the restaurant to the list
 
+            dish.setRestaurant(restaurant); // associate restaurant to the dishes
+            restaurant.getDishes().add(dish); // associate dish to the restaurant
+            dishes.add(dish); // add dish to list
+
+            dish.addImage(image);
+            image.setDish(dish);
+            images.add(image);
+
         }
+
 
         // SINGLE RUN TO CHECK FOR EXISTING USERS AND SEED ON APP START
         for (User user : users) {
             if (!userRepo.existsByUsername(user.getUsername())) {
-                log.trace(" only adding when user does not exist");
-                log.trace(" saving users :: {}", users);
-                userRepo.saveAll(users);
-
                 log.trace(" saving roles {}", roles);
                 roleRepo.saveAll(roles);
 
+                log.trace(" saving users :: {}", users);
+                userRepo.saveAll(users);
+
                 log.trace(" saving restaurant {}", restaurants);
                 restaurantRepo.saveAll(restaurants);
+
+                log.trace(" saving dishes {}", dishes);
+                dishRepo.saveAll(dishes);
+
+                log.trace(" saving images {}", dishes);
+                imageRepo.saveAll(images);
                 break;
             }
         }

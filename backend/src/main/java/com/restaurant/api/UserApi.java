@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 
 @Slf4j
 @RestController
@@ -21,6 +23,20 @@ public class UserApi {
         log.trace("UserApi- findUserByUsername={}", username);
 
         return ResponseEntity.status(HttpStatus.OK).body(userService.findByUsername(username));
+    }
+
+    @GetMapping(value = "/id/{userId}")
+    public ResponseEntity<Object> getUserById(@PathVariable("userId") UUID id) {
+        log.trace("UserApi - getUserById");
+
+        return ResponseEntity.ok(userService.findById(id));
+    }
+
+    @DeleteMapping(value = "/{userId}")
+    public ResponseEntity<Object> deleteUserById(@PathVariable("userId") UUID id) {
+        log.trace("UserApi - deleteUserById");
+
+        return ResponseEntity.ok(userService.deleteUser(id));
     }
 
 

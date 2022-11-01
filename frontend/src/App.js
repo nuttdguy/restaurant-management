@@ -1,18 +1,48 @@
-import React from 'react';
-import {AppRouter} from "./AppRouter";
-
+import React from "react";
+import { useSelector } from "react-redux";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import {
-  RouterProvider,
-} from "react-router-dom";
-
+  Landing,
+  Login,
+  Register,
+  RegisterAgreement,
+  Dashboard,
+  Overview,
+  RestaurantList,
+  NewRestaurant,
+  EditRestaurant,
+  DishList,
+  NewDish,
+  EditDish,
+} from "./pages/pagesIndex";
 
 const App = () => {
+  const user = useSelector((state) => state.userAuth.currentUser);
+  // console.log(user);
 
   return (
-    <RouterProvider router={AppRouter}> 
-    
-    </RouterProvider>
-  )
-}
+    <Router>
+      <Routes>
+        <Route exact path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/agreement" element={<RegisterAgreement />} />
+
+        {user && (
+          <Route path="/restaurant" element={<Dashboard />}>
+            <Route path="/restaurant/overview" element={<Overview />} />
+            <Route path="/restaurant/all" element={<RestaurantList />} />
+            <Route path="/restaurant/new" element={<NewRestaurant />} />
+            <Route path="/restaurant/:id/edit" element={<EditRestaurant />} />
+            <Route path="/restaurant/dishes" element={<DishList />} />
+            <Route path="/restaurant/dishes/new" element={<NewDish />} />
+            <Route path="/restaurant/dishes/edit" element={<EditDish />} />
+          </Route>
+        )}
+        <Route path="*" element={<Login />} />
+      </Routes>
+    </Router>
+  );
+};
 
 export default App;

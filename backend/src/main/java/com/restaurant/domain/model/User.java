@@ -48,21 +48,40 @@ public class User implements UserDetails {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToMany(
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @Fetch(value = FetchMode.SUBSELECT)
     @JoinTable(name = "user_roles",
-            joinColumns = { @JoinColumn(name = "user_uuid", referencedColumnName = "user_uuid")},
-            inverseJoinColumns = { @JoinColumn(name = "role_id", referencedColumnName = "role_id") })
+            joinColumns = { @JoinColumn(name = "user_uuid")},
+            inverseJoinColumns = { @JoinColumn(name = "role_id") })
     @ToString.Exclude
     @JsonIgnore
     private Set<Role> authorities = new HashSet<>();
 
 
-    @OneToMany(mappedBy = "user", orphanRemoval = true)
-    @LazyCollection(LazyCollectionOption.TRUE)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @Fetch(value = FetchMode.SUBSELECT)
     @ToString.Exclude
     private Set<Restaurant> restaurants = new HashSet<>();
+
+
+    public void addRole(Role role) {
+        this.authorities.add(role);
+        role.getUsers().add(this);
+    }
+
+    public void removeRole(Role role) {
+        this.authorities.remove(role);
+        role.getUsers().remove(this);
+    }
+
+    public void addRestaurant(Restaurant restaurant) {
+        this.restaurants.add(restaurant);
+    }
+
+    public void removeRestaurant(Restaurant restaurant) {
+        this.restaurants.remove(restaurant);
+    }
+
 
 
     public User(UUID uuid, String username, String password, Set<Role> authorities) {

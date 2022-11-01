@@ -1,7 +1,7 @@
 package com.restaurant.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.restaurant.domain.dto.request.CreateDishTo;
-import com.restaurant.domain.dto.request.CreateRestaurantTo;
 import com.restaurant.domain.dto.request.EditDishTo;
 import com.restaurant.domain.dto.request.UpdateRestaurantTo;
 import com.restaurant.domain.dto.response.GetRestaurantByName;
@@ -24,6 +24,10 @@ import java.util.UUID;
 public class RestaurantApi {
 
     private final RestaurantService restaurantService;
+
+    // TODO MAY NEED TO MODIFY MAPPINGS AFTER IMPLEMENTING SPRING SECURITY ROLES
+    // SINCE USERS ARE AUTHENTICATED BY THE ACCESS TOKEN AND USER DATA AVAILABLE
+    // THROUGH THE SECURITY CONTEXT
 
     @GetMapping("/owner/{username}")
     public ResponseEntity<Object> getRestaurantsByOwner(@PathVariable("username") String username) {
@@ -52,7 +56,8 @@ public class RestaurantApi {
 
     @PostMapping(value = "/create", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<Object> registerRestaurant(@RequestPart("data") String data,
-                                                   @RequestPart("file") MultipartFile licenseDocument) throws IOException {
+                                                   @RequestPart("license") MultipartFile licenseDocument,
+                                                     @RequestPart("image") MultipartFile image) throws IOException {
         log.trace("Restaurant Api - registerRestaurant");
         return ResponseEntity.ok(restaurantService.registerRestaurant(data, licenseDocument));
     }
@@ -63,36 +68,44 @@ public class RestaurantApi {
         return ResponseEntity.ok(restaurantService.editRestaurant(updateRestaurantTo));
     }
 
-    @GetMapping("/{restaurantId}/items")
-    public ResponseEntity<Object> getRestaurantItems(@PathVariable("restaurantId") UUID uuid) {
-        log.trace("RestaurantApi - getRestaurantItems");
+
+    // DISH ITEM MAPPINGS
+    @GetMapping("/owner/{username}/dishes")
+    public ResponseEntity<Object> getAllRestaurantDishes(@PathVariable("username") String username) {
+        log.trace("Restaurant Api - getAllRestaurantDishes");
+
+        return ResponseEntity.ok(restaurantService.getAllRestaurantDishesByOwnerName(username));
+    }
+
+    @GetMapping("/{restaurantId}/dish")
+    public ResponseEntity<Object> getRestaurantDishes(@PathVariable("restaurantId") UUID uuid) {
+        log.trace("RestaurantApi - getRestaurantDishes");
         return ResponseEntity.ok(restaurantService.getRestaurantItems(uuid));
     }
 
-    @PostMapping("/{restaurantId}/items/create")
-    public ResponseEntity<Object> createRestaurantItem(@PathVariable("restaurantId") UUID restaurantId,
-                                                       @RequestBody CreateDishTo createDishTo) {
-        log.trace("RestaurantApi - createRestaurantItem");
-        return ResponseEntity.ok(restaurantService.createItem(restaurantId, createDishTo));
+    @PostMapping(value = "/dish/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Object> createRestaurantDish(@RequestPart("data") String dish,
+                                                       @RequestPart("image") MultipartFile image) throws JsonProcessingException {
+
+        log.trace("RestaurantApi - createRestaurantDish");
+        return ResponseEntity.ok(restaurantService.createDish(dish, image));
     }
 
-    @PutMapping("/{restaurantId}/items/{itemId}/edit")
-    public ResponseEntity<Object> editRestaurantItem(@PathVariable("restaurantId") UUID restaurantId,
-                                                     @PathVariable("itemId") Long itemId,
-                                                     @RequestBody EditDishTo editDishTo) {
+    @PutMapping(value = "/dish/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Object> editRestaurantDish(@RequestPart("data") EditDishTo editDishTo) {
         log.trace("RestaurantApi - editRestaurantItem");
-        return ResponseEntity.ok(restaurantService.editRestaurantItem(restaurantId, itemId, editDishTo));
+        // TODO - made changes, fix this
+        return ResponseEntity.ok(restaurantService.editRestaurantItem(UUID.randomUUID(), editDishTo));
     }
 
-    @DeleteMapping("/{restaurantId}/remove")
+    @DeleteMapping("/{restaurantId}")
     public ResponseEntity<Object> removeRestaurant(@PathVariable("restaurantId") UUID restaurantId) {
         log.trace("RestaurantApi - removeRestaurant");
         return ResponseEntity.ok(restaurantService.removeRestaurant(restaurantId));
     }
 
-    @DeleteMapping("/{restaurantId}/items/{itemId}/remove")
-    public ResponseEntity<Object> removeRestaurantItem(@PathVariable("restaurantId") UUID restaurantId,
-                                                       @PathVariable("itemId") Long itemId) {
+    @DeleteMapping("/dish/{itemId}")
+    public ResponseEntity<Object> removeRestaurantItem(@PathVariable("itemId") Long itemId) {
         log.trace("RestaurantApi - removeRestaurantItem");
         return ResponseEntity.ok(restaurantService.removeRestaurantItem(itemId));
     }

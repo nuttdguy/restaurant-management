@@ -1,86 +1,93 @@
-import React, { useContext, useState } from 'react';
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext";
+import { useDispatch, useSelector } from "react-redux";
+import { login, clearApiError } from "../../api/authResource";
 
-// import styles to use for this component
 import {
   Container,
   Wrapper,
+  FlexWrap,
   Title,
   Form,
+  Label,
   Input,
   Button,
   LinkTo,
-  Error
+  Error,
 } from "./LoginStyles";
 
-
-// functional login component
-const Login = () => {
-  const [inputs, setInputs] = useState({
-    id: "",
-    username: "",
-    password: ""
-  }); // controlled inputs for state
-  const [error, setError] = useState(false); // controlled error object for handing errors 
-  const [errorMessage, setErrorMessage] = useState("");
-
-  // returns the imperative method for changing the location
+export const Login = () => {
+  const { isSuccess, isApiError, apiErrorMessage } = useSelector(
+    (state) => state.userAuth
+  );
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Accepts a context object (the value returned from `React.createContext`) and returns the current
-  // context value, as given by the nearest context provider for the given context.
-  // return the custom AuthContextProvider with login, logout and its state from the App context
-  const { login } = useContext(AuthContext);
+  const [error, setError] = useState(isApiError);
+  const [errorMessage, setErrorMessage] = useState(apiErrorMessage);
 
-  // func to handle state changes
-  const handleOnChange = (e) => {
-    setInputs((previousState) => ({ ...previousState, [e.target.name]: e.target.value }))
-  }
+  useEffect(() => {
+    handleError(isApiError, apiErrorMessage);
+  }, [isApiError, apiErrorMessage]);
 
-  // func to handle form submit
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // prevent the form from submitting
-    let to = "/admin/restaurant";
-    try {
-      await login(inputs); // call the login method with the inputs from this form
-      navigate(to); // change the router location / navigate to url 
-    } catch (err) {
-      setError(true)
-      setErrorMessage(err.response.data.message)
+  useEffect(() => {
+    if (isSuccess) {
+      // localStorage.setItem("user", JSON.stringify(currentUser));
+      navigate("/restaurant", { replace: false }); // change the router location / navigate to url
     }
-  }
+    clearApiError(dispatch);
+  }, [navigate, dispatch, isSuccess]);
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    login(dispatch, {
+      username: e.target?.username.value,
+      password: e.target?.password.value,
+    });
+  };
+
+  const handleError = (isError, message) => {
+    setErrorMessage(message);
+    setError(isError);
+    setTimeout(() => {
+      setErrorMessage("");
+      setError(!isError);
+    }, 3000);
+  };
 
   return (
     <Container>
       <Wrapper>
-        <Title>LOGIN</Title>
-        <Form onSubmit={handleSubmit}>
-          <Input
-            required
-            type="text"
-            minLength="4"
-            placeholder="username"
-            name="username"
-            onChange={handleOnChange}
-          />
-          <Input
-            required
-            type="password"
-            minLength="4"
-            maxLength="20"
-            placeholder="password"
-            name="password"
-            onChange={handleOnChange}
-          />
-          {error && <Error>{errorMessage}</Error>}
-          <LinkTo><Link to="/register">DON'T HAVE AN ACCOUNT? REGISTER </Link></LinkTo>
-          <Button type="submit" >LOGIN </Button>
-        </Form>
+        <FlexWrap>
+          <Title>LOGIN</Title>
+          <Form onSubmit={handleSubmit}>
+            <Label>email / username: </Label>
+            <Input
+              required
+              type="text"
+              minLength="1"
+              placeholder="username"
+              name="username"
+            />
+            <Label>password: </Label>
+            <Input
+              required
+              type="password"
+              minLength="4"
+              maxLength="20"
+              placeholder="password"
+              name="password"
+            />
+            {error && <Error>{errorMessage}</Error>}
+            <FlexWrap>
+              <LinkTo>
+                <Link to="/register">DON'T HAVE AN ACCOUNT? REGISTER </Link>
+              </LinkTo>
+              <Button type="submit">LOGIN </Button>
+            </FlexWrap>
+          </Form>
+        </FlexWrap>
       </Wrapper>
     </Container>
   );
-}
-
-export default Login;
+};

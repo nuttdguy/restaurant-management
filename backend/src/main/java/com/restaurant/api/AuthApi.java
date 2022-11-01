@@ -28,21 +28,21 @@ public class AuthApi {
     @PostMapping("/register")
     public CreateUserResponse registerUser(@RequestBody @Validated RegisterUserTo registerUserTo,
                                            final HttpServletRequest httpServletRequest) {
-
+        log.trace("Auth Api - registerUser");
         log.trace("RegistrationController - registerUserTo");
         return userService.registerUser(registerUserTo, httpServletRequest);
     }
 
     @GetMapping("/verify/{theToken}")
     public ResponseEntity<Object> verifyRegistration(@PathVariable("theToken") UUID token) {
-
+        log.trace("Auth Api - verifyRegistration");
         log.trace("RegistrationController - verifyRegistration");
         return ResponseEntity.status(HttpStatus.OK).body(userService.verifyRegistration(token));
     }
 
     @PostMapping("/login")
     public ResponseEntity<Object> loginUser(@RequestBody @Valid LoginTo loginTo) {
-        log.trace("Login controller - loginUser");
+        log.trace("Auth Api - loginUser");
         return ResponseEntity.ok(userService.loginUser(loginTo));
     }
 
@@ -51,7 +51,7 @@ public class AuthApi {
     public ResponseEntity<Object> forgotPassword(@RequestBody ForgotPasswordTo forgotPasswordTo,
                                                  final HttpServletRequest request) {
 
-        log.trace("Login controller - forgotPassword");
+        log.trace("Auth Api - forgotPassword");
         return ResponseEntity.ok(userService.forgotPassword(forgotPasswordTo, request));
 
     }
@@ -59,7 +59,7 @@ public class AuthApi {
 //    @PostMapping("/login/password/reset/{thePwdResetToken}")
     public ResponseEntity<Object> resetPassword(@RequestBody @Validated ResetPasswordTo resetPasswordTo,
                                                 @PathVariable("thePwdResetToken") String thePwdResetToken ) {
-        log.trace("Login controller - changePassword");
+        log.trace("Auth Api - resetPassword");
         return ResponseEntity.ok(userService.resetPassword(resetPasswordTo, thePwdResetToken));
 
     }

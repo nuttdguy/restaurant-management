@@ -1,13 +1,15 @@
 package com.restaurant.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.restaurant.domain.dto.request.CreateDishTo;
 import com.restaurant.domain.dto.request.CreateRestaurantTo;
 import com.restaurant.domain.dto.request.EditDishTo;
 import com.restaurant.domain.dto.request.UpdateRestaurantTo;
 import com.restaurant.domain.dto.response.CreateDishResponse;
-import com.restaurant.domain.dto.response.CreateRestaurantResponse;
+import com.restaurant.domain.dto.response.RestaurantResponse;
 import com.restaurant.domain.dto.response.GetRestaurantByName;
+import com.restaurant.domain.mapper.RestaurantMapper;
 import com.restaurant.domain.model.Dish;
 import com.restaurant.domain.model.Restaurant;
 import com.restaurant.domain.model.SafetyLicense;
@@ -20,7 +22,6 @@ import com.restaurant.repository.IUserRepo;
 import com.restaurant.util.FileUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.restaurant.domain.mapper.DishMapper.toCreateDishFrom;
 import static com.restaurant.domain.mapper.DishMapper.toDishFrom;
@@ -45,10 +47,12 @@ public class RestaurantService {
     private final IDishRepo dishRepo;
     private final IUserRepo userRepo;
 
-    public Set<GetRestaurantByName> getRestaurantsByOwnerName(String username) {
+    public Set<RestaurantResponse> getRestaurantsByOwnerName(String username) {
+        log.trace("RestaurantService - getRestaurantsByOwnerName");
         Set<Restaurant> restaurants = restaurantRepo.findByUserUsername(username);
         log.trace("Found restaurants {}", restaurants);
-        return toGetRestaurantByNameFrom(restaurants);
+        return restaurants.stream().map(RestaurantMapper::toRestaurantResponse).collect(Collectors.toSet());
+//        return RestaurantResponse;
     }
 
     public Set<GetRestaurantByName> getRestaurantsByName(String restaurantName) {
@@ -56,11 +60,23 @@ public class RestaurantService {
         return toGetRestaurantByNameFrom(restaurantRepo.findAllByName(restaurantName));
     }
 
+    public Set<Dish> getAllRestaurantDishesByOwnerName(String username) {
+        log.trace("RestaurantService - getAllRestaurantDishesByOwnerName");
+        Set<Restaurant> restaurants = restaurantRepo.findByUserUsername(username);
+
+        Set<Dish> dishes = new HashSet<>();
+        restaurants.forEach(rest -> dishes.addAll(rest.getDishes()));
+        log.trace("Restaurants found {}", restaurants);
+        log.trace("Dishes found {}", dishes);
+        return dishes;
+    }
+
     public Restaurant getRestaurantById(UUID uuid) {
         return restaurantRepo.findById(uuid)
                 .orElseThrow(() -> new EntityNotFoundException(format("Restaurant not found for id %s", uuid)));
     }
 
+    // todo extract user from spring security context set by jwt token filter
     public Object registerRestaurant(String data, MultipartFile license) throws IOException {
         log.trace("Restaurant Service - registerRestaurant");
 
@@ -86,10 +102,10 @@ public class RestaurantService {
         restaurantRepo.save(restaurant);
 
         log.trace("Done saving restaurant and safety license");
-        return toAddEditRestaurantResponseFrom(restaurant);
+        return toRestaurantResponse(restaurant);
     }
 
-    public CreateRestaurantResponse createRestaurant(CreateRestaurantTo createRestaurantTo) {
+    public RestaurantResponse createRestaurant(CreateRestaurantTo createRestaurantTo) {
         log.trace("Restaurant Service - createRestaurant {}", createRestaurantTo);
 
         log.trace("Fetching {}", createRestaurantTo.username());
@@ -99,37 +115,45 @@ public class RestaurantService {
             log.trace("Found {}, creating restaurant", user.get().getUsername());
             Restaurant restaurant = toRestaurantFrom(createRestaurantTo, user.get());
             restaurant = restaurantRepo.save(restaurant);
-            return toAddEditRestaurantResponseFrom(restaurant);
+            return toRestaurantResponse(restaurant);
         }
         throw new UserNotFoundException(format("Failed to create Restaurant. %s is not valid user", createRestaurantTo.username()));
     }
 
-    public CreateRestaurantResponse editRestaurant(UpdateRestaurantTo updateRestaurantTo) {
+    public RestaurantResponse editRestaurant(UpdateRestaurantTo updateRestaurantTo) {
         log.trace("Restaurant Service - editRestaurant");
         Restaurant restaurant = restaurantRepo
                 .findById(updateRestaurantTo.id())
                 .orElseThrow(() -> new EntityNotFoundException(format("%s not found", updateRestaurantTo.restaurantName())));
 
         restaurantRepo.save(updateRestaurantProperties(updateRestaurantTo, restaurant));
-        return toAddEditRestaurantResponseFrom(restaurant);
+        return toRestaurantResponse(restaurant);
     }
 
-    public CreateDishResponse createItem(UUID restaurantId, CreateDishTo createDishTo) {
-        log.trace("RestaurantService - createItem");
-        Restaurant restaurant = restaurantRepo.findById(restaurantId)
-                .orElseThrow(() -> new EntityNotFoundException(format("Restaurant not found for id %s", restaurantId)));
+    public CreateDishResponse createDish(String dishJson, MultipartFile image) throws JsonProcessingException {
+        log.trace("RestaurantService - createDish");
 
-        log.trace("Creating dish item {}", createDishTo);
-        Dish dish = toDishFrom(createDishTo);
+        ObjectMapper objectMapper = new ObjectMapper();
+        CreateDishTo dto = objectMapper.readValue(dishJson, CreateDishTo.class);
+
+        log.trace("Finding the restaurant by ist id {}", dto.restaurantId());
+        UUID id = dto.restaurantId();
+        Restaurant restaurant = restaurantRepo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        format("Restaurant not found for id %s", dto.restaurantId())));
+
+        log.trace("Creating dish item {}", dto);
+        Dish dish = toDishFrom(dto);
         dish.setRestaurant(restaurant);
+
         log.trace("Saving dish item");
         return toCreateDishFrom(dishRepo.save(dish));
     }
 
-    public Object editRestaurantItem(UUID restaurantId, Long itemId, EditDishTo editDishTo) {
+    public Object editRestaurantItem(UUID restaurantId, EditDishTo editDishTo) {
         log.trace("Restaurant Service - editRestaurantItem");
-        Dish dish = dishRepo.findById(itemId)
-                .orElseThrow(() -> new EntityNotFoundException(format("Cannot update - item id %s was not found", itemId)));
+        Dish dish = dishRepo.findById(editDishTo.id())
+                .orElseThrow(() -> new EntityNotFoundException(format("Cannot update - item id %s was not found", editDishTo.id())));
 
         log.trace("Updating fields {}", editDishTo);
         if (editDishTo.itemName() != null && !editDishTo.itemName().isBlank()) {
@@ -152,7 +176,7 @@ public class RestaurantService {
     }
 
     public String removeRestaurant(UUID restaurantId) {
-        log.trace("Removing restaurant {}", restaurantId);
+        log.trace("Removing restaurant of ID == {}", restaurantId);
         restaurantRepo.deleteById(restaurantId);
         return "SUCCESS";
     }
@@ -162,4 +186,5 @@ public class RestaurantService {
         dishRepo.deleteById(itemId);
         return "SUCCESS";
     }
+
 }

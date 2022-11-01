@@ -4,6 +4,8 @@ package com.restaurant.domain.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
@@ -30,11 +32,9 @@ public class Role implements GrantedAuthority {
     @JsonIgnore
     private String name;
 
-    // set cascade to merge in order to propagate changes, rather than save a new entity which throws exception =
-    @ManyToMany(
-            mappedBy = "authorities",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY)
+    // https://thorben-janssen.com/ultimate-guide-association-mappings-jpa-hibernate/
+    @ManyToMany(mappedBy = "authorities", fetch = FetchType.LAZY)
+    @Fetch(value = FetchMode.SUBSELECT)
     @ToString.Exclude
     private Set<User> users = new HashSet<>();
 

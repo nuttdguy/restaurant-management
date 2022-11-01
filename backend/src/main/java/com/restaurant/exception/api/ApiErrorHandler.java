@@ -75,7 +75,7 @@ public class ApiErrorHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = {AccountNotActiveException.class})
     public ResponseEntity<ApiError<String>> handleAccountNoActiveException(WebRequest request, AccountNotActiveException ex) {
         return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
+                .status(HttpStatus.CONFLICT)
                 .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
     }
 

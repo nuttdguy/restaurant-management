@@ -19,6 +19,4 @@
   - lombak
  
  
- ![restaurant-collage](https://user-images.githubusercontent.com/6646024/199547221-56c75285-bbca-4784-ae07-825dffd19bad.png)
-
- 
+![restaurant-collage](https://user-images.githubusercontent.com/6646024/199547988-2624af29-c259-4fa1-b23b-957e4d21345d.png)

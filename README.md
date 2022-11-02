@@ -13,7 +13,7 @@ Users can perform simple operations for getting, creating, updating and deleting
  
  ## Server / Back-end technologies:
  - Spring-boot framework
-  - Soring-context
+  - Spring-context
   - JPA / Hibernate
   - Spring Security (Jwt auth)
   - Tomcat - servlet

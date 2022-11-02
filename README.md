@@ -15,7 +15,7 @@ Users can perform simple operations for getting, creating, updating and deleting
  - Spring-boot framework
   - Soring-context
   - JPA / Hibernate
-  - Jwt Security
+  - Spring Security (Jwt auth)
   - Tomcat - servlet
   - lombak
   - mySql

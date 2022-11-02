@@ -1,6 +1,6 @@
 import { AnalyticsOutlined } from "@mui/icons-material";
 import React from "react";
-import { ChartInfo } from "../../../components/chartInfo/ChartInfo";
+import { ChartInfo } from "../../../components/info/chartInfo/ChartInfo";
 import { SaleInfo } from "../../../components/info/saleInfo/SaleInfo";
 import { SummaryInfo } from "../../../components/info/summaryInfo/SummaryInfo";
 import { DBSectionHeader, DBContentInfoWrap } from "../styles/layoutStyles";
@@ -16,9 +16,8 @@ export const Overview = () => {
         <SaleInfo />
         <SummaryInfo />
       </DBContentInfoWrap>
-      <DBContentInfoWrap>
-        <ChartInfo />
-      </DBContentInfoWrap>
+      {/* chart should continue flow of parent */}
+      <ChartInfo />
     </>
   );
 };

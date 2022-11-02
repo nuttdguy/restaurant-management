@@ -1,38 +1,29 @@
 import React from "react";
-import { ArrowDownward, ArrowUpward } from "@mui/icons-material";
 
 import {
-  FlexItemWrapper,
-  FlexItem,
-  Header,
-  Title,
-  SaleData,
-} from "./SummaryInfoStyle";
+  InfoContentWrap,
+  InfoContentGroup,
+  InfoTitle,
+  InfoLabel,
+  InfoData,
+} from "../styles/InfoStyles";
 
 export const SummaryInfo = () => {
   return (
-    <>
-      <FlexItemWrapper>
-        <Header>Summary:</Header>
-        <FlexItem>
-          {/* <SaleDataIcon> */}
-          <Title>current revenue:</Title>
-          <SaleData> $300.00</SaleData> <ArrowDownward />
-          {/* </SaleDataIcon> */}
-        </FlexItem>
-        <FlexItem>
-          {/* <SaleDataIcon> */}
-          <Title>last month revenue:</Title>
-          <SaleData> $400.00</SaleData> <ArrowUpward />
-          {/* </SaleDataIcon> */}
-        </FlexItem>
-        <FlexItem>
-          {/* <SaleDataIcon> */}
-          <Title>Difference revenue:</Title>
-          <SaleData> $100.00</SaleData> <ArrowDownward />
-          {/* </SaleDataIcon> */}
-        </FlexItem>
-      </FlexItemWrapper>
-    </>
+    <InfoContentWrap>
+      <InfoTitle>Summary:</InfoTitle>
+      <InfoContentGroup>
+        <InfoLabel>Dish Items:</InfoLabel>
+        <InfoData> 20 </InfoData>
+      </InfoContentGroup>
+      <InfoContentGroup>
+        <InfoLabel>Most popular </InfoLabel>
+        <InfoData> Steak & Eggs </InfoData>
+      </InfoContentGroup>
+      <InfoContentGroup>
+        <InfoLabel>Total % of revenue</InfoLabel>
+        <InfoData> 23.754%</InfoData>
+      </InfoContentGroup>
+    </InfoContentWrap>
   );
 };

@@ -1,6 +1,8 @@
 import axios from "axios";
+import { useSelector } from "react-redux";
 
 const user = JSON.parse(localStorage.getItem("user"));
+// const user = useSelector((state) => state.userAuth.currentUser);
 
 const CURRENT_USER = user?.username;
 const TOKEN = user?.token;

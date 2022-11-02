@@ -21,7 +21,6 @@ export const NewRestaurant = () => {
   const [message, setMessage] = useState(null);
 
   useEffect(() => {
-    console.log(isSuccess);
     if (isSuccess) {
       setIsSuccess(isSuccess);
       setMessage("Resaurant successfully created");
@@ -43,8 +42,6 @@ export const NewRestaurant = () => {
       license: document.querySelector("#license").files[0],
       image: document.querySelector("#image").files[0],
     });
-
-    // todo - add status / error message handler
 
     e.target.reset();
   };

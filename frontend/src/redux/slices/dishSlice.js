@@ -11,7 +11,6 @@ const dishSlice = createSlice({
   },
   reducers: {
     getDishesStart: (state) => {
-      state.dishes = [];
       state.isFetching = true;
       state.isSuccess = false;
       state.isError = false;
@@ -25,7 +24,6 @@ const dishSlice = createSlice({
       state.errorMessage = null;
     },
     getDishesFailure: (state, action) => {
-      state.dishes = [];
       state.isFetching = false;
       state.isSuccess = false;
       state.isError = true;
@@ -78,7 +76,10 @@ const dishSlice = createSlice({
       state.errorMessage = null;
     },
     removeDishSuccess: (state, action) => {
-      state.dishes = action.payload;
+      state.dishes.splice(
+        state.dishes.findIndex((dish) => dish.id === action.payload),
+        1
+      );
       state.isFetching = false;
       state.isSuccess = true;
       state.isError = false;

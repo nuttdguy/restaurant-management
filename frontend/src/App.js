@@ -18,6 +18,7 @@ import {
 
 const App = () => {
   const user = useSelector((state) => state.userAuth.currentUser);
+  // const user = true;
   // console.log(user);
 
   return (
@@ -36,7 +37,7 @@ const App = () => {
             <Route path="/restaurant/:id/edit" element={<EditRestaurant />} />
             <Route path="/restaurant/dishes" element={<DishList />} />
             <Route path="/restaurant/dishes/new" element={<NewDish />} />
-            <Route path="/restaurant/dishes/edit" element={<EditDish />} />
+            <Route path="/restaurant/dishes/:id/edit" element={<EditDish />} />
           </Route>
         )}
         <Route path="*" element={<Login />} />

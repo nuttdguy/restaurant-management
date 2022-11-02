@@ -9,7 +9,7 @@ const DBMainSectionWrap = styled.section`
 `;
 
 //  navbar inherits parents cloumn flow; child elements use this flex definition
-const DBNavWrap = styled.section`
+const DBNavWrap = styled.nav`
   display: inline-flex;
   align-items: center;
   position: sticky;
@@ -17,31 +17,32 @@ const DBNavWrap = styled.section`
   z-index: 999;
 
   padding: 0 12px 0 20px;
+  background-color: white;
   border-radius: 10px;
   -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
   box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
 `;
 
 // wrap the component sections of the dashbaord, i.e. [sidebar, content]
-const DBSectionWrap = styled.section`
+const DBSectionWrap = styled.main`
   display: flex;
   flex-direction: row;
-  height: calc(100vh - 100px);
 
   padding: 0 12px 0 20px;
-  position: sticky;
-  top: 100px;
 `;
 
 // set the width of wrap to 1; set display to flex so that child elements will follow this wraps flow
 const DBSidebarWrap = styled.section`
   display: flex;
   flex-direction: column;
+  height: calc(100vh - 120px);
   flex: 1;
 
   gap: 10px;
-  padding: 10px;
+  padding: 0px 10px;
 
+  position: sticky;
+  top: 100px;
   border-radius: 10px;
   -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
   box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
@@ -51,10 +52,12 @@ const DBSidebarWrap = styled.section`
 const DBMainContentWrap = styled.section`
   display: flex;
   flex-direction: column;
+  min-height: calc(100vh - 120px);
+  height: 100%;
   flex: 4;
 
   gap: 10px;
-  padding: 10px;
+  padding: 0px 20px;
 
   border-radius: 10px;
   -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
@@ -62,9 +65,12 @@ const DBMainContentWrap = styled.section`
 `;
 
 // wrap content info in order to space elements equally amongst column
-const DBContentInfoWrap = styled.div`
+const DBContentInfoWrap = styled.article`
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-evenly;
+  gap: 0;
+  padding: 0;
 `;
 
 // wrap the header; set to flex to align items within the row

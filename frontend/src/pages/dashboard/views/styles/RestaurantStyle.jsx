@@ -3,7 +3,8 @@ import styled from "styled-components";
 // TABLE STYLES - RESTAURANT LIST STYLES
 const DataTable = styled.div`
   padding: 20px 10px;
-  width: 100%;
+  /* width: 100%; */
+  flex: 4;
   height: 50vh;
 `;
 

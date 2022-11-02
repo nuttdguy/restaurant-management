@@ -21,9 +21,8 @@ export const NewDish = () => {
   const user = useSelector((state) => state.userAuth.currentUser);
 
   useEffect(() => {
-    // const username = JSON.parse(localStorage.getItem("user"))?.username;
-    getRestaurants(dispatch, user.username);
-  }, [dispatch, user.username]);
+    getRestaurants(dispatch, user?.username);
+  }, [dispatch, user?.username]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -68,19 +67,13 @@ export const NewDish = () => {
           <FlexItem>
             <Label>select restaurant:</Label>
             <Select id="restaurantId" name={"restaurantId"}>
-              {restaurants === null
-                ? null
-                : restaurants?.map((restaurant) => {
-                    return (
-                      <SelectOption
-                        name={"restaurantId"}
-                        key={restaurant.id}
-                        id={restaurant.id}
-                      >
-                        {restaurant.id}{" "}
-                      </SelectOption>
-                    );
-                  })}
+              {restaurants?.map((restaurant) => {
+                return (
+                  <SelectOption name={"restaurantId"} key={restaurant.id}>
+                    {restaurant.phone}{" "}
+                  </SelectOption>
+                );
+              })}
             </Select>
           </FlexItem>
         </FlexGroup>

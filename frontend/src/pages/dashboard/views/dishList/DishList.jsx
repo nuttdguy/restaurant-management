@@ -12,19 +12,21 @@ import {
   removeDish,
 } from "../../../../redux/resources/dishResource";
 
-export const DishList = () => {
+export function DishList() {
   const dispatch = useDispatch();
   const location = useLocation();
   const dishes = useSelector((state) => state.dish.dishes);
   const user = useSelector((state) => state.userAuth.currentUser);
 
-  const handleDelete = async (dishId) => {
+  const locationPath = () => location.pathname;
+
+  const handleDelete = (dishId) => {
     removeDish(dispatch, dishId);
   };
 
   useEffect(() => {
-    fetchDishes(dispatch, user.username);
-  }, [dispatch, user.username]);
+    fetchDishes(dispatch, user?.username);
+  }, [dispatch, user?.username]);
 
   const columns = [
     { field: "id", headerName: "ID", align: "left", flex: 1 },
@@ -42,24 +44,16 @@ export const DishList = () => {
       headerName: "Actions",
       flex: 1,
       align: "center",
-      renderCell: (params) => {
-        return params.id === "" ? null : (
-          <ActionCell>
-            <Link
-              to={
-                location.pathname.slice(0, location.pathname.lastIndexOf("/")) +
-                "/edit/" +
-                params.id
-              }
-            >
-              <Edit>edit</Edit>
-            </Link>
-            <DeleteButton onClick={() => handleDelete(params.id)}>
-              <DeleteOutline />
-            </DeleteButton>
-          </ActionCell>
-        );
-      },
+      renderCell: (params) => (
+        <ActionCell>
+          <Link to={`${locationPath()}/${params.row.id}/edit`}>
+            <Edit>edit</Edit>
+          </Link>
+          <DeleteButton onClick={() => handleDelete(params.row.id)}>
+            <DeleteOutline />
+          </DeleteButton>
+        </ActionCell>
+      ),
     },
   ];
 
@@ -71,20 +65,19 @@ export const DishList = () => {
           <AddBoxOutlined />
         </Link>
       </DBSectionHeader>
-      {JSON.stringify(dishes)}
+      {/* {JSON.stringify(dishes)} */}
       <DBContentInfoWrap>
         <DataTable>
-          {dishes === {} ? null : (
-            <DataGrid
-              // checkboxSelection
-              rows={dishes}
-              columns={columns}
-              pageSize={5}
-              rowsPerPageOptions={[5]}
-            />
-          )}
+          <DataGrid
+            // checkboxSelection
+            disableSelectionOnClick
+            rows={dishes}
+            columns={columns}
+            pageSize={5}
+            rowsPerPageOptions={[5]}
+          />
         </DataTable>
       </DBContentInfoWrap>
     </>
   );
-};
+}

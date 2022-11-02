@@ -1,5 +1,8 @@
 import React, { useState } from "react";
-import { DBSectionHeader } from "../styles/layoutStyles";
+import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { editDish } from "../../../../redux/resources/dishResource";
+import { DBContentInfoWrap, DBSectionHeader } from "../styles/layoutStyles";
 
 import {
   Form,
@@ -11,63 +14,103 @@ import {
 } from "../styles/DishStyle";
 
 export const EditDish = () => {
-  // const dishes = useSelector((state) => state.dish.dishes);
+  const dispatch = useDispatch();
+  const { id } = useParams();
+  const [dish] = useState(
+    useSelector((state) =>
+      state.dish.dishes?.filter((dish) => dish.id === id)
+    )[0]
+  );
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const data = new FormData(e.target);
+    const dataValues = Object.fromEntries(data); // convert into js object
+    dataValues.id = id; // add restaurant id
+
+    // console.log("dataValues = ", dataValues);
+    editDish(dispatch, {
+      data: JSON.stringify(dataValues),
+      image: document.querySelector("#image").files[0],
+    });
+
+    e.target.reset();
+  };
 
   return (
     <>
       <DBSectionHeader>
-        <h3>New Dish</h3>
+        <h3>Edit Dish</h3>
       </DBSectionHeader>
-      <Form id="registrationForm" encType="multipart/form-data">
+      <Form
+        id="editDishForm"
+        onSubmit={handleSubmit}
+        encType="multipart/form-data"
+      >
         <FlexGroup>
           <FlexItem>
             <Label>Name</Label>
             <Input
               required
-              minLength={4}
+              minLength={1}
               maxLength={60}
-              name={"restaurantName"}
+              name={"name"}
               type="text"
-              placeholder="Jane Doe Restaurant"
+              value={dish?.name}
+              placeholder="Steak and eggs"
             />
           </FlexItem>
           <FlexItem>
-            <Label>alias: </Label>
+            <Label>price </Label>
             <Input
               required
               minLength={1}
               maxLength={60}
-              name={"alias"}
+              name={"price"}
               type="text"
+              value={dish?.price}
               placeholder="Jackson"
             />
           </FlexItem>
           <FlexItem>
-            <Label>URL</Label>
+            <Label>description</Label>
             <Input
-              minLength={4}
+              minLength={1}
               maxLength={100}
-              name={"url"}
-              type="email"
-              placeholder="janedoe@restaurant.io"
+              name={"description"}
+              type="text"
+              value={dish?.description}
+              placeholder="Stealk and eggs"
+            />
+          </FlexItem>
+          <FlexItem>
+            <Label>ingredients</Label>
+            <Input
+              minLength={1}
+              maxLength={100}
+              name={"ingredients"}
+              type="text"
+              value={dish?.ingredients}
+              placeholder="beef, eggs, salt"
             />
           </FlexItem>
         </FlexGroup>
 
         <FlexGroup>
           <FlexItem>
-            <Label>Image</Label>
+            <Label>photo</Label>
             <Input
-              id="license"
-              name={"image"}
+              id="photos"
+              name={"photo"}
               type="file"
-              placeholder="accepts .pdf, .doc or .docx"
+              placeholder="accepts .png, .jpg, .jpeg"
             />
           </FlexItem>
         </FlexGroup>
         <FlexGroup>
           <FlexItem>
-            <SubmitButton type="submit">add new </SubmitButton>
+            <SubmitButton type="submit">update </SubmitButton>
           </FlexItem>
         </FlexGroup>
       </Form>

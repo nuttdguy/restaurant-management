@@ -57,14 +57,13 @@ const editDish = async (dispatch, dish) => {
   }
 };
 
-const removeDish = async (dispatch, id) => {
+const removeDish = async (dispatch, dishId) => {
   dispatch(removeDishStart());
   try {
-    // console.log("Deleting the dish ...");
-    const res = await authorizedRequest.delete(`/restaurant/dish/${id}`);
+    await authorizedRequest.delete(`/restaurant/dish/${dishId}`);
 
     // console.log("Done deleting the dish ...", id);
-    dispatch(removeDishSuccess(res.data));
+    dispatch(removeDishSuccess(dishId));
   } catch (err) {
     console.log("Something went wrong ...");
     dispatch(removeDishFailure(err.response?.data?.message));

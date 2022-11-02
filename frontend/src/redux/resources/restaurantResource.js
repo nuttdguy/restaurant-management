@@ -44,10 +44,10 @@ const editRestaurant = async (dispatch, dish) => {
   dispatch(editStart());
   try {
     const res = await authorizedRequest.putForm("/restaurant/edit", dish);
-    // console.log("Done editing restaurant dish ...");
+    // console.log("Done editing restaurant  ...");
     dispatch(editSuccess(res.data));
   } catch (err) {
-    // console.log("Something when wrong editing restaurant dish ...");
+    // console.log("Something when wrong editing restaurant  ...");
     dispatch(editFailure(err.response.data?.message));
   }
 };
@@ -55,11 +55,12 @@ const editRestaurant = async (dispatch, dish) => {
 const removeRestaurant = async (dispatch, restaurantId) => {
   dispatch(removeRestaurantStart());
   try {
-    const res = await authorizedRequest.delete("/restaurant/", restaurantId);
-    // console.log("Done editing restaurant dish ...");
-    dispatch(removeRestaurantSuccess(res.data));
+    console.log("Deleting the restaurant ... ", restaurantId);
+    await authorizedRequest.delete(`/restaurant/${restaurantId}`);
+    // console.log("Done deleting the restaurant ...");
+    dispatch(removeRestaurantSuccess(restaurantId));
   } catch (err) {
-    // console.log("Something when wrong editing restaurant dish ...");
+    // console.log("Something when wrong deleting the restaurant ...");
     dispatch(removeRestaurantFailure(err.response.data?.message));
   }
 };

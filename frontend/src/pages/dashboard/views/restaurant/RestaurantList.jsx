@@ -11,11 +11,11 @@ import { AddBoxOutlined, DeleteOutline, Edit } from "@mui/icons-material";
 import { DBSectionHeader, DBContentInfoWrap } from "../styles/layoutStyles";
 import { DataTable, ActionCell, DeleteButton } from "../styles/RestaurantStyle";
 
-export const RestaurantList = () => {
+export function RestaurantList() {
   const dispatch = useDispatch();
   const location = useLocation();
   const restaurants = useSelector((state) => state.restaurant.restaurants);
-  const username = useSelector((state) => state.userAuth.currentUser?.username);
+  const user = useSelector((state) => state.userAuth.currentUser);
   const [columnVisibility, setColumnVisibility] = useState({
     alias: false,
     url: false,
@@ -29,28 +29,9 @@ export const RestaurantList = () => {
     photo: false,
   });
 
-  // [
-  //   {
-  //     id: "831eaf9d-fb5f-4052-9065-4837559fa3d8",
-  //     name: "daytime_place",
-  //     alias: null,
-  //     url: "daytimeplace@restaurant.com",
-  //     phone: "000-000-00000",
-  //     category: "Burgers",
-  //     description:
-  //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque egestas semper consequat. Cras congue, sapien a hendrerit tempor, tortor quam volutpat justo, quis maximus neque ex at urna. ",
-  //     address1: "Matterson St.",
-  //     address2: null,
-  //     city: "New Hope",
-  //     state: "MN",
-  //     zip: "55555",
-  //     country: "USA",
-  //     img: "https://picsum.photos/200/300",
-  //   },
-  // ];
-
-  const handleDelete = (restaurantId) =>
+  const handleDelete = (restaurantId) => {
     removeRestaurant(dispatch, restaurantId);
+  };
 
   const locationPath = () =>
     location.pathname.slice(0, location.pathname.lastIndexOf("/"));
@@ -60,8 +41,8 @@ export const RestaurantList = () => {
   };
 
   useEffect(() => {
-    getRestaurants(dispatch, username);
-  }, [dispatch, username]);
+    getRestaurants(dispatch, user?.username);
+  }, [dispatch, user?.username]);
 
   const columns = [
     { field: "id", headerName: "ID", align: "left", flex: 1 },
@@ -70,6 +51,17 @@ export const RestaurantList = () => {
     { field: "url", headerName: "url", align: "left" },
     { field: "description", headerName: "description", align: "left" },
     { field: "category", headerName: "category", align: "left" },
+    {
+      field: "photo",
+      headerName: "Photo",
+      align: "left",
+      flex: 2,
+      renderCell: (params) => {
+        <div>
+          <img src={params.row.photo} alt="" />
+        </div>;
+      },
+    },
     {
       field: "address",
       headerName: "Address",
@@ -88,18 +80,16 @@ export const RestaurantList = () => {
       headerName: "Actions",
       align: "center",
       flex: 1,
-      renderCell: (params) => {
-        return params.id === "" ? null : (
-          <ActionCell>
-            <Link to={`${locationPath()}/${params.id}/edit`}>
-              <Edit>edit</Edit>
-            </Link>
-            <DeleteButton onClick={() => handleDelete(params.id)}>
-              <DeleteOutline />
-            </DeleteButton>
-          </ActionCell>
-        );
-      },
+      renderCell: (params) => (
+        <ActionCell>
+          <Link to={`${locationPath()}/${params.row.id}/edit`}>
+            <Edit>edit</Edit>
+          </Link>
+          <DeleteButton onClick={() => handleDelete(params.row.id)}>
+            <DeleteOutline />
+          </DeleteButton>
+        </ActionCell>
+      ),
     },
   ];
 
@@ -121,6 +111,7 @@ export const RestaurantList = () => {
               setColumnVisibility(newModel)
             }
             // getRowId={(row) => row.uuid}
+            disableSelectionOnClick
             rows={restaurants}
             columns={columns}
             pageSize={5}
@@ -130,4 +121,4 @@ export const RestaurantList = () => {
       </DBContentInfoWrap>
     </>
   );
-};
+}

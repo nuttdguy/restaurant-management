@@ -2,38 +2,29 @@ import React from "react";
 import { ArrowDownward, ArrowUpward } from "@mui/icons-material";
 
 import {
-  FlexItemWrapper,
-  FlexItem,
-  Header,
-  Title,
-  SaleData,
-  SaleDataIcon,
-} from "./SaleInfoStyle";
+  InfoContentWrap,
+  InfoContentGroup,
+  InfoTitle,
+  InfoLabel,
+  InfoData,
+} from "../styles/InfoStyles";
 
 export const SaleInfo = () => {
   return (
-    <>
-      <FlexItemWrapper>
-        <Header>Sales:</Header>
-        <FlexItem>
-          {/* <SaleDataIcon> */}
-          <Title>current revenue:</Title>
-          <SaleData> $300.00</SaleData> <ArrowDownward />
-          {/* </SaleDataIcon> */}
-        </FlexItem>
-        <FlexItem>
-          {/* <SaleDataIcon> */}
-          <Title>last month revenue:</Title>
-          <SaleData> $400.00</SaleData> <ArrowUpward />
-          {/* </SaleDataIcon> */}
-        </FlexItem>
-        <FlexItem>
-          {/* <SaleDataIcon> */}
-          <Title>Difference revenue:</Title>
-          <SaleData> $100.00</SaleData> <ArrowDownward />
-          {/* </SaleDataIcon> */}
-        </FlexItem>
-      </FlexItemWrapper>
-    </>
+    <InfoContentWrap>
+      <InfoTitle>Sales:</InfoTitle>
+      <InfoContentGroup>
+        <InfoLabel>current revenue:</InfoLabel>
+        <InfoData> $300.00</InfoData> <ArrowDownward />
+      </InfoContentGroup>
+      <InfoContentGroup>
+        <InfoLabel>last month revenue:</InfoLabel>
+        <InfoData> $400.00</InfoData> <ArrowUpward />
+      </InfoContentGroup>
+      <InfoContentGroup>
+        <InfoLabel>Difference revenue:</InfoLabel>
+        <InfoData> $100.00</InfoData> <ArrowDownward />
+      </InfoContentGroup>
+    </InfoContentWrap>
   );
 };

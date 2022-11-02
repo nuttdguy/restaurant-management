@@ -11,7 +11,6 @@ const restaurantSlice = createSlice({
   },
   reducers: {
     registerStart: (state) => {
-      state.restaurants = [];
       state.isFetching = true;
       state.isSuccess = false;
       state.isApiError = false;
@@ -25,14 +24,12 @@ const restaurantSlice = createSlice({
       state.apiErrorMessage = null;
     },
     registerFailure: (state, action) => {
-      state.restaurants = [];
       state.isFetching = false;
       state.isSuccess = false;
       state.isApiError = true;
       state.apiErrorMessage = action.payload;
     },
     getRestaurantStart: (state) => {
-      state.restaurants = [];
       state.isFetching = true;
       state.isSuccess = false;
       state.isApiError = false;
@@ -46,14 +43,12 @@ const restaurantSlice = createSlice({
       state.apiErrorMessage = null;
     },
     getRestaurantFailure: (state, action) => {
-      state.restaurants = [];
       state.isFetching = false;
       state.isSuccess = false;
       state.isApiError = true;
       state.apiErrorMessage = action.payload;
     },
     editStart: (state) => {
-      state.restaurants = [];
       state.isFetching = true;
       state.isSuccess = false;
       state.isApiError = false;
@@ -69,28 +64,30 @@ const restaurantSlice = createSlice({
       state.apiErrorMessage = null;
     },
     editFailure: (state, action) => {
-      state.restaurants = [];
       state.isFetching = false;
       state.isSuccess = false;
       state.isApiError = true;
       state.apiErrorMessage = action.payload;
     },
     removeRestaurantStart: (state) => {
-      state.restaurants = [];
       state.isFetching = true;
       state.isSuccess = false;
       state.isApiError = false;
       state.apiErrorMessage = null;
     },
     removeRestaurantSuccess: (state, action) => {
-      state.dishes = action.payload;
+      state.restaurants.splice(
+        state.restaurants.findIndex(
+          (restaurant) => restaurant.id === action.payload
+        ),
+        1
+      );
       state.isFetching = false;
       state.isSuccess = true;
       state.isApiError = false;
       state.apiErrorMessage = null;
     },
     removeRestaurantFailure: (state, action) => {
-      state.restaurants = [];
       state.isFetching = false;
       state.isSuccess = false;
       state.isApiError = true;

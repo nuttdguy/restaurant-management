@@ -11,7 +11,7 @@ Users can perform simple operations for getting, creating, updating and deleting
  - recharts
  - styled-components
  
- ## Server / Backend technologies:
+ ## Server / Back-end technologies:
  - Spring-boot framework
   - Soring-context
   - JPA / Hibernate

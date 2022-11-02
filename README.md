@@ -1,6 +1,7 @@
 ﻿# Restaurant-Management:
  
- ## Simple SPA and REST server side application for managing restaurants
+ ## Aingle Page App (SPA) and Spring-boot REST API: 
+Users can perform simple operations for getting, creating, updating and deleting restaurants and its dishes.
  
  ## Client / Front-end technologies:
  - React

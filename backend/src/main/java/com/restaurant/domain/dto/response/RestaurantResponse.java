@@ -18,4 +18,5 @@ public record RestaurantResponse(
         String country,
         String photo
 ) {
+
 }

@@ -6,16 +6,17 @@ import lombok.Setter;
 import org.springframework.context.ApplicationEvent;
 
 import java.time.Clock;
+import java.util.UUID;
 
 
 @Getter
 @Setter
 public class RegistrationEvent extends ApplicationEvent {
 
-    private final String event_url;
+    private final String verifyURL;
 
-    public RegistrationEvent(User user, String event_url) {
+    public RegistrationEvent(User user, String verifyURL, UUID token) {
         super(user, Clock.systemUTC());
-        this.event_url = event_url;
+        this.verifyURL = verifyURL + "/" + token;
     }
 }

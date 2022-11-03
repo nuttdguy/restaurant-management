@@ -5,7 +5,7 @@ import javax.validation.constraints.NotBlank;
 import java.util.HashSet;
 import java.util.Set;
 
-public record RegisterUserTo(
+public record TRegisterUser(
     @NotBlank @Email String username,
     String firstName,
     String lastName,
@@ -13,13 +13,13 @@ public record RegisterUserTo(
     @NotBlank String confirmPassword,
     Set<String> authorities)
 {
-    public RegisterUserTo {
+    public TRegisterUser {
         if (authorities == null) {
             authorities = new HashSet<>();
         }
     }
 
-    public RegisterUserTo(
+    public TRegisterUser(
             String username,
             String firstName,
             String lastName,

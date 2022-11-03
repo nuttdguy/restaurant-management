@@ -10,7 +10,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SafetyLicense {
+public class License {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -24,9 +24,10 @@ public class SafetyLicense {
     private String type;
 
     @Column(name = "license", nullable = false, length = 10000000)
-    private byte[] license;
+    private byte[] file;
 
-    @OneToOne(mappedBy = "safetyLicense")
+    @OneToOne(mappedBy = "license")
     private Restaurant restaurant;
 
 }
+

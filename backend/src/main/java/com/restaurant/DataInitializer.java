@@ -62,7 +62,7 @@ public class DataInitializer implements CommandLineRunner {
         List<User> users = new ArrayList<>();
         List<Restaurant> restaurants = new ArrayList<>();
         List<Dish> dishes = new ArrayList<>();
-        List<Image> images = new ArrayList<>();
+        List<Photo> photos = new ArrayList<>();
 
         // create role instances, add to a list to persist
         Role roleRegistered = new Role(RoleType.REGISTERED_USER);
@@ -107,8 +107,8 @@ public class DataInitializer implements CommandLineRunner {
             dish.setPrice(BigDecimal.valueOf(dishPrices.get(i)));
             dish.setIngredients(dishIngredients.get(i));
 
-            Image image = new Image();
-            image.setName(imageNames.get(i) + ".png");
+            Photo photo = new Photo();
+            photo.setName(imageNames.get(i) + ".png");
 
             user.addRole(roleRegistered);
             user.addRole(rolePublic);
@@ -122,9 +122,9 @@ public class DataInitializer implements CommandLineRunner {
             restaurant.getDishes().add(dish); // associate dish to the restaurant
             dishes.add(dish); // add dish to list
 
-            dish.addImage(image);
-            image.setDish(dish);
-            images.add(image);
+            dish.addImage(photo);
+            photo.setDish(dish);
+            photos.add(photo);
 
         }
 
@@ -144,8 +144,8 @@ public class DataInitializer implements CommandLineRunner {
                 log.trace(" saving dishes {}", dishes);
                 dishRepo.saveAll(dishes);
 
-                log.trace(" saving images {}", dishes);
-                imageRepo.saveAll(images);
+                log.trace(" saving photos {}", dishes);
+                imageRepo.saveAll(photos);
                 break;
             }
         }

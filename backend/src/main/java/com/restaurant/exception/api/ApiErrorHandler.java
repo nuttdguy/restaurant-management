@@ -6,11 +6,14 @@ import org.hibernate.JDBCException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -58,22 +61,22 @@ public class ApiErrorHandler extends ResponseEntityExceptionHandler {
     }
 
 
-    @ExceptionHandler(value = {UserNotFoundException.class})
+    @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ApiError<String>> handleNotFoundException(WebRequest request, UserNotFoundException ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
     }
 
-    @ExceptionHandler(value = {EntityNotFoundException.class})
+    @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ApiError<String>> handleEntityFoundException(WebRequest request, EntityNotFoundException ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
     }
 
-    @ExceptionHandler(value = {AccountNotActiveException.class})
-    public ResponseEntity<ApiError<String>> handleAccountNoActiveException(WebRequest request, AccountNotActiveException ex) {
+    @ExceptionHandler(NotActiveException.class)
+    public ResponseEntity<ApiError<String>> handleAccountNoActiveException(WebRequest request, NotActiveException ex) {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
@@ -93,14 +96,14 @@ public class ApiErrorHandler extends ResponseEntityExceptionHandler {
                 .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
     }
 
-    @ExceptionHandler(TokenNotFoundException.class)
-    public ResponseEntity<ApiError<String>> handleTokenNotFoundException(WebRequest request, TokenNotFoundException ex) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ApiError<String>> handleTokenNotFoundException(WebRequest request, NotFoundException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
     }
 
-    @ExceptionHandler({TokenExpiredException.class, TokenExistsException.class})
+    @ExceptionHandler({ExpiredException.class, ExistsException.class})
     public <T extends RuntimeException> ResponseEntity<ApiError<String>> handleTokenExpiredException(
             WebRequest request, T ex) {
         return ResponseEntity
@@ -118,7 +121,8 @@ public class ApiErrorHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiError<Map<String, String>>>
-    handleMethodArgumentTypeMismatchException(HttpServletRequest request, MethodArgumentTypeMismatchException ex) {
+    handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex,
+                                              HttpServletRequest request) {
         log.error("handleMethodArgumentTypeMismatchException {}\n", request.getRequestURI(), ex);
 
         var details = new HashMap<String, String>();
@@ -130,7 +134,23 @@ public class ApiErrorHandler extends ResponseEntityExceptionHandler {
                 .body(new ApiError<>("Method argument type mismatch", List.of(details)));
     }
 
+
+    @ExceptionHandler(EmptyResultDataAccessException.class)
+    public ResponseEntity<ApiError<Map<String, String>>>
+    handleIncorrectResultSizeDataAccessException(HttpServletRequest request, IncorrectResultSizeDataAccessException ex) {
+        log.error("handleIncorrectResultSizeDataAccessException {}\n", request.getRequestURI(), ex);
+
+        var details = new HashMap<String, String>();
+        details.put("paramName", ex.getMessage());
+        details.put("paramValue", ofNullable(ex.getMessage()).map(Object::toString).orElse(""));
+        details.put("errorMessage", ex.getMessage());
+
+        return ResponseEntity.badRequest()
+                .body(new ApiError<>("Method argument type mismatch", List.of(details)));
+    }
+
     @ExceptionHandler({
+            UnexpectedRollbackException.class,
             SQLIntegrityConstraintViolationException.class,
             ConstraintViolationException.class,
             DataIntegrityViolationException.class})

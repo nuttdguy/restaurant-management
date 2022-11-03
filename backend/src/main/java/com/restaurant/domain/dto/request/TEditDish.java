@@ -2,7 +2,7 @@ package com.restaurant.domain.dto.request;
 
 import java.math.BigDecimal;
 
-public record EditDishTo(
+public record TEditDish(
         Long id,
         String itemName,
         BigDecimal price,

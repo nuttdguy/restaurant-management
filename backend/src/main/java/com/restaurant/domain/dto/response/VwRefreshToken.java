@@ -1,11 +1,11 @@
 package com.restaurant.domain.dto.response;
 
-public record RefreshTokenResponse(
+public record VwRefreshToken(
         String accessToken,
         String refreshToken,
         String tokenType
 ) {
-    public RefreshTokenResponse {
+    public VwRefreshToken {
         if (tokenType == null) {
             tokenType = "Bearer ";
         }

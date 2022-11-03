@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Getter @Setter
 @ToString
+@Builder
 public class User implements UserDetails {
 
     @Id
@@ -81,8 +82,6 @@ public class User implements UserDetails {
     public void removeRestaurant(Restaurant restaurant) {
         this.restaurants.remove(restaurant);
     }
-
-
 
     public User(UUID uuid, String username, String password, Set<Role> authorities) {
         this.uuid = uuid;

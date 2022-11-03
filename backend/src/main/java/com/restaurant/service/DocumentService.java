@@ -1,8 +1,9 @@
 package com.restaurant.service;
 
-import com.restaurant.domain.model.Image;
+import com.restaurant.domain.model.Photo;
+import com.restaurant.domain.model.PhotoTag;
 import com.restaurant.domain.model.Restaurant;
-import com.restaurant.domain.model.SafetyLicense;
+import com.restaurant.domain.model.License;
 import com.restaurant.exception.FileFormatException;
 import com.restaurant.repository.IImageRepo;
 import com.restaurant.repository.IRestaurantRepo;
@@ -57,11 +58,11 @@ public class DocumentService {
                 .orElseThrow(() -> new EntityNotFoundException(format("Restaurant %s not found", restaurantId)));
 
         log.trace("Saving the license agreement");
-        safetyLicense.save(SafetyLicense.builder()
+        safetyLicense.save(License.builder()
                 .name(licenseDocument.getName())
                 .type(licenseDocument.getContentType())
                 .restaurant(restaurant)
-                .license(FileUtil.compressData(licenseDocument.getBytes()))
+                .file(FileUtil.compressData(licenseDocument.getBytes()))
                 .build());
 
         log.trace("{} was saved successfully", licenseDocument.getOriginalFilename());
@@ -75,35 +76,35 @@ public class DocumentService {
         Restaurant restaurant = restaurantRepo.findById(restaurantId)
                 .orElseThrow(() -> new EntityNotFoundException("Restaurant not found - cannot save image"));
 
-        imageRepo.save(Image.builder()
+        imageRepo.save(Photo.builder()
                 .name(imageFile.getOriginalFilename())
                 .type(imageFile.getContentType())
-                .isDishImage(true)
+                .photoTag(PhotoTag.DISH)
                 .restaurant(restaurant)
-                .imageBytes(FileUtil.compressData(imageFile.getBytes())).build());
+                .file(FileUtil.compressData(imageFile.getBytes())).build());
        log.trace("File was saved successfully");
        return "File was successfully saved";
     }
 
-    public Set<Image> getImageByRestaurantId(UUID restaurantId) {
+    public Set<Photo> getImageByRestaurantId(UUID restaurantId) {
         log.trace("Document Service - getImageByRestaurantId {}", restaurantId);
-        Set<Image> images = imageRepo.findByRestaurantUuid(restaurantId)
+        Set<Photo> photos = imageRepo.findByRestaurantUuid(restaurantId)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        format("Did not find any images for restaurant id %s", restaurantId)));
+                        format("Did not find any photos for restaurant id %s", restaurantId)));
 
-        log.trace("decompressing images");
-        return images.stream().map(image -> Image.builder()
-                .id(image.getId())
-                .name(image.getName())
-                .type(image.getType())
-                .isDishImage(image.getIsDishImage())
-                .restaurant(image.getRestaurant())
-                .imageBytes(FileUtil.decompressData(image.getImageBytes()))
+        log.trace("decompressing photos");
+        return photos.stream().map(photo -> Photo.builder()
+                .id(photo.getId())
+                .name(photo.getName())
+                .type(photo.getType())
+                .photoTag(photo.getPhotoTag())
+                .restaurant(photo.getRestaurant())
+                .file(FileUtil.decompressData(photo.getFile()))
                 .build()).collect(Collectors.toSet());
     }
 
 
-    public Image getImageByName(String imageName) {
+    public Photo getImageByName(String imageName) {
         return imageRepo.findByName(imageName)
                 .orElseThrow(() -> new EntityNotFoundException(format("%s not found", imageName)));
     }

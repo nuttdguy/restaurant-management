@@ -13,7 +13,7 @@ import java.util.Objects;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Image {
+public class Photo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -28,10 +28,11 @@ public class Image {
 
 //    @Column(name ="image_bytes", nullable = false, length = 100000)
     @Column(name ="image_bytes", length = 100000)
-    private byte[] imageBytes;
+    private byte[] file;
 
-    @Column(name = "is_dish_image")
-    private Boolean isDishImage;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tag")
+    private PhotoTag photoTag;
 
     @ManyToOne
     @JoinColumn(name = "restaurant_uuid")
@@ -45,8 +46,8 @@ public class Image {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Image image = (Image) o;
-        return id != null && Objects.equals(id, image.id);
+        Photo photo = (Photo) o;
+        return id != null && Objects.equals(id, photo.id);
     }
 
     @Override

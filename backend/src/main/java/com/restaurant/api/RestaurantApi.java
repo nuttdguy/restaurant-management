@@ -1,9 +1,10 @@
 package com.restaurant.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.restaurant.domain.dto.request.EditDishTo;
-import com.restaurant.domain.dto.request.UpdateRestaurantTo;
-import com.restaurant.domain.dto.response.GetRestaurantByName;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.restaurant.domain.dto.request.TCreateRestaurant;
+import com.restaurant.domain.dto.request.TEditDish;
+import com.restaurant.domain.dto.response.VwRestaurant;
 import com.restaurant.service.RestaurantService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,15 +29,18 @@ public class RestaurantApi {
     // SINCE USERS ARE AUTHENTICATED BY THE ACCESS TOKEN AND USER DATA AVAILABLE
     // THROUGH THE SECURITY CONTEXT
 
+
+    // this route will change after jwt filter is enabled
     @GetMapping("/owner/{username}")
     public ResponseEntity<Object> getRestaurantsByOwner(@PathVariable("username") String username) {
         log.trace("fetched restaurants by name of owner {}", username);
         return ResponseEntity.ok(restaurantService.getRestaurantsByOwnerName(username));
     }
 
+    // this will be enabled when jwt filter is enabled
 //    @GetMapping("/{restaurantName}")
     public ResponseEntity<Object> getRestaurants(@PathVariable("restaurantName") String restaurantName) {
-        Set<GetRestaurantByName> data = restaurantService.getRestaurantsByName(restaurantName);
+        Set<VwRestaurant> data = restaurantService.getRestaurantsByName(restaurantName);
         log.trace("fetched restaurants by restaurant name {}", data);
 
         return ResponseEntity.ok(data);
@@ -47,18 +51,22 @@ public class RestaurantApi {
         return ResponseEntity.ok(restaurantService.getRestaurantById(uuid));
     }
 
-//    @PostMapping("/create")
-//    public ResponseEntity<Object> createRestaurant(@RequestBody CreateRestaurantTo createRestaurantTo) {
-//        log.trace("Restaurant Api - createRestaurant");
-//        return ResponseEntity.ok(restaurantService.createRestaurant(createRestaurantTo));
-//    }
+    @PostMapping(value = "/create", consumes = { MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Object> registerRestaurant(@RequestBody TCreateRestaurant tCreateRestaurant) throws IOException {
+        log.trace("Restaurant Api - registerRestaurant - json");
+        return ResponseEntity.ok(restaurantService.registerRestaurant(tCreateRestaurant, null));
+    }
+
 
     @PostMapping(value = "/create", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<Object> registerRestaurant(@RequestPart("data") String data,
                                                    @RequestPart("license") MultipartFile licenseDocument,
                                                      @RequestPart("image") MultipartFile image) throws IOException {
-        log.trace("Restaurant Api - registerRestaurant");
-        return ResponseEntity.ok(restaurantService.registerRestaurant(data, licenseDocument));
+        log.trace("Restaurant Api - registerRestaurant - multi-part");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        TCreateRestaurant tCreateRestaurant = objectMapper.readValue(data, TCreateRestaurant.class);
+        return ResponseEntity.ok(restaurantService.registerRestaurant(tCreateRestaurant, licenseDocument));
     }
 
     @PutMapping(value = "/edit", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
@@ -69,6 +77,7 @@ public class RestaurantApi {
     }
 
 
+    // this will change when jwt filter is enabled
     // DISH ITEM MAPPINGS
     @GetMapping("/owner/{username}/dishes")
     public ResponseEntity<Object> getAllDishes(@PathVariable("username") String username) {
@@ -92,10 +101,10 @@ public class RestaurantApi {
     }
 
     @PutMapping(value = "/dish/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Object> editDish(@RequestPart("data") EditDishTo editDishTo) {
-        log.trace("RestaurantApi - editDish");
+    public ResponseEntity<Object> editDish(@RequestPart("data") TEditDish TEditDish) {
+        log.trace("RestaurantApi - TEditDish");
         // TODO - made changes, fix this
-        return ResponseEntity.ok(restaurantService.editRestaurantItem(UUID.randomUUID(), editDishTo));
+        return ResponseEntity.ok(restaurantService.editDish(UUID.randomUUID(), TEditDish));
     }
 
     @DeleteMapping("/{restaurantId}")
@@ -104,10 +113,10 @@ public class RestaurantApi {
         return ResponseEntity.ok(restaurantService.removeRestaurant(restaurantId));
     }
 
-    @DeleteMapping("/dish/{itemId}")
-    public ResponseEntity<Object> removeDish(@PathVariable("itemId") Long itemId) {
+    @DeleteMapping("/dish/{dishId}")
+    public ResponseEntity<Object> removeDish(@PathVariable("dishId") Long dishId) {
         log.trace("RestaurantApi - removeDish");
-        return ResponseEntity.ok(restaurantService.removeRestaurantItem(itemId));
+        return ResponseEntity.ok(restaurantService.removeDish(dishId));
     }
 
 }

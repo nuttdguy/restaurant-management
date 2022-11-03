@@ -2,14 +2,14 @@ package com.restaurant.domain.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.validation.constraints.NotBlank;
 import java.util.UUID;
 
-public record CreateRestaurantTo(
-        @JsonIgnore UUID id,
-        @NotBlank String restaurantName,
-        String alias,
+public record TEditRestaurant(
+        UUID id,
+        String restaurantName,
+        @JsonIgnore String alias,
         String url,
+        String phone,
         String category,
         String description,
         String address1,
@@ -17,11 +17,8 @@ public record CreateRestaurantTo(
         String city,
         String state,
         String zip,
-        String phone,
         String country,
-        @JsonIgnore String license,
         @JsonIgnore String image,
-        String username
+        @JsonIgnore String username
 ) {
-
 }

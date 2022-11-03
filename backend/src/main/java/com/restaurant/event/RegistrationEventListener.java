@@ -30,7 +30,7 @@ public class RegistrationEventListener implements ApplicationListener<Registrati
 
             log.trace("Building the email");
             User user = (User) event.getSource();
-            String url = event.getEvent_url();
+            String url = event.getVerifyURL();
 
             Email email = Email.builder.setTo(EmailCredential.TO)
                     .setFrom(EmailCredential.FROM)

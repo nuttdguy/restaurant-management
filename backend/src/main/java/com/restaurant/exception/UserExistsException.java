@@ -1,6 +1,6 @@
 package com.restaurant.exception;
 
-public class UserExistsException extends NotModifiedException {
+public class UserExistsException extends NotUpdatedException {
 
     public UserExistsException() {
         super();

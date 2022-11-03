@@ -41,7 +41,7 @@ public class Restaurant {
     private String zip;
     private String country;
 
-    private String photo;
+    private String photo    ;
     private Boolean hasLicense;
     private Boolean active;
 
@@ -52,7 +52,7 @@ public class Restaurant {
 
     @OneToOne
     @JoinColumn(name = "license_id")
-    private SafetyLicense safetyLicense;
+    private License license;
 
     @ManyToOne
     @JoinColumn(name = "user_uuid")

@@ -39,14 +39,14 @@ public class Dish {
     @Fetch(value = FetchMode.SUBSELECT) // one query mode
     @JsonIgnore
     @ToString.Exclude
-    private Set<Image> images = new HashSet<>();
+    private Set<Photo> photos = new HashSet<>();
 
-    public void addImage(Image image) {
-        this.images.add(image);
+    public void addImage(Photo photo) {
+        this.photos.add(photo);
     }
 
-    public void removeImage(Image image) {
-        this.images.remove(image);
+    public void removeImage(Photo photo) {
+        this.photos.remove(photo);
     }
 
     @Override

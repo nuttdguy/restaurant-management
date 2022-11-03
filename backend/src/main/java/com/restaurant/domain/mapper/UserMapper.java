@@ -1,8 +1,8 @@
 package com.restaurant.domain.mapper;
 
-import com.restaurant.domain.dto.request.RegisterUserTo;
-import com.restaurant.domain.dto.response.CreateUserResponse;
-import com.restaurant.domain.dto.response.UserVerifiedResponse;
+import com.restaurant.domain.dto.request.TRegisterUser;
+import com.restaurant.domain.dto.response.VwUser;
+import com.restaurant.domain.dto.response.VwVerified;
 import com.restaurant.domain.model.User;
 
 
@@ -10,17 +10,17 @@ public class UserMapper {
 
     private UserMapper() {}
 
-    public static User toUserFrom(RegisterUserTo registerUserTo) {
-        User user = new User();
-        user.setUsername(registerUserTo.username());
-        user.setFirstName(registerUserTo.firstName());
-        user.setLastName(registerUserTo.lastName());
-        user.setPassword(registerUserTo.password());
-        return user;
+    public static User toUserFrom(TRegisterUser tRegisterUser) {
+        return User.builder()
+                .username(tRegisterUser.username())
+                .firstName(tRegisterUser.firstName())
+                .lastName(tRegisterUser.lastName())
+                .password(tRegisterUser.password())
+                .build();
     }
 
-    public static CreateUserResponse toCreateUserFrom(User user) {
-        return new CreateUserResponse(
+    public static VwUser toCreateUserFrom(User user) {
+        return new VwUser(
                 user.getUuid(),
                 user.getUsername(),
                 user.getFirstName(),
@@ -28,8 +28,8 @@ public class UserMapper {
         );
     }
 
-    public static UserVerifiedResponse toUserVerifiedResponseFrom(User user) {
-        return new UserVerifiedResponse(
+    public static VwVerified toUserVerifiedResponseFrom(User user) {
+        return new VwVerified(
                 user.getUuid(),
                 user.getUsername(),
                 user.getFirstName(),

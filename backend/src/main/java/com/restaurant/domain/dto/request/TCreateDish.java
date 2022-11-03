@@ -7,7 +7,7 @@ import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public record CreateDishTo(
+public record TCreateDish(
         UUID restaurantId,
         @NotBlank String dishName,
         @NotBlank BigDecimal price,

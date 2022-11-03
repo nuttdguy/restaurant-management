@@ -13,6 +13,7 @@ import java.util.UUID;
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class RegistrationToken  {
 
     @Value("${restaurant.jwt.registrationExpirationMS}")

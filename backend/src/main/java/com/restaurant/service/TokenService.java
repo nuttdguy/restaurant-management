@@ -1,13 +1,15 @@
 package com.restaurant.service;
 
 import com.restaurant.domain.model.RegistrationToken;
-import com.restaurant.exception.TokenNotFoundException;
+import com.restaurant.exception.NotFoundException;
 import com.restaurant.repository.IRegistrationTokenRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
+import static com.restaurant.exception.ExceptionMessage.NOT_FOUND;
 import static java.lang.String.format;
 
 @Service
@@ -16,10 +18,8 @@ public class TokenService {
 
     private IRegistrationTokenRepo registerTokenRepo;
 
-    public RegistrationToken findRegisterTokenById(UUID uuid) {
-        return registerTokenRepo.findById(uuid)
-                .orElseThrow(
-                    () -> new TokenNotFoundException(format("Token %s not found", uuid)));
+    public Optional<RegistrationToken> findRegisterTokenById(UUID token) {
+        return registerTokenRepo.findById(token);
     }
 
     public int deleteRegisterToken(RegistrationToken token) {

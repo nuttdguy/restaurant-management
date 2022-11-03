@@ -1,6 +1,6 @@
 package com.restaurant.api;
 
-import com.restaurant.domain.model.Image;
+import com.restaurant.domain.model.Photo;
 import com.restaurant.service.DocumentService;
 import com.restaurant.util.FileUtil;
 import lombok.AllArgsConstructor;
@@ -53,10 +53,10 @@ public class DocumentApi {
     public ResponseEntity<Object> getImageByRestaurantName(@PathVariable("imageName") String imageName) {
         log.trace("DocumentApi - getImageByRestaurantName");
 
-        Image image = documentService.getImageByName(imageName);
+        Photo photo = documentService.getImageByName(imageName);
         return ResponseEntity.ok()
-                .contentType(MediaType.valueOf(image.getType()))
-                .body(FileUtil.decompressData(image.getImageBytes()));
+                .contentType(MediaType.valueOf(photo.getType()))
+                .body(FileUtil.decompressData(photo.getFile()));
     }
 
 

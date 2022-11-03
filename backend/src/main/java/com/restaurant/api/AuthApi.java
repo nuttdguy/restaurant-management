@@ -1,10 +1,10 @@
 package com.restaurant.api;
 
-import com.restaurant.domain.dto.request.ForgotPasswordTo;
-import com.restaurant.domain.dto.request.LoginTo;
-import com.restaurant.domain.dto.request.RegisterUserTo;
-import com.restaurant.domain.dto.request.ResetPasswordTo;
-import com.restaurant.domain.dto.response.CreateUserResponse;
+import com.restaurant.domain.dto.request.TForgotPassword;
+import com.restaurant.domain.dto.request.TLogin;
+import com.restaurant.domain.dto.request.TRegisterUser;
+import com.restaurant.domain.dto.request.TResetPassword;
+import com.restaurant.domain.dto.response.VwUser;
 import com.restaurant.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.UUID;
 
+import static java.lang.String.format;
+
 @Slf4j
 @RestController
 @RequestMapping("/auth")
@@ -26,48 +28,52 @@ public class AuthApi {
     private UserService userService;
 
     @PostMapping("/register")
-    public CreateUserResponse registerUser(@RequestBody @Validated RegisterUserTo registerUserTo,
-                                           final HttpServletRequest httpServletRequest) {
+    public VwUser registerNewUser(@RequestBody @Validated TRegisterUser tRegisterUser,
+                                  final HttpServletRequest httpServletRequest) {
         log.trace("Auth Api - registerUser");
-        log.trace("RegistrationController - registerUserTo");
-        return userService.registerUser(registerUserTo, httpServletRequest);
+        String verifyURL = format("http://%s:%s%s%s",
+                httpServletRequest.getServerName(),
+                httpServletRequest.getServerPort(),
+                httpServletRequest.getContextPath(),
+                "/auth/verify");
+        return userService.registerNewUser(tRegisterUser, verifyURL);
     }
 
     @GetMapping("/verify/{theToken}")
     public ResponseEntity<Object> verifyRegistration(@PathVariable("theToken") UUID token) {
         log.trace("Auth Api - verifyRegistration");
-        log.trace("RegistrationController - verifyRegistration");
         return ResponseEntity.status(HttpStatus.OK).body(userService.verifyRegistration(token));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Object> loginUser(@RequestBody @Valid LoginTo loginTo) {
+    public ResponseEntity<Object> loginUser(@RequestBody @Valid TLogin tLogin) {
         log.trace("Auth Api - loginUser");
-        return ResponseEntity.ok(userService.loginUser(loginTo));
+        return ResponseEntity.ok(userService.loginUser(tLogin));
     }
 
 
 //    @PostMapping("/login/password/forgot")
-    public ResponseEntity<Object> forgotPassword(@RequestBody ForgotPasswordTo forgotPasswordTo,
+    public ResponseEntity<Object> forgotPassword(@RequestBody TForgotPassword tForgotPassword,
                                                  final HttpServletRequest request) {
 
         log.trace("Auth Api - forgotPassword");
-        return ResponseEntity.ok(userService.forgotPassword(forgotPasswordTo, request));
+        return ResponseEntity.ok(userService.forgotPassword(tForgotPassword, request));
 
     }
 
 //    @PostMapping("/login/password/reset/{thePwdResetToken}")
-    public ResponseEntity<Object> resetPassword(@RequestBody @Validated ResetPasswordTo resetPasswordTo,
+    public ResponseEntity<Object> resetPassword(@RequestBody @Validated TResetPassword tResetPassword,
                                                 @PathVariable("thePwdResetToken") String thePwdResetToken ) {
         log.trace("Auth Api - resetPassword");
-        return ResponseEntity.ok(userService.resetPassword(resetPasswordTo, thePwdResetToken));
+        return ResponseEntity.ok(userService.resetPassword(tResetPassword, thePwdResetToken));
 
     }
 
+    // todo, revoke token
     @PostMapping("/logout")
     public ResponseEntity<Object> logoutUser() {
-        log.trace("Auth Api = logout");
-        return ResponseEntity.ok(null);
+        log.trace("Auth Api - logout");
+        return ResponseEntity.ok("SUCCESS");
     }
 
 }

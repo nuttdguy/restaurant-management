@@ -8,6 +8,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import java.util.concurrent.Executor;
 
 // any async method that returns an object should return "CompletableFuture", similar to js promise
+// return CompletableFuture.completedFuture(customer)
 @EnableAsync
 @Configuration
 public class AsyncConfig {

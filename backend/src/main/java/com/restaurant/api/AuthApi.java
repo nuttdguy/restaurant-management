@@ -27,6 +27,8 @@ public class AuthApi {
 
     private UserService userService;
 
+    // moved the login route into the spring security filter chain process
+
     @PostMapping("/register")
     public ResponseEntity<Object> registerNewUser(@RequestBody @Validated TRegisterUser tRegisterUser, HttpServletRequest httpServletRequest) {
         log.trace("Auth Api - registerUser");
@@ -57,12 +59,6 @@ public class AuthApi {
                 "/auth/verify");
 
         return ResponseEntity.status(HttpStatus.OK).body(userService.resendRegistrationToken(oldToken, verifyURL));
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<Object> loginUser(@RequestBody @Valid TLogin tLogin) {
-        log.trace("Auth Api - loginUser");
-        return ResponseEntity.ok(userService.loginUser(tLogin));
     }
 
 

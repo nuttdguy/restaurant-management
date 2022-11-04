@@ -22,7 +22,7 @@ public class UserApi {
     public ResponseEntity<Object> findUserByUsername(@PathVariable("username") String username) {
         log.trace("UserApi- findUserByUsername={}", username);
 
-        return ResponseEntity.status(HttpStatus.OK).body(userService.findByUsername(username));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.loadUserByUsername(username));
     }
 
     @GetMapping(value = "/id/{userId}")

@@ -14,8 +14,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "users",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"username"}))
+@Table(name = "users")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
@@ -29,7 +28,7 @@ public class User implements UserDetails {
     @Column(name = "user_uuid")
     private UUID uuid;
 
-    @Column(name = "username")
+    @Column(name = "username", unique = true)
     private String username;
 
     @Column(name = "password")
@@ -49,7 +48,7 @@ public class User implements UserDetails {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinTable(name = "user_roles",
             joinColumns = { @JoinColumn(name = "user_uuid")},

@@ -14,7 +14,7 @@ import java.util.concurrent.Executor;
 public class AsyncConfig {
 
     @Bean(name = "asyncExecutor1") // add name when there is more than one task executor bean
-    public Executor asyncExecuter() {
+    public Executor asyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(4);  // pool qty available at all times
         executor.setMaxPoolSize(10);  // max pools that can exist

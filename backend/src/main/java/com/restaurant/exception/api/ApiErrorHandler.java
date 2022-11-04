@@ -1,6 +1,7 @@
 package com.restaurant.exception.api;
 
 import com.restaurant.exception.*;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.JDBCException;
 import org.springframework.core.Ordered;
@@ -36,19 +37,19 @@ import static java.util.Optional.ofNullable;
 public class ApiErrorHandler extends ResponseEntityExceptionHandler {
 
     // START :: HANDLER FOR SECURITY / FILTER CHAIN  ::
-    @ExceptionHandler({ AuthenticationException.class })
+    @ExceptionHandler({ AuthenticationException.class, ExpiredJwtException.class })
     public ResponseEntity<ApiError<String>> handleAuthenticationException(Exception ex) {
 
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
+                .body(new ApiError<>(ex.getLocalizedMessage()));
     }
 
     @ExceptionHandler({ AccessDeniedException.class })
     public ResponseEntity<ApiError<String>> handleAccessDeniedException(Exception ex) {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
+                .body(new ApiError<>(ex.getLocalizedMessage()));
     }
 
 
@@ -107,7 +108,7 @@ public class ApiErrorHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ApiError<String>> handleExpiredException(WebRequest request, ExpiredException ex) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ApiError<>(ex.getLocalizedMessage()));
+                .body(new ApiError<>("Expired and / or invalid token", List.of(ex.getLocalizedMessage())));
     }
 
     @ExceptionHandler({IllegalStateException.class})
@@ -117,7 +118,15 @@ public class ApiErrorHandler extends ResponseEntityExceptionHandler {
                 .body(new ApiError<>(ex.getLocalizedMessage()));
     }
 
-    @ExceptionHandler({MethodArgumentTypeMismatchException.class, IllegalArgumentException.class})
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiError<String>> handleIllegalArgumentException(WebRequest request, IllegalArgumentException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ApiError<>(ex.getLocalizedMessage()));
+    }
+
+
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class})
     public ResponseEntity<ApiError<Map<String, String>>>
     handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex,
                                               HttpServletRequest request) {
@@ -158,4 +167,10 @@ public class ApiErrorHandler extends ResponseEntityExceptionHandler {
                 .body(new ApiError<>("SQL Constraint Violation", List.of(ex.getLocalizedMessage())));
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiError<String>> handleIllegalArgumentException(WebRequest request, Exception ex) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ApiError<>("Internal Server Error", List.of(ex.getLocalizedMessage())));
+    }
 }

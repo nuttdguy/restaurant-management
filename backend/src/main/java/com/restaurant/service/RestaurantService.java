@@ -10,10 +10,7 @@ import com.restaurant.domain.dto.response.VwDish;
 import com.restaurant.domain.dto.response.RestaurantResponse;
 import com.restaurant.domain.dto.response.VwRestaurant;
 import com.restaurant.domain.mapper.RestaurantMapper;
-import com.restaurant.domain.model.Dish;
-import com.restaurant.domain.model.Restaurant;
-import com.restaurant.domain.model.License;
-import com.restaurant.domain.model.User;
+import com.restaurant.domain.model.*;
 import com.restaurant.exception.UserNotFoundException;
 import com.restaurant.repository.IDishRepo;
 import com.restaurant.repository.IRestaurantRepo;
@@ -26,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.util.*;
@@ -77,7 +75,6 @@ public class RestaurantService {
                 .orElseThrow(() -> new EntityNotFoundException(format("Restaurant not found for id %s", uuid)));
     }
 
-    // todo extract user from spring security context set by jwt token filter
     public Object registerRestaurant(TCreateRestaurant tCreateRestaurant, MultipartFile license) throws IOException {
         log.trace("Restaurant Service - registerRestaurant");
 

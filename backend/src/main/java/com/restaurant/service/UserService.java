@@ -1,28 +1,27 @@
 package com.restaurant.service;
 
 import com.restaurant.domain.dto.request.TForgotPassword;
-import com.restaurant.domain.dto.request.TLogin;
 import com.restaurant.domain.dto.request.TRegisterUser;
 import com.restaurant.domain.dto.request.TResetPassword;
 import com.restaurant.domain.dto.response.VwLink;
-import com.restaurant.domain.dto.response.VwJwt;
 import com.restaurant.domain.model.RegistrationToken;
 import com.restaurant.domain.model.Role;
+import com.restaurant.domain.model.RoleType;
 import com.restaurant.event.RegistrationEvent;
 import com.restaurant.exception.*;
-import com.restaurant.jwt.JwtUtil;
 import com.restaurant.repository.IRoleRepo;
 import com.restaurant.repository.IUserRepo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.restaurant.domain.model.User;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ValidationException;
 
@@ -37,18 +36,19 @@ import static java.lang.String.format;
 
 @Slf4j
 @Service
-@AllArgsConstructor
 @Transactional
-public class UserService {
+@AllArgsConstructor
+public class UserService implements UserDetailsService {
 
-    private final JwtUtil jwtUtil;
+//    private final JwtHelper jwtHelper;
     private final TokenService tokenService;
     private final IRoleRepo roleRepo;
     private final IUserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public User findByUsername(String username) {
+    @Override
+    public User loadUserByUsername(String username) {
         return userRepo.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(format(NOT_FOUND, username)));
     }
@@ -113,7 +113,7 @@ public class UserService {
 
         log.trace("Checking if the token is expired");
         if (registrationToken.getExpiration().compareTo(Instant.now()) < 0) {
-            throw new ExpiredException(format(EXPIRED_TOKEN, registrationToken));
+            throw new ExpiredException(format(EXPIRED_TOKEN, registrationToken.getToken()));
         }
 
         log.trace("Extracting the user owning this registration token={}", theToken);
@@ -146,31 +146,30 @@ public class UserService {
         return new VwLink(format("%s/%s", verifyURL, newToken));
     }
 
-    public VwJwt loginUser(TLogin tLogin) throws BadCredentialsException {
-        log.trace("UserService - loginUser");
+//    public VwJwt loginUser(TLogin tLogin) throws BadCredentialsException {
+//        log.trace("UserService - loginUser");
+//
+//        User user = userRepo.findByUsername(tLogin.username())
+//                .orElseThrow(() -> new NotFoundException(format(NOT_FOUND, tLogin.username())));
+//
+//        log.trace("Validating the account is activated and has a valid password");
+//        if (!passwordEncoder.matches(tLogin.password(), user.getPassword())) {
+//            throw new BadCredentialsException(format(BAD_CREDENTIAL, "username", "password"));
+//        }
+//        if (!user.isEnabled()) {
+//            throw new NotActiveException(format(NOT_VERIFIED, tLogin.username()));
+//        }
+//
 
-        User user = userRepo.findByUsername(tLogin.username())
-                .orElseThrow(() -> new NotFoundException(format(NOT_FOUND, tLogin.username())));
-        
-        log.trace("Validating the account is activated and has a valid password");
-        if (!passwordEncoder.matches(tLogin.password(), user.getPassword())) {
-            throw new BadCredentialsException(format(BAD_CREDENTIAL, "username", "password"));
-        }
-        if (!user.isEnabled()) {
-            throw new NotActiveException(format(NOT_VERIFIED, tLogin.username()));
-        }
-
-        // todo - add roles into jwt authorization flow
-        // todo - enable after understanding how jwt and refresh token works in auuth flow
-        log.trace("generated the jwt token with user details");
-        log.trace("extract the granted authorities");
-//        List<String> roles = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-
-//        RefreshToken refreshToken = refreshTokenService.createRefreshToken(UUID.randomUUID());
-        String jwt = jwtUtil.generateJwtToken(user);
-        String refreshToken1 = UUID.randomUUID().toString();
-        return new VwJwt(format("Bearer %s", jwt), refreshToken1, user.getUsername(), user.getUuid());
-    }
+//        log.trace("generated the jwt token with user details");
+//        log.trace("extract the granted authorities");
+////        List<String> roles = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+//
+////        RefreshToken refreshToken = refreshTokenService.createRefreshToken(UUID.randomUUID());
+//        String jwt = jwtUtil.generateJwtToken(user);
+//        String refreshToken1 = UUID.randomUUID().toString();
+//        return new VwJwt(format("Bearer %s", jwt), refreshToken1, user.getUsername(), user.getUuid());
+//    }
 
     public Object forgotPassword(TForgotPassword tForgotPassword, HttpServletRequest request) {
         return null;

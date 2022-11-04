@@ -14,14 +14,12 @@ import javax.mail.MessagingException;
 import java.util.Arrays;
 
 @Slf4j
-@Async
 @Component
 @AllArgsConstructor
 public class RegistrationEventListener implements ApplicationListener<RegistrationEvent> {
 
     private final EmailService emailService;
 
-    @Async
     @Override
     public void onApplicationEvent(RegistrationEvent event) {
         log.trace("onApplicationEvent - generating and saving the registration token");

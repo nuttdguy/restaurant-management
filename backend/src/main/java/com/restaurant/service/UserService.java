@@ -66,7 +66,10 @@ public class UserService {
         log.trace("Generating the register token and publishing the register email event");
         UUID token = UUID.randomUUID();
         RegistrationToken registrationToken = new RegistrationToken(newUser, token);
+
+        log.trace("Async - publishing event");
         publishEmailEventTo(newUser, verifyURL, token);
+        log.trace("Async - done publishing event");
 
         log.trace("Saving the user + registration token {}", registrationToken.getToken());
         registrationToken.setUser(newUser);

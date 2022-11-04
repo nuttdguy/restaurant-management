@@ -9,6 +9,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
@@ -27,6 +28,7 @@ public class EmailService {
     private final JavaMailSender javaMailSender;
     private final Configuration freeMarker;
 
+    @Async("asyncExecutor1")
     public void sendSimpleEmail(Email theEmail) throws MessagingException {
         log.trace("EmailService - sendEmail");
 
@@ -34,6 +36,7 @@ public class EmailService {
         javaMailSender.send(simpleMailMessage);
     }
 
+    @Async("asyncExecutor1")
     public void sendEmailWithAttachment(Email theEmail) throws MessagingException {
         log.trace("EmailService - sendEmailWithAttachment");
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -51,14 +54,15 @@ public class EmailService {
         javaMailSender.send(mimeMessage);
     }
 
+    @Async("asyncExecutor1")
     public void sendEmailWithTemplate(Email theEmail, String template) throws MessagingException {
-        log.trace("EmailService - sendEmailWithTemplate");
+        log.trace("Async - EmailService - sendEmailWithTemplate");
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         configureHeader(mimeMessage);
         MimeMessageHelper message = getMimeMessageHelper(theEmail, mimeMessage);
 
-        log.trace("Converting email to text {}", theEmail);
+        log.trace("Async - Converting email to text {}", theEmail);
         String emailContent;
 
         try {
@@ -76,7 +80,7 @@ public class EmailService {
         // set the text as html
         message.setText(emailContent, true);
 
-        log.trace("Sending the email message");
+        log.trace("Async - Sending the email message");
         javaMailSender.send(message.getMimeMessage());
     }
 

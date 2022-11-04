@@ -2,7 +2,6 @@ package com.restaurant.domain.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
-import org.springframework.lang.Nullable;
 
 import java.util.UUID;
 

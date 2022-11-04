@@ -28,21 +28,35 @@ public class AuthApi {
     private UserService userService;
 
     @PostMapping("/register")
-    public VwUser registerNewUser(@RequestBody @Validated TRegisterUser tRegisterUser,
-                                  final HttpServletRequest httpServletRequest) {
+    public ResponseEntity<Object> registerNewUser(@RequestBody @Validated TRegisterUser tRegisterUser, HttpServletRequest httpServletRequest) {
         log.trace("Auth Api - registerUser");
+
         String verifyURL = format("http://%s:%s%s%s",
                 httpServletRequest.getServerName(),
                 httpServletRequest.getServerPort(),
                 httpServletRequest.getContextPath(),
                 "/auth/verify");
-        return userService.registerNewUser(tRegisterUser, verifyURL);
+
+        return ResponseEntity.ok(userService.registerNewUser(tRegisterUser, verifyURL));
     }
 
-    @GetMapping("/verify/{theToken}")
-    public ResponseEntity<Object> verifyRegistration(@PathVariable("theToken") UUID token) {
+    @GetMapping("/verify/{verifyToken}")
+    public ResponseEntity<Object> verifyRegistration(@PathVariable("verifyToken") UUID token) {
         log.trace("Auth Api - verifyRegistration");
-        return ResponseEntity.status(HttpStatus.OK).body(userService.verifyRegistration(token));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.verifyUserRegistration(token));
+    }
+
+    @GetMapping("/verify/resend/{oldVerifyToken}")
+    public ResponseEntity<Object> resendVerifyToken(@PathVariable("oldVerifyToken") UUID oldToken, HttpServletRequest httpServletRequest) {
+        log.trace("Auth Api - resendVerifyToken");
+
+        String verifyURL = format("http://%s:%s%s%s",
+                httpServletRequest.getServerName(),
+                httpServletRequest.getServerPort(),
+                httpServletRequest.getContextPath(),
+                "/auth/verify");
+
+        return ResponseEntity.status(HttpStatus.OK).body(userService.resendRegistrationToken(oldToken, verifyURL));
     }
 
     @PostMapping("/login")

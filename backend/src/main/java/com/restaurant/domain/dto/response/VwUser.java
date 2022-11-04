@@ -7,7 +7,7 @@ import org.springframework.lang.Nullable;
 import java.util.UUID;
 
 @Builder
-//@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record VwUser(
         UUID userId,
         String username,

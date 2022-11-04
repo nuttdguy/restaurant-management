@@ -57,7 +57,6 @@ public class RestaurantApi {
         return ResponseEntity.ok(restaurantService.registerRestaurant(tCreateRestaurant, null));
     }
 
-
     @PostMapping(value = "/create", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<Object> registerRestaurant(@RequestPart("data") String data,
                                                    @RequestPart("license") MultipartFile licenseDocument,

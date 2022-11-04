@@ -57,7 +57,7 @@ public class ApiErrorHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ApiError<String>> handleFileFormatException (WebRequest request, FileFormatException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
+                .body(new ApiError<>(ex.getLocalizedMessage()));
     }
 
 
@@ -65,61 +65,59 @@ public class ApiErrorHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ApiError<String>> handleNotFoundException(WebRequest request, UserNotFoundException ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
+                .body(new ApiError<>(ex.getLocalizedMessage()));
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ApiError<String>> handleEntityFoundException(WebRequest request, EntityNotFoundException ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
+                .body(new ApiError<>(ex.getLocalizedMessage()));
     }
 
     @ExceptionHandler(NotActiveException.class)
     public ResponseEntity<ApiError<String>> handleAccountNoActiveException(WebRequest request, NotActiveException ex) {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
-                .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
+                .body(new ApiError<>(ex.getLocalizedMessage()));
     }
 
     @ExceptionHandler(UserExistsException.class)
     public ResponseEntity<ApiError<String>> handleUserExistsException(WebRequest request, UserExistsException ex) {
         return ResponseEntity
                 .status(HttpStatus.FOUND)
-                .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
+                .body(new ApiError<>(ex.getLocalizedMessage()));
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiError<String>> handleBadCredentialsException(WebRequest request, BadCredentialsException ex) {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
+                .body(new ApiError<>(ex.getLocalizedMessage()));
     }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ApiError<String>> handleTokenNotFoundException(WebRequest request, NotFoundException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
+                .body(new ApiError<>(ex.getLocalizedMessage()));
     }
 
-    @ExceptionHandler({ExpiredException.class, ExistsException.class})
-    public <T extends RuntimeException> ResponseEntity<ApiError<String>> handleTokenExpiredException(
-            WebRequest request, T ex) {
+    @ExceptionHandler({ExpiredException.class})
+    public ResponseEntity<ApiError<String>> handleExpiredException(WebRequest request, ExpiredException ex) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
+                .body(new ApiError<>(ex.getLocalizedMessage()));
     }
 
     @ExceptionHandler({IllegalStateException.class})
-    public <T extends Exception> ResponseEntity<ApiError<String>> handleIllegalStateException(
-            WebRequest request, T ex) {
+    public ResponseEntity<ApiError<String>> handleIllegalStateException(WebRequest request, IllegalStateException ex) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ApiError<>(ex.getLocalizedMessage(), List.of(ex.getLocalizedMessage())));
+                .body(new ApiError<>(ex.getLocalizedMessage()));
     }
 
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class, IllegalArgumentException.class})
     public ResponseEntity<ApiError<Map<String, String>>>
     handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex,
                                               HttpServletRequest request) {
@@ -133,7 +131,6 @@ public class ApiErrorHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.badRequest()
                 .body(new ApiError<>("Method argument type mismatch", List.of(details)));
     }
-
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<ApiError<Map<String, String>>>

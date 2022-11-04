@@ -4,7 +4,7 @@ import com.restaurant.domain.dto.request.TForgotPassword;
 import com.restaurant.domain.dto.request.TLogin;
 import com.restaurant.domain.dto.request.TRegisterUser;
 import com.restaurant.domain.dto.request.TResetPassword;
-import com.restaurant.domain.dto.response.VwUser;
+import com.restaurant.domain.dto.response.VwLink;
 import com.restaurant.domain.dto.response.VwJwt;
 import com.restaurant.domain.model.RegistrationToken;
 import com.restaurant.domain.model.Role;
@@ -58,31 +58,30 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException(format(NOT_FOUND, id)));
     }
 
-    public VwUser registerNewUser(TRegisterUser tRegisterUser, String verifyURL) {
+    public VwLink registerNewUser(TRegisterUser tRegisterUser, String verifyURL) {
         log.trace("UserService - TRegisterUser");
 
-        if (!tRegisterUser.password().equals(tRegisterUser.confirmPassword())) {
-            throw new ValidationException(format(VALIDATION_FAILURE, "password", tRegisterUser.password(), "must match"));
-        }
-
-        User newUser = createNewUserOrThrowIfFound(tRegisterUser);
-        newUser.setPassword(passwordEncoder.encode(tRegisterUser.password()));
+        User newUser = createNewUserOrThrow(tRegisterUser);
 
         log.trace("Generating the register token and publishing the register email event");
         UUID token = UUID.randomUUID();
         RegistrationToken registrationToken = new RegistrationToken(newUser, token);
-        publishEmailEvent(newUser, verifyURL, token);
+        publishEmailEventTo(newUser, verifyURL, token);
 
-        log.trace("Saving the user + registration token {}", registrationToken.getUuid());
+        log.trace("Saving the user + registration token {}", registrationToken.getToken());
         registrationToken.setUser(newUser);
         userRepo.save(newUser);
         tokenService.save(registrationToken);
 
-        return new VwUser(newUser.getUuid());
+        return new VwLink(format("%s/%s", verifyURL, token));
     }
 
-    private User createNewUserOrThrowIfFound(TRegisterUser tRegisterUser) {
+    private User createNewUserOrThrow(TRegisterUser tRegisterUser) {
         log.trace("UserService - extractUserThrowIfFound");
+
+        if (!tRegisterUser.password().equals(tRegisterUser.confirmPassword())) {
+            throw new ValidationException(format(VALIDATION_FAILURE, "password", tRegisterUser.password(), "must match"));
+        }
 
         Optional<User> user = userRepo.findByUsername(tRegisterUser.username());
         log.trace("Checking if user is present {}", user);
@@ -92,23 +91,25 @@ public class UserService {
             }
             throw new UserExistsException(format(ENTITY_EXISTS, tRegisterUser.username(), " Login instead."));
         }
-        return toUserFrom(tRegisterUser);
+
+        User newUser = toUserFrom(tRegisterUser);
+        newUser.setPassword(passwordEncoder.encode(tRegisterUser.password()));
+        return newUser;
     }
 
-    private void publishEmailEvent(User user, String verifyURL, UUID token) {
+    private void publishEmailEventTo(User user, String verifyURL, UUID token) {
         log.trace("UserService - publishEmailEvent");
         applicationEventPublisher.publishEvent(new RegistrationEvent(user, verifyURL, token));
     }
 
-    public String verifyRegistration(UUID theToken) {
+    public String verifyUserRegistration(UUID theToken) {
         log.trace("UserService - verifyRegistrationToken");
 
-        RegistrationToken registrationToken = tokenService.findRegisterTokenById(theToken)
+        RegistrationToken registrationToken = tokenService.findRegisterToken(theToken)
                 .orElseThrow(() -> new NotFoundException(format(NOT_FOUND, theToken)));
 
         log.trace("Checking if the token is expired");
         if (registrationToken.getExpiration().compareTo(Instant.now()) < 0) {
-            tokenService.deleteRegisterToken(registrationToken);
             throw new ExpiredException(format(EXPIRED_TOKEN, registrationToken));
         }
 
@@ -125,6 +126,21 @@ public class UserService {
         log.trace("Deleting the registration token {}", theToken);
         tokenService.deleteRegisterToken(registrationToken);
         return format("Thank you for verifying %s", user.getUsername());
+    }
+
+    public VwLink resendRegistrationToken(UUID oldToken, String verifyURL) {
+        log.trace("UserService - resendRegistrationToken");
+
+        RegistrationToken registrationToken = tokenService.findRegisterToken(oldToken)
+                .orElseThrow(() -> new NotFoundException(format(NOT_FOUND, oldToken)));
+
+        UUID newToken = UUID.randomUUID();
+        log.trace("Updating the registration token {}", oldToken);
+        registrationToken.setToken(newToken);
+        registrationToken.setExpiration(Instant.now());
+        tokenService.save(registrationToken);
+
+        return new VwLink(format("%s/%s", verifyURL, newToken));
     }
 
     public VwJwt loginUser(TLogin tLogin) throws BadCredentialsException {

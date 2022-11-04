@@ -20,13 +20,15 @@ public class RegistrationToken  {
     public static Integer EXPIRATION_TIME_MS = 360000;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
     @Column(name = "token")
     @Type(type = "org.hibernate.type.UUIDCharType")
-    private UUID uuid;
+    private UUID token;
 
     @Column(name = "expiration")
     private Instant expiration;
-
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_uuid",
@@ -36,8 +38,13 @@ public class RegistrationToken  {
 
     public RegistrationToken(User user, UUID token) {
         this.user = user;
-        this.uuid = token;
+        this.token = token;
         this.expiration = Instant.now().plusMillis(EXPIRATION_TIME_MS);
     }
+
+    public void setExpiration(Instant instant) {
+        this.expiration = instant.plusMillis(EXPIRATION_TIME_MS);
+    }
+
 
 }

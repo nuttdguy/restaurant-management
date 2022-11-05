@@ -16,7 +16,7 @@ import java.util.UUID;
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UuidToken {
+public class UniqueToken {
 
     @Value("${restaurant.jwt.registrationExpirationMS}")
     public static Integer EXPIRATION_TIME_MS = 360000;
@@ -25,7 +25,7 @@ public class UuidToken {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "token")
+    @Column(name = "token", unique = true)
     @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID token;
 
@@ -45,7 +45,7 @@ public class UuidToken {
 //    @JoinColumn(name = "fk_user_uuid")
 //    public User user;
 
-    public UuidToken(User user, UUID token, TokenType tokenType) {
+    public UniqueToken(User user, UUID token, TokenType tokenType) {
         this.user = user;
         this.token = token;
         this.tokenType = tokenType;

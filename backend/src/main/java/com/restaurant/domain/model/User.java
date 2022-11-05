@@ -67,7 +67,7 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @Fetch(value = FetchMode.SUBSELECT)
     @ToString.Exclude
-    private Set<UuidToken> tokens = new HashSet<>();
+    private Set<UniqueToken> tokens = new HashSet<>();
 
 
     public void addRole(Role role) {

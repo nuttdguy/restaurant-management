@@ -1,6 +1,6 @@
 package com.restaurant.service;
 
-import com.restaurant.domain.model.UuidToken;
+import com.restaurant.domain.model.UniqueToken;
 import com.restaurant.repository.ITokenRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,15 +16,15 @@ public class TokenService {
 
     private ITokenRepo tokenRepo;
 
-    public Optional<UuidToken> findToken(UUID token) {
+    public Optional<UniqueToken> findByToken(UUID token) {
         return tokenRepo.findByToken(token);
     }
 
-    public void deleteToken(UuidToken token) {
+    public void deleteByToken(UniqueToken token) {
         tokenRepo.delete(token);
     }
 
-    public UuidToken save(UuidToken uuidToken) {
-        return tokenRepo.save(uuidToken);
+    public UniqueToken save(UniqueToken uniqueToken) {
+        return tokenRepo.save(uniqueToken);
     }
 }

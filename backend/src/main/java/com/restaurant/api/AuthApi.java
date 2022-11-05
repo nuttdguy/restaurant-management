@@ -1,8 +1,8 @@
 package com.restaurant.api;
 
-import com.restaurant.domain.dto.request.TForgotPassword;
+import com.restaurant.domain.dto.request.TPasswordForgot;
 import com.restaurant.domain.dto.request.TRegisterUser;
-import com.restaurant.domain.dto.request.TResetPassword;
+import com.restaurant.domain.dto.request.TPasswordReset;
 import com.restaurant.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +22,7 @@ import static java.lang.String.format;
 @AllArgsConstructor
 public class AuthApi {
 
+    private static final String URL_FORMAT_STRING = "http://%s:%s%s%s";
     private UserService userService;
 
     // moved the login route into the spring security filter chain process
@@ -30,7 +31,7 @@ public class AuthApi {
     public ResponseEntity<Object> registerNewUser(@RequestBody @Validated TRegisterUser tRegisterUser, HttpServletRequest httpServletRequest) {
         log.trace("Auth Api - registerUser");
 
-        String verifyURL = format("http://%s:%s%s%s",
+        String verifyURL = format(URL_FORMAT_STRING,
                 httpServletRequest.getServerName(),
                 httpServletRequest.getServerPort(),
                 httpServletRequest.getContextPath(),
@@ -49,7 +50,7 @@ public class AuthApi {
     public ResponseEntity<Object> resendVerifyToken(@PathVariable("oldVerifyToken") UUID oldToken, HttpServletRequest httpServletRequest) {
         log.trace("Auth Api - resendVerifyToken");
 
-        String verifyURL = format("http://%s:%s%s%s",
+        String verifyURL = format(URL_FORMAT_STRING,
                 httpServletRequest.getServerName(),
                 httpServletRequest.getServerPort(),
                 httpServletRequest.getContextPath(),
@@ -61,31 +62,29 @@ public class AuthApi {
 
     @PostMapping("/password/forgot")
     public ResponseEntity<Object> forgotPassword(HttpServletRequest httpServletRequest,
-                                                 @RequestBody TForgotPassword tForgotPassword) {
+                                                 @RequestBody TPasswordForgot tPasswordForgot) {
         log.trace("Auth Api - forgotPassword");
 
-        String resetURL = format("http://%s:%s%s%s",
+        String resetURL = format(URL_FORMAT_STRING,
                 httpServletRequest.getServerName(),
                 httpServletRequest.getServerPort(),
                 httpServletRequest.getContextPath(),
-                "/auth//password/reset");
+                "/auth/password/reset");
 
-        return ResponseEntity.ok(userService.forgotPassword(tForgotPassword, resetURL));
+        return ResponseEntity.ok(userService.forgotPassword(tPasswordForgot, resetURL));
 
     }
 
     @PostMapping("/password/reset/{thePwdResetToken}")
-    public ResponseEntity<Object> resetPassword(@RequestBody @Validated TResetPassword tResetPassword,
-                                                @PathVariable("thePwdResetToken") String thePwdResetToken ) {
+    public ResponseEntity<Object> resetPassword(@RequestBody @Validated TPasswordReset tPasswordReset,
+                                                @PathVariable("thePwdResetToken") UUID thePwdResetToken) {
         log.trace("Auth Api - resetPassword");
 
-
-
-        return ResponseEntity.ok(userService.resetPassword(tResetPassword, thePwdResetToken));
+        return ResponseEntity.ok(userService.resetPassword(tPasswordReset, thePwdResetToken));
 
     }
 
-    // todo, revoke token
+    // manage and persist token state and revoke token OR leave to front-edn impl??
     @PostMapping("/logout")
     public ResponseEntity<Object> logoutUser() {
         log.trace("Auth Api - logout");

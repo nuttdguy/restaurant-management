@@ -28,28 +28,30 @@ public class SendEmailEventListener implements ApplicationListener<SendEmailEven
 
             log.trace("Building the email");
             User user = (User) event.getSource();
-            String url = event.getUrlLink();
+            String urlLink = event.getUrlLink();
             String tokenType = event.getTokenType();
-
-            Email email = Email.builder.setTo(EmailCredential.TO)
-                    .setFrom(EmailCredential.FROM)
-                    .withSubject(EmailCredential.SUBJECT)
-                    .withText(EmailCredential.TEXT)
-                    .withModel(emailService
-                            .buildTemplateModel(user, "", url, 10L))
-                    .build();
-
-            log.trace("Sending the email");
+            String subject = "";
             String template = "";
             if (tokenType.equals(TokenType.REGISTRATION.toString())) {
                 template = "activate-account-email-template.ftlh";
+                subject = "Confirm email";
             }
             if (tokenType.equals(TokenType.PASSWORD_RESET.toString())) {
                 template = "reset-password-template.ftlh";
+                subject = "Password reset";
             }
-            emailService.sendEmailWithTemplate(email, template);
 
-            log.info("Logging the url link {}", url);
+            Email email = Email.builder
+                    .setTo(EmailCredential.TO)
+                    .setFrom(EmailCredential.FROM)
+                    .withSubject(subject)
+                    .withText(EmailCredential.TEXT)
+                    .withModel(emailService.buildTemplateModel(user, "", urlLink, 10L))
+                    .build();
+
+            log.trace("Sending the email");
+            log.info("Logging the url link {}", urlLink);
+            emailService.sendEmailWithTemplate(email, template);
 
         } catch (MessagingException e) {
             log.error(Arrays.toString(e.getStackTrace()));

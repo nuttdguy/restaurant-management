@@ -4,16 +4,13 @@ import com.restaurant.domain.dto.request.TPasswordForgot;
 import com.restaurant.domain.dto.request.TRegisterUser;
 import com.restaurant.domain.dto.request.TPasswordReset;
 import com.restaurant.domain.dto.response.VwLink;
-import com.restaurant.domain.model.TokenType;
-import com.restaurant.domain.model.UniqueToken;
-import com.restaurant.domain.model.Role;
+import com.restaurant.domain.model.*;
 import com.restaurant.event.SendEmailEvent;
 import com.restaurant.exception.*;
 import com.restaurant.repository.IRoleRepo;
 import com.restaurant.repository.IUserRepo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import com.restaurant.domain.model.User;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -85,9 +82,10 @@ public class UserService implements UserDetailsService {
 
         log.trace("Enabling and updating the user {}", user);
         user.setEnabled(true);
-        List<Role> roles = roleRepo.findAll();
-        user.getAuthorities().add(roles.get(0));
-        user.getAuthorities().add(roles.get(1));
+        user.addRole(new Role(RoleType.REGISTERED_USER));
+//        List<Role> roles = roleRepo.findAll();
+//        user.getAuthorities().add(roles.get(0));
+//        user.getAuthorities().add(roles.get(1));
         userRepo.save(user);
 
         log.trace("Deleting the registration token {}", theToken);
@@ -190,6 +188,7 @@ public class UserService implements UserDetailsService {
 
         User newUser = toUserFrom(tRegisterUser);
         newUser.setPassword(passwordEncoder.encode(tRegisterUser.password()));
+        newUser.addRole(new Role(RoleType.PUBLIC_USER));
         return newUser;
     }
 

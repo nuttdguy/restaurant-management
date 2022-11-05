@@ -1,8 +1,10 @@
 package com.restaurant.security;
 
+import com.restaurant.exception.BadCredentialException;
 import com.restaurant.security.jwt.JwtHelper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,21 +40,22 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.trace("JwtFilter - doInternalFilter");
         // extract the token from the request header
-        String token = getToken(request);
-        log.trace("doFilterInternal - jwt filter security chain incoming request {}", token);
         try {
+
+            String token = getToken(request);
+            log.trace("extracted bearer token {}", token);
             // extract the claims from the token
             Map<String, Object> claims = jwtHelper.parseClaims(token);
             // set context to this user and their roles / authorities
             Authentication authenticated = createAuthentication(claims);
-            log.trace("doFilterInternal - jwt authenticated {}", authenticated);
 
+            log.trace("set security context to authenticated user {}", authenticated);
             SecurityContextHolder.getContext().setAuthentication(authenticated);
-        } catch (ExpiredJwtException ex ) {
+        } catch (JwtException | NullPointerException ex ) {
             log.trace(ex.getLocalizedMessage());
         }
 
-        log.trace("JwtFilter - continue doFilter");
+//        log.trace("JwtFilter - continue doFilter");
         // continue spring security filter chain
         filterChain.doFilter(request, response);
     }
@@ -69,19 +73,20 @@ public class JwtFilter extends OncePerRequestFilter {
         return new UsernamePasswordAuthenticationToken(claims.get(Claims.SUBJECT), null, authorities);
     }
 
-    private String getToken(HttpServletRequest request) {
-        log.trace("JwtFilter - getToken");
+    private String getToken(HttpServletRequest request) throws NullPointerException, JwtException {
+//        log.trace("JwtFilter - getToken");
+
         return Optional.ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION))
                 .filter(auth -> auth.startsWith("Bearer "))
                 .map(auth -> auth.replace("Bearer ", ""))
-                .orElseThrow(() -> new BadCredentialsException("Invalid token"));
+                .orElseThrow(() -> new JwtException("Invalid token"));
     }
 
     // do not apply this filter to /auth/login route
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String uri = request.getRequestURI();
-        log.trace("jwt - shouldNotFilter uri {}", uri);
+        log.trace("jwt - shouldNotFilter");
 
         // do not use the jwt filter for register or verify routes
         return uri.startsWith("/v1/api/auth/register") || uri.startsWith("/v1/api/auth/verify") ||

@@ -34,7 +34,7 @@ public class RestaurantApi {
         return ResponseEntity.ok(restaurantService.getRestaurantsByOwnerName(username));
     }
 
-    @GetMapping("/{restaurantName}")
+    @GetMapping("/name/{restaurantName}")
     @RolesAllowed({RoleType.REGISTERED_USER, RoleType.RESTAURANT_OPERATOR})
     public ResponseEntity<Object> getRestaurants(@PathVariable("restaurantName") String restaurantName) {
         Set<VwRestaurant> data = restaurantService.getRestaurantsByName(restaurantName);

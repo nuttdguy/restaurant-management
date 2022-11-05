@@ -82,6 +82,7 @@ public class DocumentService {
                 .photoTag(PhotoTag.DISH)
                 .restaurant(restaurant)
                 .file(FileUtil.compressData(imageFile.getBytes())).build());
+
        log.trace("File was saved successfully");
        return "File was successfully saved";
     }
@@ -104,7 +105,7 @@ public class DocumentService {
     }
 
 
-    public Photo getImageByName(String imageName) {
+    public Photo getByPhotoName(String imageName) {
         return imageRepo.findByName(imageName)
                 .orElseThrow(() -> new EntityNotFoundException(format("%s not found", imageName)));
     }

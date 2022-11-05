@@ -119,15 +119,15 @@ public class RestaurantService {
         log.trace("Restaurant Service - TEditRestaurant");
 
         ObjectMapper objMapper = new ObjectMapper();
-        TEditRestaurant TEditRestaurant = objMapper.readValue(restaurantJson, TEditRestaurant.class);
+        TEditRestaurant tEditRestaurant = objMapper.readValue(restaurantJson, TEditRestaurant.class);
 
         log.trace("Getting the restaurant to update");
         Restaurant restaurant = restaurantRepo
-                .findById(TEditRestaurant.id())
-                .orElseThrow(() -> new EntityNotFoundException(format("%s not found", TEditRestaurant.restaurantName())));
+                .findById(tEditRestaurant.id())
+                .orElseThrow(() -> new EntityNotFoundException(format("%s not found", tEditRestaurant.restaurantName())));
 
         log.trace("Preparing to update");
-        restaurantRepo.save(updateRestaurantProperties(TEditRestaurant, restaurant));
+        restaurantRepo.save(updateRestaurantProperties(tEditRestaurant, restaurant));
 
         log.trace("Done updating the restaurant");
         return toRestaurantViewFrom(restaurant);
@@ -153,23 +153,23 @@ public class RestaurantService {
         return toCreateDishFrom(dishRepo.save(dish));
     }
 
-    public Object editDish(UUID restaurantId, TEditDish TEditDish) {
+    public Object editDish(UUID restaurantId, TEditDish tEditDish) {
         log.trace("Restaurant Service - TEditDish");
-        Dish dish = dishRepo.findById(TEditDish.id())
-                .orElseThrow(() -> new EntityNotFoundException(format("Cannot update - dish id %s was not found", TEditDish.id())));
+        Dish dish = dishRepo.findById(tEditDish.id())
+                .orElseThrow(() -> new EntityNotFoundException(format("Cannot update - dish id %s was not found", tEditDish.id())));
 
-        log.trace("Updating fields {}", TEditDish);
-        if (TEditDish.itemName() != null && !TEditDish.itemName().isBlank()) {
-            dish.setName(TEditDish.itemName());
+        log.trace("Updating fields {}", tEditDish);
+        if (tEditDish.itemName() != null && !tEditDish.itemName().isBlank()) {
+            dish.setName(tEditDish.itemName());
         }
-        if (TEditDish.price() != null && !TEditDish.price().equals(dish.getPrice())) {
-            dish.setPrice(TEditDish.price());
+        if (tEditDish.price() != null && !tEditDish.price().equals(dish.getPrice())) {
+            dish.setPrice(tEditDish.price());
         }
-        if (TEditDish.description() != null && !TEditDish.description().isBlank()) {
-            dish.setDescription(TEditDish.description());
+        if (tEditDish.description() != null && !tEditDish.description().isBlank()) {
+            dish.setDescription(tEditDish.description());
         }
-        if (TEditDish.ingredients() != null && !TEditDish.ingredients().isBlank()) {
-            dish.setIngredients(TEditDish.ingredients());
+        if (tEditDish.ingredients() != null && !tEditDish.ingredients().isBlank()) {
+            dish.setIngredients(tEditDish.ingredients());
         }
         return dishRepo.save(dish);
     }

@@ -1,5 +1,6 @@
 package com.restaurant.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -36,10 +37,12 @@ public class Photo {
 
     @ManyToOne
     @JoinColumn(name = "restaurant_uuid")
+    @JsonIgnore
     private Restaurant restaurant;
 
     @ManyToOne
     @JoinColumn(name = "dish_id")
+    @JsonIgnore
     private Dish dish;
 
     @Override

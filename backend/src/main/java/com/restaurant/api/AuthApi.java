@@ -59,7 +59,6 @@ public class AuthApi {
         return ResponseEntity.status(HttpStatus.OK).body(userService.resendToken(oldToken, verifyURL));
     }
 
-
     @PostMapping("/password/forgot")
     public ResponseEntity<Object> forgotPassword(HttpServletRequest httpServletRequest,
                                                  @RequestBody TPasswordForgot tPasswordForgot) {
@@ -72,16 +71,13 @@ public class AuthApi {
                 "/auth/password/reset");
 
         return ResponseEntity.ok(userService.forgotPassword(tPasswordForgot, resetURL));
-
     }
 
     @PostMapping("/password/reset/{thePwdResetToken}")
     public ResponseEntity<Object> resetPassword(@RequestBody @Validated TPasswordReset tPasswordReset,
                                                 @PathVariable("thePwdResetToken") UUID thePwdResetToken) {
         log.trace("Auth Api - resetPassword");
-
         return ResponseEntity.ok(userService.resetPassword(tPasswordReset, thePwdResetToken));
-
     }
 
     // manage and persist token state and revoke token OR leave to front-edn impl??

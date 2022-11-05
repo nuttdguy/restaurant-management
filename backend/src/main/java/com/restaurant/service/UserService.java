@@ -149,19 +149,15 @@ public class UserService implements UserDetailsService {
         return "Password was successfully changed - please login with the new password.";
     }
 
-//    public String deleteUser(String username) {
-//        userRepo.delete(userRepo
-//                .findByUsername(username)
-//                .orElseThrow(() -> new UsernameNotFoundException(format(DELETE_FAILURE, username))));
-//        return "Success";
-//    }
-
     public String deleteUser(UUID uuid) {
         userRepo.delete(userRepo.findById(uuid)
                 .orElseThrow(() -> new UsernameNotFoundException(format(DELETE_FAILURE, uuid))));
         return "Success";
     }
 
+
+    //========== PRIVATE METHODS =======================//
+    //==================================================//
     private UniqueToken createAndSaveToken(User newUser, TokenType registration) {
         log.trace("UserService - createAndSaveToken");
         UUID uuid = UUID.randomUUID();

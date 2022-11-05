@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.UUID;
 
-import static java.lang.String.format;
-
 @Service
 @AllArgsConstructor
 public class TokenService {

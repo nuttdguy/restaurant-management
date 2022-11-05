@@ -46,6 +46,7 @@ public class LoginFilter extends OncePerRequestFilter {
         );
         // set the jwt header
         response.setHeader(HttpHeaders.AUTHORIZATION, createJwtToken(authentication));
+        response.addHeader("username", username);
         log.trace("response {}", response.getHeader(HttpHeaders.AUTHORIZATION));
     }
 

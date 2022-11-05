@@ -32,7 +32,6 @@ export const Login = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      // localStorage.setItem("user", JSON.stringify(currentUser));
       navigate("/restaurant", { replace: false }); // change the router location / navigate to url
     }
     clearApiError(dispatch);

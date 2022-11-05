@@ -80,12 +80,12 @@ public class JwtFilter extends OncePerRequestFilter {
     // do not apply this filter to /auth/login route
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        String method = request.getMethod();
         String uri = request.getRequestURI();
         log.trace("jwt - shouldNotFilter uri {}", uri);
-        if (uri.startsWith("/v1/api/auth/register") || uri.startsWith("/v1/api/auth/verify")) {
-            return true;
-        }
-        return HttpMethod.POST.matches(method) && uri.startsWith("/v1/api/auth/login");
+
+        // do not use the jwt filter for register or verify routes
+        return uri.startsWith("/v1/api/auth/register") || uri.startsWith("/v1/api/auth/verify") ||
+                uri.startsWith("/v1/api/auth/password") || uri.startsWith("/v1/api/auth/login");
+//        return HttpMethod.POST.matches(method) && ;
     }
 }

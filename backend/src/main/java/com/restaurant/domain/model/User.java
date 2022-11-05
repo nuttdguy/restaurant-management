@@ -64,6 +64,12 @@ public class User implements UserDetails {
     private Set<Restaurant> restaurants = new HashSet<>();
 
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @Fetch(value = FetchMode.SUBSELECT)
+    @ToString.Exclude
+    private Set<UuidToken> tokens = new HashSet<>();
+
+
     public void addRole(Role role) {
         this.authorities.add(role);
         role.getUsers().add(this);

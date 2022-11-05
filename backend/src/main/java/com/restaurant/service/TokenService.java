@@ -1,7 +1,7 @@
 package com.restaurant.service;
 
-import com.restaurant.domain.model.RegistrationToken;
-import com.restaurant.repository.IRegistrationTokenRepo;
+import com.restaurant.domain.model.UuidToken;
+import com.restaurant.repository.ITokenRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,18 +14,17 @@ import static java.lang.String.format;
 @AllArgsConstructor
 public class TokenService {
 
-    private IRegistrationTokenRepo registerTokenRepo;
+    private ITokenRepo tokenRepo;
 
-    public Optional<RegistrationToken> findRegisterToken(UUID token) {
-        return registerTokenRepo.findByToken(token);
+    public Optional<UuidToken> findToken(UUID token) {
+        return tokenRepo.findByToken(token);
     }
 
-    public int deleteRegisterToken(RegistrationToken token) {
-        registerTokenRepo.delete(token);
-        return 1;
+    public void deleteToken(UuidToken token) {
+        tokenRepo.delete(token);
     }
 
-    public RegistrationToken save(RegistrationToken registrationToken) {
-        return registerTokenRepo.save(registrationToken);
+    public UuidToken save(UuidToken uuidToken) {
+        return tokenRepo.save(uuidToken);
     }
 }

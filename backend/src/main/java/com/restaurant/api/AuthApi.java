@@ -1,10 +1,8 @@
 package com.restaurant.api;
 
 import com.restaurant.domain.dto.request.TForgotPassword;
-import com.restaurant.domain.dto.request.TLogin;
 import com.restaurant.domain.dto.request.TRegisterUser;
 import com.restaurant.domain.dto.request.TResetPassword;
-import com.restaurant.domain.dto.response.VwUser;
 import com.restaurant.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +12,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.util.UUID;
 
 import static java.lang.String.format;
@@ -58,23 +55,32 @@ public class AuthApi {
                 httpServletRequest.getContextPath(),
                 "/auth/verify");
 
-        return ResponseEntity.status(HttpStatus.OK).body(userService.resendRegistrationToken(oldToken, verifyURL));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.resendToken(oldToken, verifyURL));
     }
 
 
-//    @PostMapping("/login/password/forgot")
-    public ResponseEntity<Object> forgotPassword(@RequestBody TForgotPassword tForgotPassword,
-                                                 final HttpServletRequest request) {
-
+    @PostMapping("/password/forgot")
+    public ResponseEntity<Object> forgotPassword(HttpServletRequest httpServletRequest,
+                                                 @RequestBody TForgotPassword tForgotPassword) {
         log.trace("Auth Api - forgotPassword");
-        return ResponseEntity.ok(userService.forgotPassword(tForgotPassword, request));
+
+        String resetURL = format("http://%s:%s%s%s",
+                httpServletRequest.getServerName(),
+                httpServletRequest.getServerPort(),
+                httpServletRequest.getContextPath(),
+                "/auth//password/reset");
+
+        return ResponseEntity.ok(userService.forgotPassword(tForgotPassword, resetURL));
 
     }
 
-//    @PostMapping("/login/password/reset/{thePwdResetToken}")
+    @PostMapping("/password/reset/{thePwdResetToken}")
     public ResponseEntity<Object> resetPassword(@RequestBody @Validated TResetPassword tResetPassword,
                                                 @PathVariable("thePwdResetToken") String thePwdResetToken ) {
         log.trace("Auth Api - resetPassword");
+
+
+
         return ResponseEntity.ok(userService.resetPassword(tResetPassword, thePwdResetToken));
 
     }

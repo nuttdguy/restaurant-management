@@ -4,10 +4,10 @@ import com.restaurant.domain.dto.request.TForgotPassword;
 import com.restaurant.domain.dto.request.TRegisterUser;
 import com.restaurant.domain.dto.request.TResetPassword;
 import com.restaurant.domain.dto.response.VwLink;
-import com.restaurant.domain.model.RegistrationToken;
+import com.restaurant.domain.model.TokenType;
+import com.restaurant.domain.model.UuidToken;
 import com.restaurant.domain.model.Role;
-import com.restaurant.domain.model.RoleType;
-import com.restaurant.event.RegistrationEvent;
+import com.restaurant.event.SendEmailEvent;
 import com.restaurant.exception.*;
 import com.restaurant.repository.IRoleRepo;
 import com.restaurant.repository.IUserRepo;
@@ -21,8 +21,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.security.RolesAllowed;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.ValidationException;
 
 import java.time.Instant;
@@ -40,7 +38,7 @@ import static java.lang.String.format;
 @AllArgsConstructor
 public class UserService implements UserDetailsService {
 
-//    private final JwtHelper jwtHelper;
+    private static final String FORMAT_URL = "%s/%s";
     private final TokenService tokenService;
     private final IRoleRepo roleRepo;
     private final IUserRepo userRepo;
@@ -58,25 +56,105 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UserNotFoundException(format(NOT_FOUND, id)));
     }
 
-    public VwLink registerNewUser(TRegisterUser tRegisterUser, String verifyURL) {
+    public VwLink registerNewUser(TRegisterUser tRegisterUser, String urlLink) {
         log.trace("UserService - TRegisterUser");
 
         User newUser = createNewUserOrThrow(tRegisterUser);
 
-        log.trace("Generating the register token and publishing the register email event");
-        UUID token = UUID.randomUUID();
-        RegistrationToken registrationToken = new RegistrationToken(newUser, token);
+        log.trace("Generating the registration token and publishing the email event");
+        UuidToken token = createAndSaveToken(newUser, TokenType.REGISTRATION);
 
-        log.trace("Async - publishing event");
-        publishEmailEventTo(newUser, verifyURL, token);
-        log.trace("Async - done publishing event");
+        publishEmailEventTo(newUser, urlLink, token.getToken(), token.getTokenType());
+        log.trace("Async - done publishing async event");
 
-        log.trace("Saving the user + registration token {}", registrationToken.getToken());
-        registrationToken.setUser(newUser);
+        return new VwLink(format(FORMAT_URL, urlLink, token.getToken()));
+    }
+
+    public String verifyUserRegistration(UUID theToken) {
+        log.trace("UserService - verifyRegistrationToken");
+
+        UuidToken uuidToken = tokenService.findToken(theToken)
+                .orElseThrow(() -> new NotFoundException(format(NOT_FOUND, theToken)));
+
+        log.trace("Checking if the token is expired");
+        if (uuidToken.getExpiration().compareTo(Instant.now()) < 0) {
+            throw new ExpiredException(format(EXPIRED_TOKEN, uuidToken.getToken()));
+        }
+
+        log.trace("Extracting the user owning this registration token={}", theToken);
+        User user = uuidToken.getUser();
+
+        log.trace("Enabling and updating the user {}", user);
+        user.setEnabled(true);
+        List<Role> roles = roleRepo.findAll();
+        user.getAuthorities().add(roles.get(0));
+        user.getAuthorities().add(roles.get(1));
+        userRepo.save(user);
+
+        log.trace("Deleting the registration token {}", theToken);
+        tokenService.deleteToken(uuidToken);
+        return format("Thank you for verifying %s", user.getUsername());
+    }
+
+    public VwLink resendToken(UUID oldToken, String verifyURL) {
+        log.trace("UserService - resendToken");
+
+        UuidToken uuidToken = tokenService.findToken(oldToken)
+                .orElseThrow(() -> new NotFoundException(format(NOT_FOUND, oldToken)));
+
+        UUID newToken = UUID.randomUUID();
+        log.trace("Updating the registration token {}", oldToken);
+        uuidToken.setToken(newToken);
+        uuidToken.setExpiration(Instant.now());
+        tokenService.save(uuidToken);
+
+        return new VwLink(format(FORMAT_URL, verifyURL, newToken));
+    }
+
+    public String forgotPassword(TForgotPassword tForgotPassword, String urlLink) {
+        log.trace("User Service - forgotPassword");
+
+        log.trace("Finding user by username " );
+        User user = userRepo.findByUsername(tForgotPassword.username())
+                .orElseThrow(() -> new NotFoundException(format(NOT_FOUND, tForgotPassword.username())));
+
+        log.trace("Generating the password reset token and publishing the email event");
+        UuidToken uuidToken = createAndSaveToken(user, TokenType.PASSWORD_RESET);
+
+        publishEmailEventTo(user, urlLink, uuidToken.getToken(), uuidToken.getTokenType());
+        log.trace("Async - done publishing async event");
+
+        return "Reset link sent to your email";
+    }
+
+    public Object resetPassword(TResetPassword tResetPassword, String thePwdResetToken) {
+        return null;
+    }
+
+    public String deleteUser(String username) {
+        userRepo.delete(userRepo
+                .findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(format(DELETE_FAILURE, username))));
+        return "Success";
+    }
+
+    public String deleteUser(UUID uuid) {
+        userRepo.delete(userRepo.findById(uuid)
+                .orElseThrow(() -> new UsernameNotFoundException(format(DELETE_FAILURE, uuid))));
+        return "Success";
+    }
+
+    private UuidToken createAndSaveToken(User newUser, TokenType registration) {
+        UUID uuid = UUID.randomUUID();
+        UuidToken token = new UuidToken(newUser, uuid, registration);
+
+        log.trace("Saving the user + registration token {}", token.getToken());
+        token.setUser(newUser);
         userRepo.save(newUser);
-        tokenService.save(registrationToken);
+        tokenService.save(token);
 
-        return new VwLink(format("%s/%s", verifyURL, token));
+        log.trace("Done creating and saving {} token", token.getToken());
+        return token;
     }
 
     private User createNewUserOrThrow(TRegisterUser tRegisterUser) {
@@ -100,96 +178,9 @@ public class UserService implements UserDetailsService {
         return newUser;
     }
 
-    private void publishEmailEventTo(User user, String verifyURL, UUID token) {
+    private void publishEmailEventTo(User user, String urlLink, UUID token, TokenType tokenType) {
         log.trace("UserService - publishEmailEvent");
-        applicationEventPublisher.publishEvent(new RegistrationEvent(user, verifyURL, token));
-    }
-
-    public String verifyUserRegistration(UUID theToken) {
-        log.trace("UserService - verifyRegistrationToken");
-
-        RegistrationToken registrationToken = tokenService.findRegisterToken(theToken)
-                .orElseThrow(() -> new NotFoundException(format(NOT_FOUND, theToken)));
-
-        log.trace("Checking if the token is expired");
-        if (registrationToken.getExpiration().compareTo(Instant.now()) < 0) {
-            throw new ExpiredException(format(EXPIRED_TOKEN, registrationToken.getToken()));
-        }
-
-        log.trace("Extracting the user owning this registration token={}", theToken);
-        User user = registrationToken.getUser();
-
-        log.trace("Enabling and updating the user {}", user);
-        user.setEnabled(true);
-        List<Role> roles = roleRepo.findAll();
-        user.getAuthorities().add(roles.get(0));
-        user.getAuthorities().add(roles.get(1));
-        userRepo.save(user);
-
-        log.trace("Deleting the registration token {}", theToken);
-        tokenService.deleteRegisterToken(registrationToken);
-        return format("Thank you for verifying %s", user.getUsername());
-    }
-
-    public VwLink resendRegistrationToken(UUID oldToken, String verifyURL) {
-        log.trace("UserService - resendRegistrationToken");
-
-        RegistrationToken registrationToken = tokenService.findRegisterToken(oldToken)
-                .orElseThrow(() -> new NotFoundException(format(NOT_FOUND, oldToken)));
-
-        UUID newToken = UUID.randomUUID();
-        log.trace("Updating the registration token {}", oldToken);
-        registrationToken.setToken(newToken);
-        registrationToken.setExpiration(Instant.now());
-        tokenService.save(registrationToken);
-
-        return new VwLink(format("%s/%s", verifyURL, newToken));
-    }
-
-//    public VwJwt loginUser(TLogin tLogin) throws BadCredentialsException {
-//        log.trace("UserService - loginUser");
-//
-//        User user = userRepo.findByUsername(tLogin.username())
-//                .orElseThrow(() -> new NotFoundException(format(NOT_FOUND, tLogin.username())));
-//
-//        log.trace("Validating the account is activated and has a valid password");
-//        if (!passwordEncoder.matches(tLogin.password(), user.getPassword())) {
-//            throw new BadCredentialsException(format(BAD_CREDENTIAL, "username", "password"));
-//        }
-//        if (!user.isEnabled()) {
-//            throw new NotActiveException(format(NOT_VERIFIED, tLogin.username()));
-//        }
-//
-
-//        log.trace("generated the jwt token with user details");
-//        log.trace("extract the granted authorities");
-////        List<String> roles = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-//
-////        RefreshToken refreshToken = refreshTokenService.createRefreshToken(UUID.randomUUID());
-//        String jwt = jwtUtil.generateJwtToken(user);
-//        String refreshToken1 = UUID.randomUUID().toString();
-//        return new VwJwt(format("Bearer %s", jwt), refreshToken1, user.getUsername(), user.getUuid());
-//    }
-
-    public Object forgotPassword(TForgotPassword tForgotPassword, HttpServletRequest request) {
-        return null;
-    }
-
-    public Object resetPassword(TResetPassword tResetPassword, String thePwdResetToken) {
-        return null;
-    }
-
-    public String deleteUser(String username) {
-        userRepo.delete(userRepo
-                .findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException(format(DELETE_FAILURE, username))));
-        return "Success";
-    }
-
-    public String deleteUser(UUID uuid) {
-        userRepo.delete(userRepo.findById(uuid)
-                .orElseThrow(() -> new UsernameNotFoundException(format(DELETE_FAILURE, uuid))));
-        return "Success";
+        applicationEventPublisher.publishEvent(new SendEmailEvent(user, urlLink, token, tokenType));
     }
 
 }

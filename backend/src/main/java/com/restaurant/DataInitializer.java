@@ -33,7 +33,7 @@ public class DataInitializer implements CommandLineRunner {
     final String zip = "55555";
     final String country = "USA";
     final String imageUrl = "https://picsum.photos/200/300";
-    final String phone = "000-000-00000";
+    final String phone = "000-000-000";
 
     final List<String> dishNamesDesc = List.of("Spaghetti", "Steak", "Fries", "Potatoes", "Noodles", "Cheesecake", "Pie", "Crab");
     final List<Double> dishPrices = List.of(9.99, 10.99, 2.99, 4.99, 8.00, 4.00, 2.00);
@@ -46,7 +46,7 @@ public class DataInitializer implements CommandLineRunner {
     @Autowired private IUserRepo userRepo;
     @Autowired private IRestaurantRepo restaurantRepo;
     @Autowired private IDishRepo dishRepo;
-    @Autowired private IImageRepo imageRepo;
+    @Autowired private IPhotoRepo imageRepo;
     @Autowired private PasswordEncoder passwordEncoder;
 
     @Override
@@ -95,7 +95,7 @@ public class DataInitializer implements CommandLineRunner {
             restaurant.setZip(zip);
             restaurant.setCountry(country);
             restaurant.setPhoto(imageUrl);
-            restaurant.setPhone(phone);
+            restaurant.setPhone(phone+i);
             restaurant.setHasLicense(true);
             restaurant.setActive(true);
             restaurant.setCreatedAt(LocalDateTime.now());
@@ -122,7 +122,7 @@ public class DataInitializer implements CommandLineRunner {
             restaurant.getDishes().add(dish); // associate dish to the restaurant
             dishes.add(dish); // add dish to list
 
-            dish.addImage(photo);
+            dish.addPhoto(photo);
             photo.setDish(dish);
             photos.add(photo);
 

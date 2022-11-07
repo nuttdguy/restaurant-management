@@ -18,8 +18,7 @@ import {
 
 const App = () => {
   const user = useSelector((state) => state.userAuth.currentUser);
-  // const user = true;
-  // console.log(user);
+  // todo add middleware or other alternauves for protecting routes
 
   return (
     <Router>

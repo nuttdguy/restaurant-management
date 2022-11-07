@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.security.RolesAllowed;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
@@ -37,15 +38,29 @@ public class DocumentApi {
     @PostMapping(value = "/upload/image")
     @RolesAllowed({RoleType.REGISTERED_USER, RoleType.RESTAURANT_OPERATOR})
     public ResponseEntity<Object> uploadImage(@RequestPart("image") MultipartFile imageFile,
-                                              @RequestPart("restaurantId") String restaurantId) {
+                                              @RequestPart("restaurantId") String restaurantId,
+                                              HttpServletRequest request) {
         log.trace("DocumentApi - uploadImage");
+
+
+
         try {
-            return ResponseEntity.ok(documentService.saveImage(imageFile, UUID.fromString(restaurantId)));
+            return ResponseEntity.ok(documentService.savePhoto(imageFile, UUID.fromString(restaurantId)));
         } catch (IOException ex) {
             log.trace(ex.getLocalizedMessage());
         }
         return ResponseEntity.badRequest().body("File could not be saved");
     }
+
+//    @GetMapping("/download/image/{imageId}")
+//    @RolesAllowed({RoleType.REGISTERED_USER, RoleType.RESTAURANT_OPERATOR})
+//    public ResponseEntity<Object> downloadPhoto(@PathVariable("imageId") Long imageId) {
+//        log.trace("DocumentApi - downloadPhoto");
+//
+//        Set<Photo> photos = documentService.getImageById(imageId);
+//        return ResponseEntity.ok().body(photos);
+//    }
+
 
     @GetMapping("/download/images/id/{restaurantId}")
     @RolesAllowed({RoleType.REGISTERED_USER, RoleType.RESTAURANT_OPERATOR})

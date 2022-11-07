@@ -1,5 +1,5 @@
 package com.restaurant.domain.model;
 
-public enum PhotoTag {
+public enum PhotoType {
     PROFILE, PRIMARY, DISH
 }

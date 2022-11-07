@@ -96,7 +96,7 @@ public class RestaurantApi {
     @PostMapping(value = "/dish/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @RolesAllowed({RoleType.REGISTERED_USER, RoleType.RESTAURANT_OPERATOR})
     public ResponseEntity<Object> createDish(@RequestPart("data") String dish,
-                                            @RequestPart("image") MultipartFile image) throws JsonProcessingException {
+                                            @RequestPart("image") MultipartFile image) {
 
         log.trace("RestaurantApi - createDish");
         return ResponseEntity.ok(restaurantService.createDish(dish, image));

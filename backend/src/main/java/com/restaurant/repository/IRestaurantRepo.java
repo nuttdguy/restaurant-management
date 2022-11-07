@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -16,4 +17,5 @@ public interface IRestaurantRepo extends JpaRepository<Restaurant, UUID> {
     boolean existsByName(String name);
     Set<Restaurant> findAllByName(String name);
     Set<Restaurant> findByUserUsername(String username);
+    Optional<Restaurant> findByPhone(String phone);
 }

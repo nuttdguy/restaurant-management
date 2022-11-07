@@ -35,18 +35,44 @@ const FlexGroup = styled.div`
   justify-content: space-between;
 `;
 
+const FlexImageGroup = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+`;
+
+const FlexItemGroup = styled.div`
+  flex: 50%;
+  margin: 12px 0;
+`;
+
 const FlexItem = styled.div`
   flex: 50%;
   margin: 6px 0;
+`;
+
+const Image = styled.img`
+  min-height: 200px;
+  /* aspect-ratio: calc(16 / 9); */
+  min-width: 80%;
+  padding: 10px 10px;
+  margin: 10px 0 24px;
+  min-width: 200;
+  min-height: 200;
+  border: 3px solid black;
+  background-color: white;
 `;
 
 const Label = styled.label`
   display: block;
   color: #2f2f2f;
   font-size: 0.9em;
+
   text-transform: capitalize;
   font-weight: 500;
-  margin-bottom: 6px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
 `;
 
 const Input = styled.input`
@@ -57,7 +83,7 @@ const Input = styled.input`
   border-bottom: 1px solid black;
   background-color: transparent;
   padding: 3px 10px 3px 0px;
-  margin: 0 10px 10px 0;
+  margin: 0 10px 20px 0;
   outline: 0;
   &::placeholder {
     color: gray;
@@ -71,6 +97,8 @@ const Input = styled.input`
 const Select = styled.select`
   height: 40px;
   border-radius: 5px;
+  margin-bottom: 18px;
+  padding: 12px 0;
 `;
 
 const SelectOption = styled.option`
@@ -95,6 +123,9 @@ export {
   Form,
   FlexGroup,
   FlexItem,
+  FlexImageGroup,
+  FlexItemGroup,
+  Image,
   Label,
   Input,
   Select,

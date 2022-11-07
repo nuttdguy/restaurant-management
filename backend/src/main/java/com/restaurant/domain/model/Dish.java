@@ -17,6 +17,7 @@ import java.util.*;
 @NoArgsConstructor
 @Getter @Setter
 @ToString
+@Builder
 public class Dish {
 
     @Id
@@ -25,9 +26,11 @@ public class Dish {
     private Long id;
 
     private String name;
+    private String category;
+    private String tags;
     private String description;
-    private BigDecimal price;
     private String ingredients;
+    private BigDecimal price;
 
 
     @ManyToOne
@@ -41,11 +44,11 @@ public class Dish {
     @ToString.Exclude
     private Set<Photo> photos = new HashSet<>();
 
-    public void addImage(Photo photo) {
+    public void addPhoto(Photo photo) {
         this.photos.add(photo);
     }
 
-    public void removeImage(Photo photo) {
+    public void removePhoto(Photo photo) {
         this.photos.remove(photo);
     }
 

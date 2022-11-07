@@ -7,7 +7,7 @@ import {
   Container,
   Wrapper,
   Title,
-  FlexWrap,
+  FlexTitleGroup,
   Form,
   Input,
   Label,
@@ -74,78 +74,76 @@ export const Register = () => {
   return (
     <Container>
       <Wrapper>
-        <FlexWrap>
+        <FlexTitleGroup>
           <Title>create account</Title>
-          <Form onSubmit={handleSubmit}>
-            <Label>email: </Label>
-            <Input
+        </FlexTitleGroup>
+        <Form onSubmit={handleSubmit}>
+          <Label>email: </Label>
+          <Input
+            required
+            minLength={4}
+            maxLength={60}
+            name={"username"}
+            type={"email"}
+            onChange={handleChange}
+            placeholder="alice@restaurant.iox "
+          />
+          <Label>first name: </Label>
+          <Input
+            minLength={2}
+            maxLength={20}
+            name={"firstName"}
+            type={"text"}
+            onChange={handleChange}
+            placeholder="alice"
+          />
+          <Label>last name: </Label>
+          <Input
+            minLength={2}
+            maxLength={20}
+            name={"lastName"}
+            type={"text"}
+            onChange={handleChange}
+            placeholder="jones"
+          />
+          <Label>password: </Label>
+          <Input
+            required
+            minLength={4}
+            maxLength={32}
+            name={"password"}
+            onChange={handleChange}
+            placeholder="password"
+          />
+          <Label>confirm password: </Label>
+          <Input
+            required
+            minLength={4}
+            maxLength={32}
+            name={"confirmPassword"}
+            onChange={handleChange}
+            placeholder="confirm password"
+          />
+          {error && <Error>{errorMessage}</Error>}
+          <Agreement>
+            <input
+              style={{ padding: "12px", marginRight: "12px" }}
               required
-              minLength={4}
-              maxLength={60}
-              name={"username"}
-              type={"email"}
-              onChange={handleChange}
-              placeholder="alice@restaurant.iox "
+              onClick={handleChange}
+              name={"terms"}
+              type={"checkbox"}
             />
-            <Label>first name: </Label>
-            <Input
-              minLength={2}
-              maxLength={20}
-              name={"firstName"}
-              type={"text"}
-              onChange={handleChange}
-              placeholder="alice"
-            />
-            <Label>last name: </Label>
-            <Input
-              minLength={2}
-              maxLength={20}
-              name={"lastName"}
-              type={"text"}
-              onChange={handleChange}
-              placeholder="jones"
-            />
-            <Label>password: </Label>
-            <Input
-              required
-              minLength={4}
-              maxLength={32}
-              name={"password"}
-              onChange={handleChange}
-              placeholder="password"
-            />
-            <Label>confirm password: </Label>
-            <Input
-              required
-              minLength={4}
-              maxLength={32}
-              name={"confirmPassword"}
-              onChange={handleChange}
-              placeholder="confirm password"
-            />
-            {error && <Error>{errorMessage}</Error>}
-            <Agreement>
-              <input
-                style={{ padding: "12px", marginRight: "12px" }}
-                required
-                onClick={handleChange}
-                name={"terms"}
-                type={"checkbox"}
-              />
-              By creating an account, I consent to the processing of my personal
-              data in accordance with the <b>PRIVACY POLICY</b>
-              <Link to="/agreement" style={{ paddingLeft: "6px" }}>
-                VIEW AGREEMENT
-              </Link>
-            </Agreement>
-            <FlexWrap>
-              <LinkTo>
-                <Link to="/login"> HAVE AN ACCOUNT? LOGIN </Link>
-              </LinkTo>
-              <Button>CREATE</Button>
-            </FlexWrap>
-          </Form>
-        </FlexWrap>
+            By creating an account, I consent to the processing of my personal
+            data in accordance with the
+            <Link to="/agreement" style={{ padding: "6px 6px 0px 6px" }}>
+              <b>PRIVACY POLICY</b>
+            </Link>
+          </Agreement>
+          <Button>CREATE</Button>
+          <LinkTo>
+            <Link to="/login"> HAVE AN ACCOUNT? LOGIN </Link>
+          </LinkTo>
+        </Form>
       </Wrapper>
     </Container>
   );

@@ -6,7 +6,7 @@ import { login, clearApiError } from "../../api/authResource";
 import {
   Container,
   Wrapper,
-  FlexWrap,
+  FlexTitleGroup,
   Title,
   Form,
   Label,
@@ -57,35 +57,34 @@ export const Login = () => {
   return (
     <Container>
       <Wrapper>
-        <FlexWrap>
+        <FlexTitleGroup>
           <Title>LOGIN</Title>
-          <Form onSubmit={handleSubmit}>
-            <Label>email / username: </Label>
-            <Input
-              required
-              type="text"
-              minLength="1"
-              placeholder="username"
-              name="username"
-            />
-            <Label>password: </Label>
-            <Input
-              required
-              type="password"
-              minLength="4"
-              maxLength="20"
-              placeholder="password"
-              name="password"
-            />
-            {error && <Error>{errorMessage}</Error>}
-            <FlexWrap>
-              <LinkTo>
-                <Link to="/register">DON'T HAVE AN ACCOUNT? REGISTER </Link>
-              </LinkTo>
-              <Button type="submit">LOGIN </Button>
-            </FlexWrap>
-          </Form>
-        </FlexWrap>
+        </FlexTitleGroup>
+        <Form onSubmit={handleSubmit}>
+          <Label>email / username: </Label>
+          <Input
+            required
+            type="text"
+            minLength="1"
+            placeholder="username"
+            name="username"
+          />
+          <Label>password: </Label>
+          <Input
+            required
+            type="password"
+            minLength="4"
+            maxLength="20"
+            placeholder="password"
+            name="password"
+          />
+          {error && <Error>{errorMessage}</Error>}
+
+          <Button type="submit">LOGIN </Button>
+          <LinkTo>
+            <Link to="/register">DON'T HAVE AN ACCOUNT? REGISTER </Link>
+          </LinkTo>
+        </Form>
       </Wrapper>
     </Container>
   );

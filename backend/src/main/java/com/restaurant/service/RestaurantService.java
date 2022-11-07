@@ -12,10 +12,7 @@ import com.restaurant.domain.dto.response.VwRestaurant;
 import com.restaurant.domain.mapper.RestaurantMapper;
 import com.restaurant.domain.model.*;
 import com.restaurant.exception.UserNotFoundException;
-import com.restaurant.repository.IDishRepo;
-import com.restaurant.repository.IRestaurantRepo;
-import com.restaurant.repository.ISafetyLicenseRepo;
-import com.restaurant.repository.IUserRepo;
+import com.restaurant.repository.*;
 import com.restaurant.util.FileUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityNotFoundException;
+import javax.validation.ValidationException;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -40,6 +38,9 @@ import static java.lang.String.format;
 @AllArgsConstructor
 public class RestaurantService {
 
+    private final DocumentService documentService;
+
+    private final IPhotoRepo photoRepo;
     private final ISafetyLicenseRepo safetyLicenseRepo;
     private final IRestaurantRepo restaurantRepo;
     private final IDishRepo dishRepo;
@@ -133,24 +134,51 @@ public class RestaurantService {
         return toRestaurantViewFrom(restaurant);
     }
 
-    public VwDish createDish(String dishJson, MultipartFile image) throws JsonProcessingException {
+    public VwDish createDish(String dishJson, MultipartFile photoFile) {
         log.trace("RestaurantService - createDish");
 
         ObjectMapper objectMapper = new ObjectMapper();
-        TCreateDish dto = objectMapper.readValue(dishJson, TCreateDish.class);
+        TCreateDish dto = null;
+        try {
+            dto = objectMapper.readValue(dishJson, TCreateDish.class);
+            log.trace("dto {}", dto);
+        } catch (JsonProcessingException ex) {
+            log.trace(ex.getLocalizedMessage());
+            throw new ValidationException("Invalid format " + ex.getLocalizedMessage());
+        }
 
-        log.trace("Finding the restaurant by ist id {}", dto.restaurantId());
-        UUID id = dto.restaurantId();
-        Restaurant restaurant = restaurantRepo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        format("Restaurant not found for id %s", dto.restaurantId())));
+        log.trace("Finding the restaurant by phone {}", dto.phone());
+        Restaurant restaurant = restaurantRepo.findByPhone(dto.phone())
+                .orElseThrow(() -> new EntityNotFoundException("Restaurant not found for phone"));
 
         log.trace("Creating dish item {}", dto);
         Dish dish = toDishFrom(dto);
         dish.setRestaurant(restaurant);
 
+        // process photo
+        Photo photo = null;
+        try {
+            photo = documentService.processPhoto(photoFile);
+            log.trace("Adding photo {} ", dish);
+//            dish.addPhoto(photo);
+            log.trace("Done saving dish");
+            photo.setDish(dish);
+
+            log.trace("start saving photo");
+            photoRepo.save(photo);
+            dish = dishRepo.save(dish);
+        } catch(IOException ex) {
+            log.error(format("Unable to process %s", photoFile.getName()));
+        }
+
+//        if (photo != null) {
+//            photo.setDish(dish);
+//            photoRepo.save(photo);
+//        }
+
         log.trace("Saving dish item");
-        return toCreateDishFrom(dishRepo.save(dish));
+//        return "Dished saved";
+        return toCreateDishFrom(dish);
     }
 
     public Object editDish(UUID restaurantId, TEditDish tEditDish) {

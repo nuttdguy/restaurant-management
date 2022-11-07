@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { newDish } from "../../../../redux/resources/dishResource";
 import { getRestaurants } from "../../../../redux/resources/restaurantResource";
@@ -8,6 +8,8 @@ import {
   Form,
   FlexGroup,
   FlexItem,
+  FlexItemGroup,
+  Image,
   Label,
   Input,
   Select,
@@ -16,6 +18,12 @@ import {
 } from "../styles/DishStyle";
 
 export const NewDish = () => {
+  const [image, setValues] = useState({
+    imagePreviewUrl: "",
+    imageFile: null,
+  });
+  // const fileInput = useRef();
+
   const dispatch = useDispatch();
   const restaurants = useSelector((state) => state.restaurant?.restaurants);
   const user = useSelector((state) => state.userAuth.currentUser);
@@ -23,6 +31,19 @@ export const NewDish = () => {
   useEffect(() => {
     getRestaurants(dispatch, user?.username);
   }, [dispatch, user?.username]);
+
+  const handleImageChange = (e) => {
+    const reader = new FileReader();
+    const file = e.target.files[0];
+
+    console.log("reader ", reader);
+    console.log("file ", file);
+    reader.onloadend = () => {
+      setValues({ ...image, imageFile: file, imagePreviewUrl: reader.result });
+    };
+
+    reader.readAsDataURL(file);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -35,24 +56,47 @@ export const NewDish = () => {
     // console.log(user);
     newDish(dispatch, {
       data: JSON.stringify(dataValues),
-      image: document.querySelector("#image").files[0],
+      // image: document.querySelector("#image").files[0],
+      image: image.imageFile,
     });
 
-    e.target.reset();
+    // e.target.reset();s
   };
 
   return (
     <>
       <DBSectionHeader>
         <h3>New Dish</h3>
+        {/* {JSON.stringify(restaurants)} */}
       </DBSectionHeader>
+
       <Form
         onSubmit={handleSubmit}
         id="newDishForm"
         encType="multipart/form-data"
       >
         <FlexGroup>
-          <FlexItem>
+          <FlexItemGroup>
+            <Label>image:</Label>
+
+            {image.imageFile === null ? (
+              <Image />
+            ) : (
+              <Image
+                style={{ width: 200, height: 200, border: "3px solid black" }}
+                src={image.imagePreviewUrl}
+                alt="..."
+              />
+            )}
+            <Input
+              id="image"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              // ref={fileInput}
+            />
+          </FlexItemGroup>
+          <FlexItemGroup>
             <Label>dish name</Label>
             <Input
               required
@@ -62,23 +106,16 @@ export const NewDish = () => {
               type="text"
               placeholder="Fire Beans"
             />
-          </FlexItem>
-          {/* {JSON.stringify(restaurants)} */}
-          <FlexItem>
             <Label>select restaurant:</Label>
-            <Select id="restaurantId" name={"restaurantId"}>
+            <Select id="phone" name={"phone"}>
               {restaurants?.map((restaurant) => {
                 return (
-                  <SelectOption name={"restaurantId"} key={restaurant.id}>
+                  <SelectOption name={"phone"} key={restaurant.id}>
                     {restaurant.phone}{" "}
                   </SelectOption>
                 );
               })}
             </Select>
-          </FlexItem>
-        </FlexGroup>
-        <FlexGroup>
-          <FlexItem>
             <Label>price </Label>
             <Input
               required
@@ -87,8 +124,6 @@ export const NewDish = () => {
               type="text"
               placeholder="2.99"
             />
-          </FlexItem>
-          <FlexItem>
             <Label>category: </Label>
             <Input
               required
@@ -98,10 +133,10 @@ export const NewDish = () => {
               type="text"
               placeholder="Beans"
             />
-          </FlexItem>
+          </FlexItemGroup>
         </FlexGroup>
         <FlexGroup>
-          <FlexItem>
+          <FlexItemGroup>
             <Label>description:</Label>
             <Input
               minLength={4}
@@ -110,10 +145,10 @@ export const NewDish = () => {
               type="text"
               placeholder="Roasted beans in a fire sauce"
             />
-          </FlexItem>
+          </FlexItemGroup>
         </FlexGroup>
         <FlexGroup>
-          <FlexItem>
+          <FlexItemGroup>
             <Label>ingredients:</Label>
             <Input
               minLength={4}
@@ -122,19 +157,9 @@ export const NewDish = () => {
               type="text"
               placeholder="Beans, red pepper, salt, water, chili powder"
             />
-          </FlexItem>
+          </FlexItemGroup>
         </FlexGroup>
-        <FlexGroup>
-          <FlexItem>
-            <Label>image:</Label>
-            <Input
-              id="image"
-              name={"image"}
-              type="file"
-              placeholder="accepts .png, .jpeg, .svg"
-            />
-          </FlexItem>
-        </FlexGroup>
+
         <FlexGroup>
           <FlexItem>
             <SubmitButton type="submit">create </SubmitButton>

@@ -9,52 +9,63 @@ const Container = styled.div`
     ),
     url("https://images.unsplash.com/photo-1592861956120-e524fc739696?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80")
       center;
+
   background-size: cover;
   display: flex;
   align-items: center;
   justify-content: center;
 `;
 
-const Wrapper = styled.div`
-  width: 60%; // width will be 60% of parent
-  padding: 30px 20px 20px 20px;
+// center the wrap within the parent
+const Wrapper = styled.section`
+  display: inline-flex; // display item content inline
+  flex-wrap: wrap; // wrap items of content
+
+  padding: 24px 12px;
+  width: 60%;
+  max-width: 60%; // width will be 60% of parent
   background-color: white;
+  -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+  box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
 `;
 
-const FlexWrap = styled.div`
-  gap: 10px;
-  width: 100%;
+// set flex to align content center left
+const FlexTitleGroup = styled.article`
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  display: inline-flex; // establish items within this wrap to align in row
-`;
-
-const Title = styled.h1`
-  flex-basis: 35%; // establish the base size
-  flex: 1;
-  font-size: 36px;
-  font-weight: 300;
-  padding: 0px 12px;
-  margin-right: 18px;
+  justify-content: center;
+  padding: 12px 12px;
+  flex: 1; // set size ratio 1:1
 `;
 
 const Form = styled.form`
-  flex: 3; // container size relative to parent
-
   display: flex; // establish this form as its own flex container
-  flex-direction: column;
+  flex-direction: column; // set content flow to column
+  max-width: 90%; // width will be 90% of parent
+  flex: 3; // size of 3:11
+
   padding: 12px 27px;
   border-left: 1px solid gray;
 `;
 
-const Label = styled.label`
-  font-size: smaller;
-  font-weight: bold;
+const Title = styled.h1`
+  font-size: 2.2rem;
+  font-weight: 300;
   text-transform: uppercase;
+  padding: 0px 12px;
+`;
+
+const Label = styled.label`
+  font-size: 0.9rem;
+  font-weight: bold;
   opacity: 0.5;
+  text-transform: uppercase;
+  padding: 6px 0;
 `;
 
 const Input = styled.input`
-  font-size: larger;
+  font-size: 1.2rem;
   margin: 0px 20px 10px 0px;
   padding: 12px;
   &::placeholder {
@@ -63,20 +74,19 @@ const Input = styled.input`
 `;
 
 const Button = styled.button`
-  flex-basis: 50%;
-  border: none;
-  padding: 15px 18px;
-  margin-right: 20px;
+  font-size: 1.2rem;
   background-color: darkblue;
+  border: none;
   color: white;
+  margin: 12px 12px 12px 0;
+  padding: 18px 18px 18px 0;
   cursor: pointer;
 `;
 
-const LinkTo = styled.p`
-  width: 100%;
-  margin: 12px 0px;
+const LinkTo = styled.span`
   margin-left: auto;
-  font-size: 12px;
+  padding: 12px 12px 12px 0;
+  font-size: 0.8rem;
   text-decoration: underline;
   cursor: pointer;
 `;
@@ -89,7 +99,7 @@ const Error = styled.span`
 export {
   Container,
   Wrapper,
-  FlexWrap,
+  FlexTitleGroup,
   Title,
   Form,
   Label,

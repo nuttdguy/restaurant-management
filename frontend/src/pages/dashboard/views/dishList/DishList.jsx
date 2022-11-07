@@ -30,6 +30,7 @@ export function DishList() {
 
   const columns = [
     { field: "id", headerName: "ID", align: "left", flex: 1 },
+    { field: "photo", headerName: "Photo", align: "left", flex: 1 },
     {
       field: "name",
       headerName: "Dish name",

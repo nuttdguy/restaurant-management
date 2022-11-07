@@ -37,15 +37,14 @@ const login = async (dispatch, user) => {
         password: user.password,
       },
     });
-    console.log("Header data: ", res.headers);
-    const headerData = {
+    const authData = {
       accessToken: res.headers.authorization,
       username: res.headers.username,
     };
 
     // temp solution - set user to local storage until redux persist
-    localStorage.setItem("user", JSON.stringify(headerData));
-    dispatch(loginSuccess(headerData));
+    localStorage.setItem("user", JSON.stringify(authData));
+    dispatch(loginSuccess(authData));
   } catch (err) {
     console.log(err.response.data?.message);
     dispatch(loginFailure(err.response.data?.message));

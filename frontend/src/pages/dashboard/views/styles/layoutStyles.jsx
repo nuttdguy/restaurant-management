@@ -4,6 +4,7 @@ import styled from "styled-components";
 // wrap the entire dashboard as a flex container
 const DBMainSectionWrap = styled.section`
   display: flex;
+  flex: 100vw;
   flex-direction: column;
   gap: 10px;
 `;
@@ -15,6 +16,7 @@ const DBNavWrap = styled.nav`
   position: sticky;
   top: 0;
   z-index: 999;
+  flex: 5;
 
   padding: 0 12px 0 20px;
   background-color: white;

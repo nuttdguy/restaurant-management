@@ -1,11 +1,11 @@
 package com.restaurant.service;
 
 import com.restaurant.domain.model.Photo;
-import com.restaurant.domain.model.PhotoTag;
+import com.restaurant.domain.model.PhotoType;
 import com.restaurant.domain.model.Restaurant;
 import com.restaurant.domain.model.License;
 import com.restaurant.exception.FileFormatException;
-import com.restaurant.repository.IImageRepo;
+import com.restaurant.repository.IPhotoRepo;
 import com.restaurant.repository.IRestaurantRepo;
 import com.restaurant.repository.ISafetyLicenseRepo;
 import com.restaurant.util.FileUtil;
@@ -29,7 +29,7 @@ import static java.lang.String.format;
 @AllArgsConstructor
 public class DocumentService {
 
-    private final IImageRepo imageRepo;
+    private final IPhotoRepo photoRepo;
     private final ISafetyLicenseRepo safetyLicense;
     private final IRestaurantRepo restaurantRepo;
 
@@ -70,26 +70,33 @@ public class DocumentService {
     }
 
 
-    public String saveImage(MultipartFile imageFile, UUID restaurantId) throws IOException {
+    public String savePhoto(MultipartFile photoFile, UUID restaurantId) throws IOException {
 
         log.trace("Document Service - saveImage");
         Restaurant restaurant = restaurantRepo.findById(restaurantId)
                 .orElseThrow(() -> new EntityNotFoundException("Restaurant not found - cannot save image"));
 
-        imageRepo.save(Photo.builder()
-                .name(imageFile.getOriginalFilename())
-                .type(imageFile.getContentType())
-                .photoTag(PhotoTag.DISH)
-                .restaurant(restaurant)
-                .file(FileUtil.compressData(imageFile.getBytes())).build());
+        Photo photo = processPhoto(photoFile);
+        photo.setRestaurant(restaurant);
 
-       log.trace("File was saved successfully");
-       return "File was successfully saved";
+        photoRepo.save(photo);
+        log.trace("File was saved successfully");
+        return "File was successfully saved";
+    }
+
+    public Photo processPhoto(MultipartFile photoFile) throws IOException {
+        return Photo.builder()
+                .name(photoFile.getOriginalFilename())
+                .type(photoFile.getContentType())
+                .photoType(PhotoType.DISH)
+                .photoUrl(format("/%s", photoFile.getName()))
+                .file(FileUtil.compressData(photoFile.getBytes()))
+                .build();
     }
 
     public Set<Photo> getImageByRestaurantId(UUID restaurantId) {
         log.trace("Document Service - getImageByRestaurantId {}", restaurantId);
-        Set<Photo> photos = imageRepo.findByRestaurantUuid(restaurantId)
+        Set<Photo> photos = photoRepo.findByRestaurantUuid(restaurantId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         format("Did not find any photos for restaurant id %s", restaurantId)));
 
@@ -98,7 +105,7 @@ public class DocumentService {
                 .id(photo.getId())
                 .name(photo.getName())
                 .type(photo.getType())
-                .photoTag(photo.getPhotoTag())
+                .photoType(photo.getPhotoType())
                 .restaurant(photo.getRestaurant())
                 .file(FileUtil.decompressData(photo.getFile()))
                 .build()).collect(Collectors.toSet());
@@ -106,9 +113,12 @@ public class DocumentService {
 
 
     public Photo getByPhotoName(String imageName) {
-        return imageRepo.findByName(imageName)
+        return photoRepo.findByName(imageName)
                 .orElseThrow(() -> new EntityNotFoundException(format("%s not found", imageName)));
     }
 
 
+//    public Set<Photo> getImageById(Long imageId) {
+//        return null;
+//    }
 }

@@ -1,11 +1,12 @@
 import axios from "axios";
 
-const user = JSON.parse(localStorage.getItem("user"));
+let user = JSON.parse(localStorage.getItem("user"));
 // const user = useSelector((state) => state.userAuth.currentUser);
 
-const CURRENT_USER = user?.username;
-const TOKEN = user?.accessToken;
+let CURRENT_USER = user?.username;
+let TOKEN = user?.accessToken;
 // const REFRESH_TOKEN = user?.refreshToken;
+console.log("apiResource - ", user);
 
 export const publicRequest = axios.create();
 

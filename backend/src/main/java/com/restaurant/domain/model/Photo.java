@@ -33,7 +33,10 @@ public class Photo {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tag")
-    private PhotoTag photoTag;
+    private PhotoType photoType;
+
+    @Column(name = "photo_url")
+    private String photoUrl;
 
     @ManyToOne
     @JoinColumn(name = "restaurant_uuid")

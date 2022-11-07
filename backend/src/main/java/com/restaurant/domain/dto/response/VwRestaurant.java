@@ -1,32 +1,23 @@
 package com.restaurant.domain.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.restaurant.domain.model.Photo;
 import lombok.Builder;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record VwRestaurant(
         UUID id,
-        String restaurantName,
+        String name,
+        String url,
         String phone,
         VwAddress address,
+        Set<Photo> photos,
+        Photo photo,
         VwUser user
 ) {
-
-    public VwRestaurant() {
-        this(null, null, null, null, null);
-    }
-
-    public VwRestaurant(UUID id) {
-        this(id, null, null, null, null);
-    }
-
-    public VwRestaurant(UUID id, String restaurantName, String phone) {
-        this(id, restaurantName, phone, null, null);
-    }
-
-    public VwRestaurant(UUID id, String restaurantName, String phone, VwAddress address) {
-        this(id, restaurantName, phone, address, null);
-    }
 
 }

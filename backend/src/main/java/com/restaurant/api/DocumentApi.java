@@ -42,8 +42,6 @@ public class DocumentApi {
                                               HttpServletRequest request) {
         log.trace("DocumentApi - uploadImage");
 
-
-
         try {
             return ResponseEntity.ok(documentService.savePhoto(imageFile, UUID.fromString(restaurantId)));
         } catch (IOException ex) {

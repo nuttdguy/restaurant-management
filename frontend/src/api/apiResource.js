@@ -6,7 +6,7 @@ let user = JSON.parse(localStorage.getItem("user"));
 let CURRENT_USER = user?.username;
 let TOKEN = user?.accessToken;
 // const REFRESH_TOKEN = user?.refreshToken;
-console.log("apiResource - ", user);
+// console.log("apiResource - ", user);
 
 export const publicRequest = axios.create();
 

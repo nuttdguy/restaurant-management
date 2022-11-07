@@ -25,18 +25,18 @@ const registerRestaurant = async (dispatch, restaurant) => {
     );
     dispatch(registerSuccess(res.data));
   } catch (err) {
-    dispatch(registerFailure(err.response.data?.message));
+    dispatch(registerFailure(err.response?.data?.message));
   }
 };
 
-const getRestaurants = async (dispatch, username) => {
+const getRestaurants = async (dispatch) => {
   dispatch(getRestaurantStart());
   try {
-    const res = await authorizedRequest.get(`/restaurant/owner/${username}`);
+    const res = await authorizedRequest.get(`/restaurant`);
     // console.log("Done fetching list of restaurants ", res.data);
     dispatch(getRestaurantSuccess(res.data));
   } catch (err) {
-    dispatch(getRestaurantFailure(err.response.data?.message));
+    dispatch(getRestaurantFailure(err.response?.data?.message));
   }
 };
 

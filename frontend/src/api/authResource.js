@@ -44,7 +44,7 @@ const login = async (dispatch, user) => {
 
     // temp solution - set user to local storage until redux persist
     localStorage.setItem("user", JSON.stringify(authData));
-    dispatch(loginSuccess(authData));
+    await dispatch(loginSuccess(authData));
   } catch (err) {
     console.log(err.response.data?.message);
     dispatch(loginFailure(err.response.data?.message));

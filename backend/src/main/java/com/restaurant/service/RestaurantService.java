@@ -27,8 +27,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.restaurant.domain.mapper.DishMapper.toCreateDishFrom;
-import static com.restaurant.domain.mapper.DishMapper.toDishFrom;
+import static com.restaurant.domain.mapper.DishMapper.*;
 import static com.restaurant.domain.mapper.RestaurantMapper.*;
 import static java.lang.String.format;
 
@@ -46,7 +45,7 @@ public class RestaurantService {
     private final IDishRepo dishRepo;
     private final IUserRepo userRepo;
 
-    public Set<RestaurantResponse> getRestaurantsByOwnerName(String username) {
+    public Set<VwRestaurant> getRestaurantsByOwnerName(String username) {
         log.trace("RestaurantService - getRestaurantsByOwnerName");
         Set<Restaurant> restaurants = restaurantRepo.findByUserUsername(username);
         log.trace("Found restaurants {}", restaurants);
@@ -58,7 +57,7 @@ public class RestaurantService {
         return toGetRestaurantByNameFrom(restaurantRepo.findAllByName(restaurantName));
     }
 
-    public Set<Dish> getAllDishesByOwnerName(String username) {
+    public Set<VwDish> getAllDishesByOwnerName(String username) {
         log.trace("RestaurantService - getAllDishesByOwnerName");
 
         log.trace("Finding all restaurants owned by {}", username);
@@ -68,7 +67,7 @@ public class RestaurantService {
         restaurants.forEach(rest -> dishes.addAll(rest.getDishes()));
         log.trace("Restaurants found {}", restaurants);
         log.trace("Dishes found {}", dishes);
-        return dishes;
+        return toCreateDishSetFrom(dishes);
     }
 
     public Restaurant getRestaurantById(UUID uuid) {
@@ -76,7 +75,7 @@ public class RestaurantService {
                 .orElseThrow(() -> new EntityNotFoundException(format("Restaurant not found for id %s", uuid)));
     }
 
-    public Object registerRestaurant(TCreateRestaurant tCreateRestaurant, MultipartFile license) throws IOException {
+    public VwRestaurant registerRestaurant(TCreateRestaurant tCreateRestaurant, MultipartFile license) throws IOException {
         log.trace("Restaurant Service - registerRestaurant");
 
         log.trace("Fetching {}", tCreateRestaurant.user().username());
@@ -101,7 +100,7 @@ public class RestaurantService {
         return toRestaurantViewFrom(restaurant);
     }
 
-    public RestaurantResponse createRestaurant(TCreateRestaurant tCreateRestaurant) {
+    public VwRestaurant createRestaurant(TCreateRestaurant tCreateRestaurant) {
         log.trace("Restaurant Service - TCreateRestaurant {}", tCreateRestaurant);
 
         log.trace("Fetching {}", tCreateRestaurant.user().username());
@@ -116,7 +115,7 @@ public class RestaurantService {
         throw new UserNotFoundException(format("Failed to create Restaurant. %s is not valid user", tCreateRestaurant.user().username()));
     }
 
-    public RestaurantResponse editRestaurant(String restaurantJson, MultipartFile restaurantPhoto) throws JsonProcessingException {
+    public VwRestaurant editRestaurant(String restaurantJson, MultipartFile restaurantPhoto) throws JsonProcessingException {
         log.trace("Restaurant Service - TEditRestaurant");
 
         ObjectMapper objMapper = new ObjectMapper();
@@ -151,33 +150,34 @@ public class RestaurantService {
         Restaurant restaurant = restaurantRepo.findByPhone(dto.phone())
                 .orElseThrow(() -> new EntityNotFoundException("Restaurant not found for phone"));
 
-        log.trace("Creating dish item {}", dto);
+//        Photo photo = null;
         Dish dish = toDishFrom(dto);
         dish.setRestaurant(restaurant);
+//        restaurant.addDish(dish); // associate and add the dish to the restaurant
+        log.trace("done converting dto to dish item {}", dish);
 
-        // process photo
-        Photo photo = null;
         try {
-            photo = documentService.processPhoto(photoFile);
-            log.trace("Adding photo {} ", dish);
-//            dish.addPhoto(photo);
-            log.trace("Done saving dish");
+            // process the image
+            log.trace("start processing photo");
+            Photo photo = documentService.processPhoto(photoFile, PhotoType.DISH);
             photo.setDish(dish);
+            photo = photoRepo.save(photo);  // save the photo
+            log.trace("done processing photo");
 
-            log.trace("start saving photo");
-            photoRepo.save(photo);
-            dish = dishRepo.save(dish);
+            log.trace("start saving dish");
+//            dish.addPhoto(photo); // associate and add photo to the dish
+            dish = dishRepo.save(dish);  // save the dish
+
+
+            log.trace("start saving dish");
+            // todo figure out why this is not throwing an error, but failing when adding a photo
+//            dish.addPhoto(photo);
+
         } catch(IOException ex) {
             log.error(format("Unable to process %s", photoFile.getName()));
         }
 
-//        if (photo != null) {
-//            photo.setDish(dish);
-//            photoRepo.save(photo);
-//        }
-
         log.trace("Saving dish item");
-//        return "Dished saved";
         return toCreateDishFrom(dish);
     }
 

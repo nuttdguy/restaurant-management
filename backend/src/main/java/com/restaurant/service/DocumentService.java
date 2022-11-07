@@ -76,7 +76,7 @@ public class DocumentService {
         Restaurant restaurant = restaurantRepo.findById(restaurantId)
                 .orElseThrow(() -> new EntityNotFoundException("Restaurant not found - cannot save image"));
 
-        Photo photo = processPhoto(photoFile);
+        Photo photo = processPhoto(photoFile, PhotoType.PRIMARY);
         photo.setRestaurant(restaurant);
 
         photoRepo.save(photo);
@@ -84,11 +84,12 @@ public class DocumentService {
         return "File was successfully saved";
     }
 
-    public Photo processPhoto(MultipartFile photoFile) throws IOException {
+    public Photo processPhoto(MultipartFile photoFile, PhotoType photoType) throws IOException {
+        log.trace("DocumentService - processPhoto {}", photoFile);
         return Photo.builder()
                 .name(photoFile.getOriginalFilename())
                 .type(photoFile.getContentType())
-                .photoType(PhotoType.DISH)
+                .photoType(photoType)
                 .photoUrl(format("/%s", photoFile.getName()))
                 .file(FileUtil.compressData(photoFile.getBytes()))
                 .build();

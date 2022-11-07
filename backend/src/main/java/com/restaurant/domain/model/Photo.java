@@ -8,7 +8,7 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "images")
+@Table(name = "photos")
 @Getter @Setter
 @ToString
 @Builder
@@ -16,9 +16,18 @@ import java.util.Objects;
 @NoArgsConstructor
 public class Photo {
 
+//    public Photo(Photo photo) {
+//        this(photo.getId(),
+//                photo.name,
+//                photo.type,
+//                photo.file,
+//                photo.photoType,
+//                photo.photoUrl, null, null);
+//    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "image_id", nullable = false, updatable = false)
+    @Column(name = "photo_id", nullable = false, updatable = false)
     private Long id;
 
     @Column(name = "name")
@@ -28,11 +37,11 @@ public class Photo {
     private String type;
 
 //    @Column(name ="image_bytes", nullable = false, length = 100000)
-    @Column(name ="image_bytes", length = 100000)
+    @Column(name ="image_bytes", columnDefinition="BLOB", length = 100000)
     private byte[] file;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "tag")
+    @Column(name = "photo_type")
     private PhotoType photoType;
 
     @Column(name = "photo_url")

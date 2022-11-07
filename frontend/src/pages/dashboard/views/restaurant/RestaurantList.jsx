@@ -10,6 +10,7 @@ import {
 import { AddBoxOutlined, DeleteOutline, Edit } from "@mui/icons-material";
 import { DBSectionHeader, DBContentInfoWrap } from "../styles/layoutStyles";
 import { DataTable, ActionCell, DeleteButton } from "../styles/RestaurantStyle";
+import { Avatar } from "@mui/material";
 
 export function RestaurantList() {
   const dispatch = useDispatch();
@@ -26,7 +27,7 @@ export function RestaurantList() {
     city: false,
     state: false,
     zip: false,
-    photo: false,
+    photo: true,
   });
 
   const handleDelete = (restaurantId) => {
@@ -36,40 +37,43 @@ export function RestaurantList() {
   const locationPath = () =>
     location.pathname.slice(0, location.pathname.lastIndexOf("/"));
 
-  const fullAddress = (params) => {
-    return `${params.row.address1}, ${params.row.city}, ${params.row.state}, ${params.row.zip}`;
-  };
+  function fullAddress(params) {
+    return `${params.address1}, ${params.city}, ${params.state}, ${params.zip}`;
+  }
 
   useEffect(() => {
-    getRestaurants(dispatch, user?.username);
-  }, [dispatch, user?.username]);
+    getRestaurants(dispatch);
+  }, [dispatch]);
 
   const columns = [
     { field: "id", headerName: "ID", align: "left", flex: 1 },
-    { field: "name", headerName: "Name", align: "left", flex: 2 },
-    { field: "alias", headerName: "Alias", align: "left" },
-    { field: "url", headerName: "url", align: "left" },
-    { field: "description", headerName: "description", align: "left" },
-    { field: "category", headerName: "category", align: "left" },
     {
       field: "photo",
       headerName: "Photo",
-      align: "left",
-      flex: 2,
-      renderCell: (params) => {
-        <div>
-          <img src={params.row.photo} alt="" />
-        </div>;
-      },
+      align: "center",
+      flex: 1,
+      renderCell: (params) => (
+        <Avatar
+          src={`${params.row?.photo.photoUrl}?w=64&fit=crop&auto=format`}
+          srcSet={`${params.row?.photo.photoUrl}?w=64&fit=crop&auto=format&dpr=2 2x`}
+          alt={params.row?.photo.name}
+          loading="lazy"
+        />
+      ),
     },
+    { field: "name", headerName: "Name", align: "left", flex: 2 },
+    // { field: "alias", headerName: "Alias", align: "left" },
+    { field: "url", headerName: "url", align: "left" },
+    { field: "description", headerName: "description", align: "left" },
+    { field: "category", headerName: "category", align: "left" },
     {
       field: "address",
       headerName: "Address",
       align: "left",
       flex: 3,
-      valueGetter: (params) => fullAddress(params),
+      valueGetter: (params) => fullAddress(params.row?.address),
     },
-    { field: "phone", headerName: "phone", align: "left", flex: 1 },
+    { field: "phone", headerName: "phone", align: "left", flex: 2 },
     { field: "address1", headerName: "Address1", align: "left" },
     { field: "address2", headerName: "Address2", align: "left" },
     { field: "city", headerName: "City ", align: "left" },

@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.security.RolesAllowed;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.Set;
 import java.util.UUID;
 
@@ -27,16 +28,17 @@ public class RestaurantApi {
 
     private final RestaurantService restaurantService;
 
-    @GetMapping("/owner/{username}")
+    @GetMapping
     @RolesAllowed({RoleType.REGISTERED_USER, RoleType.RESTAURANT_OPERATOR})
-    public ResponseEntity<Object> getRestaurantsByOwner(@PathVariable("username") String username) {
-        log.trace("RestaurantApi - getRestaurantsByOwner {}", username);
-        return ResponseEntity.ok(restaurantService.getRestaurantsByOwnerName(username));
+    public ResponseEntity<Object> getRestaurantsByOwner(Principal principal) {
+        log.trace("RestaurantApi - getRestaurantsByOwner {}", principal.getName());
+
+        return ResponseEntity.ok(restaurantService.getRestaurantsByOwnerName(principal.getName()));
     }
 
-    @GetMapping("/name/{restaurantName}")
+    @GetMapping("/name/{name}")
     @RolesAllowed({RoleType.REGISTERED_USER, RoleType.RESTAURANT_OPERATOR})
-    public ResponseEntity<Object> getRestaurants(@PathVariable("restaurantName") String restaurantName) {
+    public ResponseEntity<Object> getRestaurants(@PathVariable("name") String restaurantName) {
         Set<VwRestaurant> data = restaurantService.getRestaurantsByName(restaurantName);
         log.trace("fetched restaurants by restaurant name {}", data);
 
@@ -78,12 +80,12 @@ public class RestaurantApi {
 
 
     // DISH ITEM MAPPINGS
-    @GetMapping("/owner/{username}/dishes")
+    @GetMapping("/dishes")
     @RolesAllowed({RoleType.REGISTERED_USER, RoleType.RESTAURANT_OPERATOR})
-    public ResponseEntity<Object> getAllDishes(@PathVariable("username") String username) {
+    public ResponseEntity<Object> getAllDishes(Principal principal) {
         log.trace("Restaurant Api - getAllDishes");
 
-        return ResponseEntity.ok(restaurantService.getAllDishesByOwnerName(username));
+        return ResponseEntity.ok(restaurantService.getAllDishesByOwnerName(principal.getName()));
     }
 
     @GetMapping("/{restaurantId}/dish")

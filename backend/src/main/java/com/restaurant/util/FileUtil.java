@@ -12,6 +12,7 @@ public class FileUtil {
     private FileUtil() { }
 
     public static byte[] compressData(byte[] data) {
+        log.trace("FileUtil - compressData ");
 
         Deflater deflater = new Deflater();
         deflater.setLevel(Deflater.BEST_COMPRESSION);
@@ -29,10 +30,14 @@ public class FileUtil {
         } catch (Exception ex) {
             log.trace(ex.getLocalizedMessage());
         }
+
+        log.trace("FileUtil - done compressing data ");
         return outputStream.toByteArray();
     }
 
     public static byte[] decompressData(byte[] data) {
+        log.trace("FileUtil - decompressData ");
+
         Inflater inflater = new Inflater();
         inflater.setInput(data);
 

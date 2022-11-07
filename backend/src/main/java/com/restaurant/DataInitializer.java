@@ -5,6 +5,7 @@ import com.restaurant.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -32,7 +34,6 @@ public class DataInitializer implements CommandLineRunner {
     final String state = "MN";
     final String zip = "55555";
     final String country = "USA";
-    final String imageUrl = "https://picsum.photos/200/300";
     final String phone = "000-000-000";
 
     final List<String> dishNamesDesc = List.of("Spaghetti", "Steak", "Fries", "Potatoes", "Noodles", "Cheesecake", "Pie", "Crab");
@@ -46,17 +47,11 @@ public class DataInitializer implements CommandLineRunner {
     @Autowired private IUserRepo userRepo;
     @Autowired private IRestaurantRepo restaurantRepo;
     @Autowired private IDishRepo dishRepo;
-    @Autowired private IPhotoRepo imageRepo;
+    @Autowired private IPhotoRepo photoRepo;
     @Autowired private PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) throws Exception {
-
-        log.trace(" deleting all records .................... ");
-//        uncomment to delete all records instead
-//        roleRepo.deleteAll();
-//        restaurantRepo.deleteAll();
-//        userRepo.deleteAll();
 
         // initialize lists
         List<User> users = new ArrayList<>();
@@ -94,7 +89,6 @@ public class DataInitializer implements CommandLineRunner {
             restaurant.setState(state);
             restaurant.setZip(zip);
             restaurant.setCountry(country);
-            restaurant.setPhoto(imageUrl);
             restaurant.setPhone(phone+i);
             restaurant.setHasLicense(true);
             restaurant.setActive(true);
@@ -107,46 +101,64 @@ public class DataInitializer implements CommandLineRunner {
             dish.setPrice(BigDecimal.valueOf(dishPrices.get(i)));
             dish.setIngredients(dishIngredients.get(i));
 
-            Photo photo = new Photo();
-            photo.setName(imageNames.get(i) + ".png");
+            Photo photo1 = new Photo();
+            Photo photo2 = new Photo();
+            String photoUrl = "https://picsum.photos/200/300";
+//            photo.setPhotoUrl("/v1/api/download/image/"+imageNames.get(i)+".png");
+            photo1.setName(imageNames.get(i) + "_" + i + ".png");
+            photo1.setPhotoUrl(photoUrl);
+            photo1.setType(MediaType.IMAGE_PNG_VALUE);
+            photo1.setPhotoType(PhotoType.PRIMARY);
 
+            photo2.setName(imageNames.get(i) + "_" + 10+i + ".png");
+            photo2.setPhotoUrl(photoUrl);
+            photo2.setType(MediaType.IMAGE_PNG_VALUE);
+            photo2.setPhotoType(PhotoType.DISH);
+
+
+            // add entity for mapping relationship
             user.addRole(roleRegistered);
             user.addRole(rolePublic);
-            users.add(user); // add user to list
-
-            restaurant.setUser(user); // associate the user to the restaurant
             user.addRestaurant(restaurant); // associate user to the restaurant
-            restaurants.add(restaurant); // add the restaurant to the list
 
-            dish.setRestaurant(restaurant); // associate restaurant to the dishes
-            restaurant.getDishes().add(dish); // associate dish to the restaurant
+            dish.addPhoto(photo2);
+
+            restaurant.addPhoto(photo1);
+            restaurant.addPhoto(photo2);
+            restaurant.addDish(dish); // associate dish to the restaurant
+
+
+            // add entities to list
+            users.add(user); // add user to list
+            photos.add(photo1);
+            photos.add(photo2);
             dishes.add(dish); // add dish to list
-
-            dish.addPhoto(photo);
-            photo.setDish(dish);
-            photos.add(photo);
+            restaurants.add(restaurant); // add the restaurant to the list
 
         }
 
 
         // SINGLE RUN TO CHECK FOR EXISTING USERS AND SEED ON APP START
-        for (User user : users) {
-            if (!userRepo.existsByUsername(user.getUsername())) {
-                log.trace(" saving roles {}", roles);
-                roleRepo.saveAll(roles);
+        List<User> existingUserList =  userRepo.findAll();
+        if (existingUserList.isEmpty()) {
+            for (User user : users) {
+                if (!userRepo.existsByUsername(user.getUsername())) {
+                    log.trace(" saving roles {}", roles);
+                    roleRepo.saveAll(roles);
 
-                log.trace(" saving users :: {}", users);
-                userRepo.saveAll(users);
+                    log.trace(" saving users :: {}", users);
+                    userRepo.saveAll(users);
 
-                log.trace(" saving restaurant {}", restaurants);
-                restaurantRepo.saveAll(restaurants);
+                    log.trace(" saving restaurant {}", restaurants);
+                    restaurantRepo.saveAll(restaurants);
 
-                log.trace(" saving dishes {}", dishes);
-                dishRepo.saveAll(dishes);
+                    log.trace(" saving dishes {}", dishes);
+                    dishRepo.saveAll(dishes);
 
-                log.trace(" saving photos {}", dishes);
-                imageRepo.saveAll(photos);
-                break;
+                    log.trace(" saving photos {}", photos);
+                    photoRepo.saveAll(photos);
+                    break;
+                }
             }
         }
 

@@ -2,15 +2,15 @@ package com.restaurant.domain.mapper;
 
 import com.restaurant.domain.dto.request.TCreateRestaurant;
 import com.restaurant.domain.dto.request.TEditRestaurant;
-import com.restaurant.domain.dto.response.RestaurantResponse;
-import com.restaurant.domain.dto.response.VwAddress;
-import com.restaurant.domain.dto.response.VwRestaurant;
-import com.restaurant.domain.dto.response.VwUser;
+import com.restaurant.domain.dto.response.*;
+import com.restaurant.domain.model.Photo;
+import com.restaurant.domain.model.PhotoType;
 import com.restaurant.domain.model.Restaurant;
 import com.restaurant.domain.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,23 +29,26 @@ public class RestaurantMapper {
         return restaurant;
     }
 
-    public static RestaurantResponse toRestaurantViewFrom(Restaurant restaurant) {
-        return new RestaurantResponse(
-                restaurant.getUuid(),
-                restaurant.getName(),
-                restaurant.getAlias(),
-                restaurant.getUrl(),
-                restaurant.getPhone(),
-                restaurant.getCategory(),
-                restaurant.getDescription(),
-                restaurant.getAddress1(),
-                restaurant.getAddress2(),
-                restaurant.getCity(),
-                restaurant.getState(),
-                restaurant.getZip(),
-                restaurant.getCountry(),
-                restaurant.getPhoto()
-        );
+    public static VwRestaurant toRestaurantViewFrom(Restaurant restaurant) {
+        return VwRestaurant.builder()
+                .id(restaurant.getUuid())
+                .name(restaurant.getName())
+                .url(restaurant.getUrl())
+                .phone(restaurant.getPhone())
+                .address(new VwAddress(
+                        restaurant.getAddress1(),
+                        restaurant.getAddress2(),
+                        restaurant.getCity(),
+                        restaurant.getState(),
+                        restaurant.getZip()))
+                .photos(null)
+                .photo(restaurant.getPhotos().stream()
+                        .filter(e->e.getPhotoType().equals(PhotoType.PRIMARY))
+                        .findFirst().orElse(null))
+                .user(new VwUser(
+                    restaurant.getUser().getUuid(),
+                    restaurant.getUser().getUsername()))
+                .build();
     }
 
     public static Restaurant updateRestaurantProperties(TEditRestaurant updateData, Restaurant old) {
@@ -58,6 +61,7 @@ public class RestaurantMapper {
         return restaurants.stream().map(restaurant -> new VwRestaurant(
                 restaurant.getUuid(),
                 restaurant.getName(),
+                restaurant.getUrl(),
                 restaurant.getPhone(),
                 new VwAddress(
                         restaurant.getAddress1(),
@@ -65,9 +69,13 @@ public class RestaurantMapper {
                         restaurant.getCity(),
                         restaurant.getState(),
                         restaurant.getZip()),
+                null,
+                restaurant.getPhotos().stream()
+                        .filter(e->e.getPhotoType().equals(PhotoType.PRIMARY))
+                        .findFirst().orElse(null),
                 new VwUser(
                         restaurant.getUser().getUuid(),
-                        restaurant.getName())
+                        restaurant.getUser().getUsername())
         )).collect(Collectors.toSet());
     }
 

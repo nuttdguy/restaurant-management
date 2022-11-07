@@ -9,6 +9,8 @@ import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -57,15 +59,14 @@ public class User implements UserDetails {
     @JsonIgnore
     private Set<Role> authorities = new HashSet<>();
 
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @Fetch(value = FetchMode.SUBSELECT)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude
-    private Set<Restaurant> restaurants = new HashSet<>();
+    public  Set<Restaurant> restaurants = new HashSet<>();
 
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @Fetch(value = FetchMode.SUBSELECT)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude
     private Set<UniqueToken> tokens = new HashSet<>();
 
@@ -82,10 +83,20 @@ public class User implements UserDetails {
 
     public void addRestaurant(Restaurant restaurant) {
         this.restaurants.add(restaurant);
+        restaurant.setUser(this);
     }
 
     public void removeRestaurant(Restaurant restaurant) {
         this.restaurants.remove(restaurant);
+    }
+
+    public void addToken(UniqueToken token) {
+        this.tokens.add(token);
+        token.setUser(this);
+    }
+
+    public void removeToken(UniqueToken token) {
+        this.tokens.remove(token);
     }
 
     public User(UUID uuid, String username, String password, Set<Role> authorities) {

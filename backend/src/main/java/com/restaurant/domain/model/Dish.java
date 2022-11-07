@@ -1,6 +1,5 @@
 package com.restaurant.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Fetch;
@@ -16,7 +15,6 @@ import java.util.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
-@ToString
 @Builder
 public class Dish {
 
@@ -32,20 +30,17 @@ public class Dish {
     private String ingredients;
     private BigDecimal price;
 
-
-    @ManyToOne
     @JoinColumn(name = "restaurant_uuid")
-    @JsonIgnore
+    @ManyToOne
     private Restaurant restaurant;
 
-    @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL)
     @Fetch(value = FetchMode.SUBSELECT) // one query mode
-    @JsonIgnore
-    @ToString.Exclude
+    @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Photo> photos = new HashSet<>();
 
     public void addPhoto(Photo photo) {
         this.photos.add(photo);
+        photo.setDish(this);
     }
 
     public void removePhoto(Photo photo) {

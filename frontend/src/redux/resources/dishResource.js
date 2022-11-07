@@ -18,9 +18,7 @@ import { authorizedRequest } from "../../api/apiResource";
 const fetchDishes = async (dispatch, username) => {
   dispatch(getDishesStart());
   try {
-    const res = await authorizedRequest.get(
-      `/restaurant/owner/${username}/dishes`
-    );
+    const res = await authorizedRequest.get(`/restaurant/dishes`);
     // console.log("Done fetching list of dishes ", res.data);
     dispatch(getDishesSuccess(res.data));
   } catch (err) {

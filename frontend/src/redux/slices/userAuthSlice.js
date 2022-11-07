@@ -16,6 +16,7 @@ const userAuthSlice = createSlice({
     },
     loginSuccess: (state, action) => {
       state.currentUser = action.payload;
+      // console.log("authSlice ", state.currentUser);
       state.isSuccess = true;
       state.isApiError = false;
       state.apiErrorMessage = null;

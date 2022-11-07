@@ -1,6 +1,5 @@
 package com.restaurant.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.*;
@@ -9,15 +8,17 @@ import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
 @Table(name = "restaurants")
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
+@Builder
 @ToString
 public class Restaurant {
 
@@ -40,29 +41,45 @@ public class Restaurant {
     private String state;
     private String zip;
     private String country;
-
-    private String photo;
     private Boolean hasLicense;
     private Boolean active;
+    @CreationTimestamp private LocalDateTime createdAt;
+    @UpdateTimestamp private LocalDateTime updatedAt;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
-    @OneToOne
     @JoinColumn(name = "license_id")
+    @OneToOne
     private License license;
 
-    @ManyToOne
     @JoinColumn(name = "user_uuid")
-    @JsonIgnore
+    @ManyToOne
     private User user;
 
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
     @Fetch(value = FetchMode.SUBSELECT)
+    @OneToMany(mappedBy = "restaurant")
+    @ToString.Exclude
+    private Set<Photo> photos = new HashSet<>();
+
+    @Fetch(value = FetchMode.SUBSELECT)
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
     @ToString.Exclude
     private Set<Dish> dishes = new HashSet<>();
+
+    public void addPhoto(Photo photo) {
+        this.photos.add(photo);
+        photo.setRestaurant(this);
+    }
+
+    public void removePhoto(Photo photo) {
+        this.photos.remove(photo);
+    }
+
+    public void addDish(Dish dish) {
+        this.dishes.add(dish);
+        dish.setRestaurant(this);
+    }
+    public void removeDish(Dish dish) {
+        this.getDishes().remove(dish);
+    }
 
     @Override
     public boolean equals(Object o) {

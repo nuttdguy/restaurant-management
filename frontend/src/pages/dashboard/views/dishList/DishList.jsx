@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { DataGrid } from "@mui/x-data-grid";
+import { Avatar } from "@mui/material";
 import { AddBoxOutlined, DeleteOutline, Edit } from "@mui/icons-material";
 import { DataTable, ActionCell, DeleteButton } from "../styles/DishStyle";
 import { DBSectionHeader, DBContentInfoWrap } from "../styles/layoutStyles";
@@ -13,6 +14,7 @@ import {
 } from "../../../../redux/resources/dishResource";
 
 export function DishList() {
+  // const [dishes] = useState(useSelector((state) => state.dish.dishes));
   const dispatch = useDispatch();
   const location = useLocation();
   const dishes = useSelector((state) => state.dish.dishes);
@@ -25,12 +27,26 @@ export function DishList() {
   };
 
   useEffect(() => {
-    fetchDishes(dispatch, user?.username);
-  }, [dispatch, user?.username]);
+    fetchDishes(dispatch);
+  }, [dispatch]);
 
   const columns = [
     { field: "id", headerName: "ID", align: "left", flex: 1 },
-    { field: "photo", headerName: "Photo", align: "left", flex: 1 },
+    {
+      field: "photo",
+      headerName: "Photo",
+      align: "center",
+      flex: 1,
+      renderCell: (params) => (
+        <Avatar
+          src={`https://picsum.photos/200/300?w=64&fit=crop&auto=format`}
+          // src={`${params.row?.photos[0]?.name}?w=64&fit=crop&auto=format`}
+          // srcSet={`${params.row?.photos[0]?.photoUrl}?w=64&fit=crop&auto=format&dpr=2 2x`}
+          alt={params.row?.photos?.name}
+          loading="lazy"
+        />
+      ),
+    },
     {
       field: "name",
       headerName: "Dish name",
@@ -72,6 +88,7 @@ export function DishList() {
           <DataGrid
             // checkboxSelection
             disableSelectionOnClick
+            // rows={dishes}
             rows={dishes}
             columns={columns}
             pageSize={5}

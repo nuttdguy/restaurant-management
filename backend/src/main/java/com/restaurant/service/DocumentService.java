@@ -90,7 +90,7 @@ public class DocumentService {
                 .name(photoFile.getOriginalFilename())
                 .type(photoFile.getContentType())
                 .photoType(photoType)
-                .photoUrl(format("/%s", photoFile.getName()))
+                .photoUrl(format("/download/%s/%s", photoFile.getName(), photoFile.getOriginalFilename()))
                 .file(FileUtil.compressData(photoFile.getBytes()))
                 .build();
     }

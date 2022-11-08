@@ -1,5 +1,6 @@
 package com.restaurant.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.*;
@@ -20,8 +21,10 @@ import java.util.*;
 @Getter @Setter
 @Builder
 @ToString
-public class Restaurant {
+public class Restaurant implements Serializable {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Type(type = "org.hibernate.type.UUIDCharType")
@@ -47,11 +50,11 @@ public class Restaurant {
     @UpdateTimestamp private LocalDateTime updatedAt;
 
     @JoinColumn(name = "license_id")
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private License license;
 
     @JoinColumn(name = "user_uuid")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     @Fetch(value = FetchMode.SUBSELECT)

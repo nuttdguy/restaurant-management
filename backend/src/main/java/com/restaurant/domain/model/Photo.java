@@ -1,10 +1,11 @@
 package com.restaurant.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
@@ -14,16 +15,10 @@ import java.util.Objects;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Photo {
+public class Photo implements Serializable {
 
-//    public Photo(Photo photo) {
-//        this(photo.getId(),
-//                photo.name,
-//                photo.type,
-//                photo.file,
-//                photo.photoType,
-//                photo.photoUrl, null, null);
-//    }
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -47,14 +42,12 @@ public class Photo {
     @Column(name = "photo_url")
     private String photoUrl;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_uuid")
-    @JsonIgnore
     private Restaurant restaurant;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dish_id")
-    @JsonIgnore
     private Dish dish;
 
     @Override

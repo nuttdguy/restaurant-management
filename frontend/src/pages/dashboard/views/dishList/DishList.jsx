@@ -39,8 +39,8 @@ export function DishList() {
       flex: 1,
       renderCell: (params) => (
         <Avatar
-          src={`https://picsum.photos/200/300?w=64&fit=crop&auto=format`}
-          // src={`${params.row?.photos[0]?.name}?w=64&fit=crop&auto=format`}
+          // src={`https://picsum.photos/200/300?w=64&fit=crop&auto=format`}
+          src={`${params.row?.photos?.photoUrl}?w=64&fit=crop&auto=format`}
           // srcSet={`${params.row?.photos[0]?.photoUrl}?w=64&fit=crop&auto=format&dpr=2 2x`}
           alt={params.row?.photos?.name}
           loading="lazy"

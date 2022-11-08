@@ -3,7 +3,6 @@ package com.restaurant.domain.mapper;
 import com.restaurant.domain.dto.request.TCreateRestaurant;
 import com.restaurant.domain.dto.request.TEditRestaurant;
 import com.restaurant.domain.dto.response.*;
-import com.restaurant.domain.model.Photo;
 import com.restaurant.domain.model.PhotoType;
 import com.restaurant.domain.model.Restaurant;
 import com.restaurant.domain.model.User;
@@ -35,48 +34,45 @@ public class RestaurantMapper {
                 .name(restaurant.getName())
                 .url(restaurant.getUrl())
                 .phone(restaurant.getPhone())
-                .address(new VwAddress(
-                        restaurant.getAddress1(),
-                        restaurant.getAddress2(),
-                        restaurant.getCity(),
-                        restaurant.getState(),
-                        restaurant.getZip()))
-                .photos(null)
-                .photo(restaurant.getPhotos().stream()
-                        .filter(e->e.getPhotoType().equals(PhotoType.PRIMARY))
-                        .findFirst().orElse(null))
-                .user(new VwUser(
-                    restaurant.getUser().getUuid(),
-                    restaurant.getUser().getUsername()))
+                .address(VwAddress.builder()
+                        .address1(restaurant.getAddress1())
+                        .address2(restaurant.getAddress2())
+                        .city(restaurant.getCity())
+                        .state(restaurant.getState())
+                        .zip(restaurant.getZip())
+                        .build())
+                .photos(restaurant.getPhotos().stream()
+                        .filter(photo -> photo.getPhotoType().equals(PhotoType.PRIMARY))
+                        .map(photo -> VwPhoto.builder()
+                                .id(photo.getId())
+                                .photoUrl(photo.getPhotoUrl())
+                                .type(photo.getType())
+                                .name(photo.getName())
+                                .build())
+                        .collect(Collectors.toSet()))
+                .user(VwUser.builder()
+                        .userId(restaurant.getUser().getUuid())
+                        .username(restaurant.getUser().getUsername())
+                        .build())
                 .build();
+    }
+
+    public static List<VwRestaurant> toRestaurantListViewFrom(Set<Restaurant> restaurants) {
+        return restaurants.stream()
+                .map(RestaurantMapper::toRestaurantViewFrom)
+                .toList();
+    }
+
+    public static Set<VwRestaurant> toRestaurantSetViewFrom(Set<Restaurant> restaurants) {
+        return restaurants.stream()
+                .map(RestaurantMapper::toRestaurantViewFrom)
+                .collect(Collectors.toSet());
     }
 
     public static Restaurant updateRestaurantProperties(TEditRestaurant updateData, Restaurant old) {
         BeanUtils.copyProperties(updateData, old);
         log.trace("Transferred request properties {}", old);
         return old;
-    }
-
-    public static Set<VwRestaurant> toGetRestaurantByNameFrom(Set<Restaurant> restaurants) {
-        return restaurants.stream().map(restaurant -> new VwRestaurant(
-                restaurant.getUuid(),
-                restaurant.getName(),
-                restaurant.getUrl(),
-                restaurant.getPhone(),
-                new VwAddress(
-                        restaurant.getAddress1(),
-                        restaurant.getAddress2(),
-                        restaurant.getCity(),
-                        restaurant.getState(),
-                        restaurant.getZip()),
-                null,
-                restaurant.getPhotos().stream()
-                        .filter(e->e.getPhotoType().equals(PhotoType.PRIMARY))
-                        .findFirst().orElse(null),
-                new VwUser(
-                        restaurant.getUser().getUuid(),
-                        restaurant.getUser().getUsername())
-        )).collect(Collectors.toSet());
     }
 
 }

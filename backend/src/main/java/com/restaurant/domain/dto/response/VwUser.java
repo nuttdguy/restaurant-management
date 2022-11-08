@@ -14,12 +14,4 @@ public record VwUser(
         String lastName
 ) {
 
-    public VwUser(UUID userId) {
-        this(userId, null, null, null);
-    }
-
-    public VwUser(UUID userId, String username) {
-        this(userId, username, null, null);
-    }
-
 }

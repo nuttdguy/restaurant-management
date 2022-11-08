@@ -7,10 +7,9 @@ import com.restaurant.domain.dto.request.TCreateRestaurant;
 import com.restaurant.domain.dto.request.TEditDish;
 import com.restaurant.domain.dto.request.TEditRestaurant;
 import com.restaurant.domain.dto.response.VwDish;
-import com.restaurant.domain.dto.response.RestaurantResponse;
 import com.restaurant.domain.dto.response.VwRestaurant;
-import com.restaurant.domain.mapper.RestaurantMapper;
 import com.restaurant.domain.model.*;
+import com.restaurant.exception.NotFoundException;
 import com.restaurant.exception.UserNotFoundException;
 import com.restaurant.repository.*;
 import com.restaurant.util.FileUtil;
@@ -20,15 +19,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.ValidationException;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.restaurant.domain.mapper.DishMapper.*;
 import static com.restaurant.domain.mapper.RestaurantMapper.*;
+import static com.restaurant.exception.ExceptionMessage.NOT_FOUND;
 import static java.lang.String.format;
 
 @Slf4j
@@ -47,14 +45,16 @@ public class RestaurantService {
 
     public Set<VwRestaurant> getRestaurantsByOwnerName(String username) {
         log.trace("RestaurantService - getRestaurantsByOwnerName");
-        Set<Restaurant> restaurants = restaurantRepo.findByUserUsername(username);
-        log.trace("Found restaurants {}", restaurants);
-        return restaurants.stream().map(RestaurantMapper::toRestaurantViewFrom).collect(Collectors.toSet());
+        User user = userRepo.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException(format(NOT_FOUND, username)));
+        Set<Restaurant> restaurants = restaurantRepo.findFirst5ByUserUuid(user.getUuid());
+
+        return toRestaurantSetViewFrom(restaurants);
     }
 
     public Set<VwRestaurant> getRestaurantsByName(String restaurantName) {
         log.trace("RestaurantService - getRestaurantsByName");
-        return toGetRestaurantByNameFrom(restaurantRepo.findAllByName(restaurantName));
+        return toRestaurantSetViewFrom(restaurantRepo.findAllByName(restaurantName));
     }
 
     public Set<VwDish> getAllDishesByOwnerName(String username) {
@@ -150,28 +150,28 @@ public class RestaurantService {
         Restaurant restaurant = restaurantRepo.findByPhone(dto.phone())
                 .orElseThrow(() -> new EntityNotFoundException("Restaurant not found for phone"));
 
-//        Photo photo = null;
+
         Dish dish = toDishFrom(dto);
-        dish.setRestaurant(restaurant);
-//        restaurant.addDish(dish); // associate and add the dish to the restaurant
         log.trace("done converting dto to dish item {}", dish);
 
         try {
             // process the image
             log.trace("start processing photo");
             Photo photo = documentService.processPhoto(photoFile, PhotoType.DISH);
-            photo.setDish(dish);
-            photo = photoRepo.save(photo);  // save the photo
-            log.trace("done processing photo");
 
-            log.trace("start saving dish");
-//            dish.addPhoto(photo); // associate and add photo to the dish
-            dish = dishRepo.save(dish);  // save the dish
+            restaurant.addDish(dish);
+            restaurant.addPhoto(photo);
 
+            log.trace("done adding photo relationships ...");
+            photo = photoRepo.saveAndFlush(photo);
 
-            log.trace("start saving dish");
-            // todo figure out why this is not throwing an error, but failing when adding a photo
-//            dish.addPhoto(photo);
+            dish.addPhoto(photo);
+            dish = dishRepo.saveAndFlush(dish);
+            log.trace("done saving the dish {} ", dish);
+
+            // save / update the restaurant entity
+            restaurantRepo.save(restaurant);
+            log.trace("Done updating the restaurant .. ");
 
         } catch(IOException ex) {
             log.error(format("Unable to process %s", photoFile.getName()));

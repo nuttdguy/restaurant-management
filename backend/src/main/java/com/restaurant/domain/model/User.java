@@ -55,19 +55,15 @@ public class User implements UserDetails {
     @JoinTable(name = "user_roles",
             joinColumns = { @JoinColumn(name = "user_uuid")},
             inverseJoinColumns = { @JoinColumn(name = "role_id") })
-    @ToString.Exclude
-    @JsonIgnore
     private Set<Role> authorities = new HashSet<>();
 
+
     @Fetch(value = FetchMode.SUBSELECT)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @ToString.Exclude
     public  Set<Restaurant> restaurants = new HashSet<>();
 
-
     @Fetch(value = FetchMode.SUBSELECT)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @ToString.Exclude
     private Set<UniqueToken> tokens = new HashSet<>();
 
 

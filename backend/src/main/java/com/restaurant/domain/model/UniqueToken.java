@@ -36,9 +36,8 @@ public class UniqueToken {
     @Column(name = "expiration")
     private Instant expiration;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_uuid")
-    @JsonIgnore
     private User user;
 
 //    @OneToOne

@@ -15,8 +15,7 @@ import { Avatar } from "@mui/material";
 export function RestaurantList() {
   const dispatch = useDispatch();
   const location = useLocation();
-  const restaurants = useSelector((state) => state.restaurant.restaurants);
-  const user = useSelector((state) => state.userAuth.currentUser);
+  const restaurants = useSelector((state) => state.restaurant?.restaurants);
   const [columnVisibility, setColumnVisibility] = useState({
     alias: false,
     url: false,
@@ -54,9 +53,10 @@ export function RestaurantList() {
       flex: 1,
       renderCell: (params) => (
         <Avatar
-          src={`${params.row?.photo.photoUrl}?w=64&fit=crop&auto=format`}
-          srcSet={`${params.row?.photo.photoUrl}?w=64&fit=crop&auto=format&dpr=2 2x`}
-          alt={params.row?.photo.name}
+          key={params.row?.photos?.[0].id}
+          src={`${params.row?.photos?.[0].photoUrl}?w=64&fit=crop&auto=format`}
+          srcSet={`${params.row?.photos?.[0].photoUrl}?w=64&fit=crop&auto=format&dpr=2 2x`}
+          alt={params.row?.photos?.[0].name}
           loading="lazy"
         />
       ),
@@ -114,7 +114,7 @@ export function RestaurantList() {
             onColumnVisibilityModelChange={(newModel) =>
               setColumnVisibility(newModel)
             }
-            // getRowId={(row) => row.uuid}
+            // getRowId={(row) => row.id}
             disableSelectionOnClick
             rows={restaurants}
             columns={columns}

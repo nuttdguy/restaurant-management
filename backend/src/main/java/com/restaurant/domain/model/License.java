@@ -26,7 +26,7 @@ public class License {
     @Column(name = "license", nullable = false, length = 10000000)
     private byte[] file;
 
-    @OneToOne(mappedBy = "license")
+    @OneToOne(mappedBy = "license", fetch = FetchType.LAZY)
     private Restaurant restaurant;
 
 }

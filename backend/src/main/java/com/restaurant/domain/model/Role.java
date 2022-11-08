@@ -35,7 +35,6 @@ public class Role implements GrantedAuthority {
     // https://thorben-janssen.com/ultimate-guide-association-mappings-jpa-hibernate/
     @ManyToMany(mappedBy = "authorities", fetch = FetchType.LAZY)
     @Fetch(value = FetchMode.SUBSELECT)
-    @ToString.Exclude
     private Set<User> users = new HashSet<>();
 
     public Role(String roleType) {

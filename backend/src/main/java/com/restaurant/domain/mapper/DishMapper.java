@@ -7,6 +7,7 @@ import com.restaurant.domain.model.Dish;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -22,6 +23,7 @@ public class DishMapper {
                 .description(tCreateDish.description())
                 .ingredients(tCreateDish.ingredients())
                 .price(tCreateDish.price())
+                .photos(new HashSet<>())
                 .build();
     }
 
@@ -34,14 +36,14 @@ public class DishMapper {
                 .description(dish.getDescription())
                 .ingredients(dish.getIngredients())
                 .tags(dish.getTags())
-//                .photos(dish.getPhotos().stream().map(photo ->
-//                        VwPhoto.builder()
-//                                .id(photo.getId())
-//                                .name(photo.getName())
-//                                .type(photo.getType())
-//                                .photoUrl(photo.getPhotoUrl())
-//                                .build())
-//                        .collect(Collectors.toSet()))
+                .photos(dish.getPhotos().stream().map(photo ->
+                        VwPhoto.builder()
+                                .id(photo.getId())
+                                .name(photo.getName())
+                                .type(photo.getType())
+                                .photoUrl(photo.getPhotoUrl())
+                                .build())
+                        .collect(Collectors.toSet()))
                 .price(dish.getPrice().floatValue())
                 .restaurantId(dish.getRestaurant().getUuid())
                 .build();

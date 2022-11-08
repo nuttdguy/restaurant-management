@@ -29,8 +29,8 @@ export const NewDish = () => {
   const user = useSelector((state) => state.userAuth.currentUser);
 
   useEffect(() => {
-    getRestaurants(dispatch, user?.username);
-  }, [dispatch, user?.username]);
+    getRestaurants(dispatch);
+  }, [dispatch]);
 
   const handleImageChange = (e) => {
     const reader = new FileReader();
@@ -106,15 +106,16 @@ export const NewDish = () => {
               type="text"
               placeholder="Fire Beans"
             />
+            {JSON.stringify(restaurants)}
             <Label>select restaurant:</Label>
             <Select id="phone" name={"phone"}>
-              {restaurants?.map((restaurant) => {
+              {/* {restaurants?.map((restaurant) => {
                 return (
                   <SelectOption name={"phone"} key={restaurant.id}>
                     {restaurant.phone}{" "}
                   </SelectOption>
                 );
-              })}
+              })} */}
             </Select>
             <Label>price </Label>
             <Input

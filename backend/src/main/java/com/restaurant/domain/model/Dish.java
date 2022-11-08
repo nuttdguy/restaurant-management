@@ -6,6 +6,8 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.io.Serial;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -16,7 +18,10 @@ import java.util.*;
 @NoArgsConstructor
 @Getter @Setter
 @Builder
-public class Dish {
+public class Dish implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -31,11 +36,11 @@ public class Dish {
     private BigDecimal price;
 
     @JoinColumn(name = "restaurant_uuid")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Restaurant restaurant;
 
     @Fetch(value = FetchMode.SUBSELECT) // one query mode
-    @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL)
     private Set<Photo> photos = new HashSet<>();
 
     public void addPhoto(Photo photo) {

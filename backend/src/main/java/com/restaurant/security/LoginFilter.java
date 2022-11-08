@@ -44,6 +44,7 @@ public class LoginFilter extends OncePerRequestFilter {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
         );
+
         // set the jwt header
         response.setHeader(HttpHeaders.AUTHORIZATION, createJwtToken(authentication));
         response.addHeader("username", username);
@@ -53,10 +54,12 @@ public class LoginFilter extends OncePerRequestFilter {
     // create the jwt token with subject and claims
     private String createJwtToken(Authentication authentication) {
         log.trace("LoginFilter - createJwtToken");
+
         User user = (User) authentication.getPrincipal();
         String authorities = user.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
+
         return jwtHelper.createToken(user.getUsername(), Map.of("roles", authorities));
     }
 
@@ -65,6 +68,7 @@ public class LoginFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         log.trace("LoginFilter - shouldNotFilter");
+
         String method = request.getMethod();
         String uri = request.getRequestURI();
         boolean isLogin = HttpMethod.POST.matches(method) && uri.startsWith("/v1/api/auth/login");

@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -55,26 +54,28 @@ public class JwtFilter extends OncePerRequestFilter {
             log.trace(ex.getLocalizedMessage());
         }
 
-//        log.trace("JwtFilter - continue doFilter");
         // continue spring security filter chain
         filterChain.doFilter(request, response);
     }
 
     private Authentication createAuthentication(Map<String, Object> claims) {
         log.trace("JwtFilter - createAuthentication");
+
         // extract the claims, i.e. user authorities
         Set<String> roles = Set.of(claims.get("roles").toString().split(","));
+
         // create new simple granted authority instances for each role / authorization claim
         Set<SimpleGrantedAuthority> authorities = roles.stream()
                 .map(role -> "ROLE_"+role)  // append ROLE_ b/c spring prefixes roles
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toSet());
+
         // return an authentication object with claims and authorities
         return new UsernamePasswordAuthenticationToken(claims.get(Claims.SUBJECT), null, authorities);
     }
 
     private String getToken(HttpServletRequest request) throws NullPointerException, JwtException {
-//        log.trace("JwtFilter - getToken");
+        log.trace("JwtFilter - getToken");
 
         return Optional.ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION))
                 .filter(auth -> auth.startsWith("Bearer "))

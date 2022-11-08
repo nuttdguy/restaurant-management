@@ -17,6 +17,7 @@ public class DishMapper {
     private DishMapper() { }
 
     public static Dish toDishFrom(TCreateDish tCreateDish) {
+        log.trace("DishMapper - toDishFrom {}", tCreateDish);
         return Dish.builder()
                 .name(tCreateDish.dishName())
                 .category(tCreateDish.category())
@@ -28,7 +29,7 @@ public class DishMapper {
     }
 
     public static VwDish toCreateDishFrom(Dish dish) {
-        log.trace("toCreateDishFrom {}", dish);
+        log.trace("DishMapper - toCreateDishFrom {}", dish);
         return VwDish.builder()
                 .id(dish.getId())
                 .name(dish.getName())
@@ -51,7 +52,7 @@ public class DishMapper {
     }
 
     public static Set<VwDish> toCreateDishSetFrom(Set<Dish> dishes) {
-        log.trace("toCreateDishSetFrom {}", dishes);
+        log.trace("DishMapper - toCreateDishSetFrom {}", dishes);
         return dishes.stream()
                 .map(DishMapper::toCreateDishFrom)
                 .collect(Collectors.toSet());

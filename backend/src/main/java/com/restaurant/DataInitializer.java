@@ -52,6 +52,13 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        log.trace("DataInitializer - run");
+
+        log.trace("return if records exists ...");
+        List<User> existingUserList =  userRepo.findAll();
+        if (existingUserList.isEmpty()) {
+            return;
+        }
 
         // initialize lists
         List<User> users = new ArrayList<>();
@@ -104,7 +111,6 @@ public class DataInitializer implements CommandLineRunner {
             Photo photo1 = new Photo();
             Photo photo2 = new Photo();
             String photoUrl = "https://picsum.photos/200/300";
-//            photo.setPhotoUrl("/v1/api/download/image/"+imageNames.get(i)+".png");
             photo1.setName(imageNames.get(i) + "_" + i + ".png");
             photo1.setPhotoUrl(photoUrl);
             photo1.setType(MediaType.IMAGE_PNG_VALUE);
@@ -139,28 +145,28 @@ public class DataInitializer implements CommandLineRunner {
 
 
         // SINGLE RUN TO CHECK FOR EXISTING USERS AND SEED ON APP START
-        List<User> existingUserList =  userRepo.findAll();
-        if (existingUserList.isEmpty()) {
-            for (User user : users) {
-                if (!userRepo.existsByUsername(user.getUsername())) {
-                    log.trace(" saving roles {}", roles);
-                    roleRepo.saveAll(roles);
+//        List<User> existingUserList =  userRepo.findAll();
+//        if (existingUserList.isEmpty()) {
+        for (User user : users) {
+            if (!userRepo.existsByUsername(user.getUsername())) {
+                log.trace(" saving roles {}", roles);
+                roleRepo.saveAll(roles);
 
-                    log.trace(" saving users :: {}", users);
-                    userRepo.saveAll(users);
+                log.trace(" saving users :: {}", users);
+                userRepo.saveAll(users);
 
-                    log.trace(" saving restaurant {}", restaurants);
-                    restaurantRepo.saveAll(restaurants);
+                log.trace(" saving restaurant {}", restaurants);
+                restaurantRepo.saveAll(restaurants);
 
-                    log.trace(" saving dishes {}", dishes);
-                    dishRepo.saveAll(dishes);
+                log.trace(" saving dishes {}", dishes);
+                dishRepo.saveAll(dishes);
 
-                    log.trace(" saving photos {}", photos);
-                    photoRepo.saveAll(photos);
-                    break;
-                }
+                log.trace(" saving photos {}", photos);
+                photoRepo.saveAll(photos);
+                break;
             }
         }
+//        }
 
         log.trace(" initializer done ..... ");
 

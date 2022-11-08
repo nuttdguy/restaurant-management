@@ -1,7 +1,6 @@
 package com.restaurant.domain.model;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Fetch;
@@ -13,11 +12,10 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-@Getter
-@Setter
-@ToString
 @Entity
 @Table(name = "roles")
+@Getter @Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class Role implements GrantedAuthority {
@@ -25,16 +23,15 @@ public class Role implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "role_id")
-    @JsonIgnore
     private Long id;
 
     @Column(length = 20, unique = true)
-    @JsonIgnore
     private String name;
 
-    // https://thorben-janssen.com/ultimate-guide-association-mappings-jpa-hibernate/
     @ManyToMany(mappedBy = "authorities", fetch = FetchType.LAZY)
     @Fetch(value = FetchMode.SUBSELECT)
+    @ToString.Exclude
+// https://thorben-janssen.com/ultimate-guide-association-mappings-jpa-hibernate/
     private Set<User> users = new HashSet<>();
 
     public Role(String roleType) {

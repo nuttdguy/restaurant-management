@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public record TEditDish(
         Long id,
-        String itemName,
+        String name,
         BigDecimal price,
         String ingredients,
         String description

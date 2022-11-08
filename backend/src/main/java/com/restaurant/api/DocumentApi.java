@@ -57,15 +57,6 @@ public class DocumentApi {
         return ResponseEntity.badRequest().body("File could not be saved");
     }
 
-//    @GetMapping("/download/image/{imageId}")
-//    @RolesAllowed({RoleType.REGISTERED_USER, RoleType.RESTAURANT_OPERATOR})
-//    public ResponseEntity<Object> downloadPhoto(@PathVariable("imageId") Long imageId) {
-//        log.trace("DocumentApi - downloadPhoto");
-//
-//        Set<Photo> photos = documentService.getImageById(imageId);
-//        return ResponseEntity.ok().body(photos);
-//    }
-
 
     @GetMapping("/images/id/{imageId}")
     public ResponseEntity<Object> getPhotoById(@PathVariable("imageId") Long imageId) {

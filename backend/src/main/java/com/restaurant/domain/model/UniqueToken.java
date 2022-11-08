@@ -1,6 +1,5 @@
 package com.restaurant.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.annotations.Type;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,11 +37,13 @@ public class UniqueToken {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_uuid")
+    @ToString.Exclude
     private User user;
 
-//    @OneToOne
-//    @JoinColumn(name = "fk_user_uuid")
-//    public User user;
+    public void setExpiration(Instant instant) {
+        this.expiration = instant.plusMillis(EXPIRATION_TIME_MS);
+    }
+
 
     public UniqueToken(User user, UUID token, TokenType tokenType) {
         this.user = user;
@@ -50,10 +51,5 @@ public class UniqueToken {
         this.tokenType = tokenType;
         this.expiration = Instant.now().plusMillis(EXPIRATION_TIME_MS);
     }
-
-    public void setExpiration(Instant instant) {
-        this.expiration = instant.plusMillis(EXPIRATION_TIME_MS);
-    }
-
 
 }

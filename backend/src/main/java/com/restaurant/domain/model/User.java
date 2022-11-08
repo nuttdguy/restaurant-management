@@ -1,6 +1,5 @@
 package com.restaurant.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.annotations.*;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,7 +21,10 @@ import java.util.stream.Collectors;
 @Getter @Setter
 @ToString
 @Builder
-public class User implements UserDetails {
+public class User implements UserDetails, Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -56,7 +58,6 @@ public class User implements UserDetails {
             joinColumns = { @JoinColumn(name = "user_uuid")},
             inverseJoinColumns = { @JoinColumn(name = "role_id") })
     private Set<Role> authorities = new HashSet<>();
-
 
     @Fetch(value = FetchMode.SUBSELECT)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

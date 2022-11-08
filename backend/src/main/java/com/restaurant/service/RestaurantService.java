@@ -191,8 +191,8 @@ public class RestaurantService {
                 .orElseThrow(() -> new EntityNotFoundException(format("Cannot update - dish id %s was not found", tEditDish.id())));
 
         log.trace("Updating fields {}", tEditDish);
-        if (tEditDish.itemName() != null && !tEditDish.itemName().isBlank()) {
-            dish.setName(tEditDish.itemName());
+        if (tEditDish.name() != null && !tEditDish.name().isBlank()) {
+            dish.setName(tEditDish.name());
         }
         if (tEditDish.price() != null && !tEditDish.price().equals(dish.getPrice())) {
             dish.setPrice(tEditDish.price());

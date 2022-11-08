@@ -5,8 +5,6 @@ import com.restaurant.domain.dto.response.VwUser;
 import com.restaurant.domain.dto.response.VwVerified;
 import com.restaurant.domain.model.User;
 
-import java.util.Set;
-
 
 public class UserMapper {
 

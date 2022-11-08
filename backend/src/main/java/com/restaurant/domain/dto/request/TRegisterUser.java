@@ -1,10 +1,13 @@
 package com.restaurant.domain.dto.request;
 
+import lombok.Builder;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.HashSet;
 import java.util.Set;
 
+@Builder
 public record TRegisterUser(
     @NotBlank @Email String username,
     String firstName,

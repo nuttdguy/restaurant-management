@@ -29,11 +29,22 @@ public class Dish implements Serializable {
     @Column(name = "dish_id")
     private Long id;
 
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "category")
     private String category;
+
+    @Column(name = "tags")
     private String tags;
+
+    @Column(name = "description")
     private String description;
+
+    @Column(name = "ingredients")
     private String ingredients;
+
+    @Column(name = "price")
     private BigDecimal price;
 
     @JoinColumn(name = "restaurant_uuid")

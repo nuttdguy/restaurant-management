@@ -57,7 +57,7 @@ export const Landing = () => {
   return (
     <Container>
       <Wrapper>
-        <Title>Restuarant Management</Title>
+        <Title>Restaurant Management</Title>
 
         <LinkContainer>
           <Link to="/login">

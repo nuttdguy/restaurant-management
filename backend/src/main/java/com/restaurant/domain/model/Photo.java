@@ -32,7 +32,7 @@ public class Photo implements Serializable {
     private String type;
 
 //    @Column(name ="image_bytes", nullable = false, length = 100000)
-    @Column(name ="image_bytes", columnDefinition="BLOB", length = 100000)
+    @Column(name ="file", length = 100000)
     private byte[] file;
 
     @Enumerated(EnumType.STRING)
@@ -44,10 +44,12 @@ public class Photo implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_uuid")
+    @ToString.Exclude
     private Restaurant restaurant;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dish_id")
+    @ToString.Exclude
     private Dish dish;
 
     @Override

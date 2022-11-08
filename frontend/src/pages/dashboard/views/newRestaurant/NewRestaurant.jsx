@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
+import { useDispatch } from "react-redux";
 import { registerRestaurant } from "../../../../redux/resources/restaurantResource";
 import { DBSectionHeader } from "../styles/layoutStyles";
 
@@ -14,28 +14,11 @@ import {
 
 export const NewRestaurant = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.userAuth.currentUser);
-  const [isSuccess, setIsSuccess] = useState(
-    useSelector((state) => state.restaurant.isSuccess)
-  );
-  const [message, setMessage] = useState(null);
-
-  useEffect(() => {
-    if (isSuccess) {
-      setIsSuccess(isSuccess);
-      setMessage("Resaurant successfully created");
-      setTimeout(() => {
-        setMessage(null);
-        setIsSuccess(!isSuccess);
-      });
-    }
-  }, [isSuccess, message]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const data = new FormData(e.target);
     const dataValues = Object.fromEntries(data);
-    dataValues.username = user.username;
 
     registerRestaurant(dispatch, {
       data: JSON.stringify(dataValues),
@@ -43,7 +26,7 @@ export const NewRestaurant = () => {
       image: document.querySelector("#image").files[0],
     });
 
-    e.target.reset();
+    // e.target.reset();
   };
 
   return (
@@ -56,7 +39,6 @@ export const NewRestaurant = () => {
         id="registrationForm"
         encType="multipart/form-data"
       >
-        {isSuccess ? <p>{message}</p> : null}
         <FlexGroup>
           <FlexItem>
             <Label>Name</Label>
@@ -90,6 +72,16 @@ export const NewRestaurant = () => {
               placeholder="janedoe@restaurant.io"
             />
           </FlexItem>
+          <FlexItem>
+            <Label>phone</Label>
+            <Input
+              required
+              maxLength={10}
+              name={"phone"}
+              type="tel"
+              placeholder="555-555-5555"
+            />
+          </FlexItem>
         </FlexGroup>
         <FlexGroup>
           <FlexItem>
@@ -119,7 +111,7 @@ export const NewRestaurant = () => {
           <FlexItem>
             <Label>address1: </Label>
             <Input
-              minLength={4}
+              minLength={1}
               maxLength={50}
               name={"address1"}
               type="text"
@@ -128,13 +120,7 @@ export const NewRestaurant = () => {
           </FlexItem>
           <FlexItem>
             <Label>address2: </Label>
-            <Input
-              minLength={4}
-              maxLength={50}
-              name={"address2"}
-              type="text"
-              placeholder="block 1"
-            />
+            <Input name={"address2"} type="text" placeholder="block 1" />
           </FlexItem>
         </FlexGroup>
         <FlexGroup>
@@ -161,8 +147,8 @@ export const NewRestaurant = () => {
           <FlexItem>
             <Label>Zip</Label>
             <Input
-              minLength={4}
-              maxLength={50}
+              minLength={5}
+              maxLength={9}
               name={"zip"}
               type="text"
               placeholder="55555"
@@ -208,7 +194,6 @@ export const NewRestaurant = () => {
           </FlexItem>
         </FlexGroup>
       </Form>
-      {/* <FlexItem>{image == null ? null : processImage}</FlexItem> */}
     </>
   );
 };

@@ -43,8 +43,11 @@ const FlexImageGroup = styled.div`
 `;
 
 const FlexItemGroup = styled.div`
+  display: flex;
   flex: 50%;
-  margin: 12px 0;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
 `;
 
 const FlexItem = styled.div`
@@ -53,8 +56,9 @@ const FlexItem = styled.div`
 `;
 
 const Image = styled.img`
-  min-height: 200px;
-  /* aspect-ratio: calc(16 / 9); */
+  min-height: 300px;
+  width: 200px;
+  aspect-ratio: calc(3 / 1);
   min-width: 80%;
   padding: 10px 10px;
   margin: 10px 0 24px;
@@ -67,7 +71,7 @@ const Image = styled.img`
 const Label = styled.label`
   display: block;
   color: #2f2f2f;
-  font-size: 0.9em;
+  font-size: 1rem;
 
   text-transform: capitalize;
   font-weight: 500;
@@ -82,6 +86,8 @@ const Input = styled.input`
   border-right: hidden;
   border-bottom: 1px solid black;
   background-color: transparent;
+
+  font-size: 1.2rem;
   padding: 3px 10px 3px 0px;
   margin: 0 10px 20px 0;
   outline: 0;
@@ -92,22 +98,33 @@ const Input = styled.input`
   &:active {
     border-bottom: 1px solid teal;
   }
+  &::-webkit-file-upload-button {
+    background-color: transparent;
+    border-color: darkblue;
+    text-transform: uppercase;
+    letter-spacing: 0.6pt;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+  &::-webkit-file-upload-button:hover {
+    background-color: lightgray;
+  }
 `;
 
 const Select = styled.select`
+  font-size: 1rem;
   height: 40px;
-  border-radius: 5px;
-  margin-bottom: 18px;
-  padding: 12px 0;
+  margin: 0 24px 12px 0;
+  padding: 0;
 `;
 
 const SelectOption = styled.option`
-  font-size: larger;
+  font-size: 1rem;
 `;
 
 const SubmitButton = styled.button`
   width: 40%;
-  height: 44px;
+  height: 40px;
   border: none;
   padding: 15px 18px;
   text-transform: uppercase;

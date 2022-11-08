@@ -20,6 +20,7 @@ const linkStyle = {
   textDecoration: "none",
   color: "#000",
   fontWeight: "500",
+  fontSize: "1rem",
 };
 
 const navPath = {

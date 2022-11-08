@@ -74,7 +74,11 @@ public class SecurityConfig {
 
         // require authorization for any request
         httpSecurity.authorizeRequests()
-                .antMatchers("/auth/register", "/auth/verify/**", "/auth/password/**").permitAll()
+                .antMatchers(
+                        "/auth/register",
+                        "/auth/verify/**",
+                        "/auth/password/**",
+                        "/images/**").permitAll()
                 .anyRequest().authenticated();
 
         // set custom filters, inject the dependencies that have been created by Spring @Component annotation

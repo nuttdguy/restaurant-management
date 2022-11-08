@@ -15,10 +15,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.security.RolesAllowed;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Set;
 import java.util.UUID;
+
+import static java.lang.String.format;
 
 @Slf4j
 @RestController
@@ -26,6 +29,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class RestaurantApi {
 
+    private static final String URL_FORMAT_STRING = "http://%s:%s%s%s";
     private final RestaurantService restaurantService;
 
     @GetMapping
@@ -51,23 +55,31 @@ public class RestaurantApi {
         return ResponseEntity.ok(restaurantService.getRestaurantById(uuid));
     }
 
-    @PostMapping(value = "/create", consumes = { MediaType.APPLICATION_JSON_VALUE})
-    @RolesAllowed({RoleType.REGISTERED_USER, RoleType.RESTAURANT_OPERATOR})
-    public ResponseEntity<Object> registerRestaurant(@RequestBody TCreateRestaurant tCreateRestaurant) throws IOException {
-        log.trace("Restaurant Api - registerRestaurant - json");
-        return ResponseEntity.ok(restaurantService.registerRestaurant(tCreateRestaurant, null));
-    }
+//    @PostMapping(value = "/create", consumes = { MediaType.APPLICATION_JSON_VALUE})
+//    @RolesAllowed({RoleType.REGISTERED_USER, RoleType.RESTAURANT_OPERATOR})
+//    public ResponseEntity<Object> registerRestaurant(@RequestBody TCreateRestaurant tCreateRestaurant) throws IOException {
+//        log.trace("Restaurant Api - registerRestaurant - json");
+//        return ResponseEntity.ok(restaurantService.registerRestaurant(tCreateRestaurant, null));
+//    }
 
     @PostMapping(value = "/create", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     @RolesAllowed({RoleType.REGISTERED_USER, RoleType.RESTAURANT_OPERATOR})
     public ResponseEntity<Object> registerRestaurant(@RequestPart("data") String data,
-                                                   @RequestPart("license") MultipartFile licenseDocument,
-                                                     @RequestPart("image") MultipartFile image) throws IOException {
+                                                     @RequestPart("license") MultipartFile licenseDocument,
+                                                     @RequestPart("image") MultipartFile image,
+                                                     Principal principal,
+                                                     HttpServletRequest httpServletRequest) throws IOException {
         log.trace("Restaurant Api - registerRestaurant - multi-part");
+
+        String photoResourceUri = format(URL_FORMAT_STRING,
+                httpServletRequest.getServerName(),
+                httpServletRequest.getServerPort(),
+                httpServletRequest.getContextPath());
 
         ObjectMapper objectMapper = new ObjectMapper();
         TCreateRestaurant tCreateRestaurant = objectMapper.readValue(data, TCreateRestaurant.class);
-        return ResponseEntity.ok(restaurantService.registerRestaurant(tCreateRestaurant, licenseDocument));
+        return ResponseEntity.ok(restaurantService
+                .registerRestaurant(tCreateRestaurant, licenseDocument, principal.getName(), photoResourceUri));
     }
 
     @PutMapping(value = "/edit", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
@@ -98,19 +110,26 @@ public class RestaurantApi {
     @PostMapping(value = "/dish/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @RolesAllowed({RoleType.REGISTERED_USER, RoleType.RESTAURANT_OPERATOR})
     public ResponseEntity<Object> createDish(@RequestPart("data") String dish,
-                                            @RequestPart("image") MultipartFile image) {
+                                            @RequestPart("image") MultipartFile image,
+                                             HttpServletRequest httpServletRequest) {
+
+        String photoResourceUri = format(URL_FORMAT_STRING,
+                httpServletRequest.getServerName(),
+                httpServletRequest.getServerPort(),
+                httpServletRequest.getContextPath(),
+                "/images");
 
         log.trace("RestaurantApi - createDish");
-        return ResponseEntity.ok(restaurantService.createDish(dish, image));
+        return ResponseEntity.ok(restaurantService.createDish(dish, image, photoResourceUri));
     }
 
     @PutMapping(value = "/dish/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @RolesAllowed({RoleType.REGISTERED_USER, RoleType.RESTAURANT_OPERATOR})
-    public ResponseEntity<Object> editDish(@RequestPart("data") TEditDish TEditDish) {
+    public ResponseEntity<Object> editDish(@RequestPart("data") TEditDish tEditDish) {
         log.trace("RestaurantApi - TEditDish");
 
         // TODO - made changes, fix this
-        return ResponseEntity.ok(restaurantService.editDish(UUID.randomUUID(), TEditDish));
+        return ResponseEntity.ok(restaurantService.editDish(UUID.randomUUID(), tEditDish));
     }
 
     @DeleteMapping("/{restaurantId}")

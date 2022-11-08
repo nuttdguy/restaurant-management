@@ -60,10 +60,12 @@ public class User implements UserDetails {
 
     @Fetch(value = FetchMode.SUBSELECT)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @ToString.Exclude
     public  Set<Restaurant> restaurants = new HashSet<>();
 
     @Fetch(value = FetchMode.SUBSELECT)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private Set<UniqueToken> tokens = new HashSet<>();
 
 

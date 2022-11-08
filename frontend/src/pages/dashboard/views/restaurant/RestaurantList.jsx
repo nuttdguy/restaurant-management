@@ -10,7 +10,7 @@ import {
 import { AddBoxOutlined, DeleteOutline, Edit } from "@mui/icons-material";
 import { DBSectionHeader, DBContentInfoWrap } from "../styles/layoutStyles";
 import { DataTable, ActionCell, DeleteButton } from "../styles/RestaurantStyle";
-import { Avatar } from "@mui/material";
+import { Avatar, Box } from "@mui/material";
 
 export function RestaurantList() {
   const dispatch = useDispatch();
@@ -47,22 +47,25 @@ export function RestaurantList() {
   const columns = [
     { field: "id", headerName: "ID", align: "left", flex: 1 },
     {
-      field: "photo",
+      field: "photos",
       headerName: "Photo",
       align: "center",
       flex: 1,
       renderCell: (params) => (
-        <Avatar
-          key={params.row?.photos?.[0].id}
-          src={`${params.row?.photos?.[0].photoUrl}?w=64&fit=crop&auto=format`}
-          srcSet={`${params.row?.photos?.[0].photoUrl}?w=64&fit=crop&auto=format&dpr=2 2x`}
-          alt={params.row?.photos?.[0].name}
-          loading="lazy"
-        />
+        <>
+          {params.row.photos?.map((photo, index) => (
+            <Avatar
+              key={photo.id}
+              src={`${photo.photoUrl}`}
+              alt={photo.name}
+              loading="lazy"
+            />
+          ))}
+        </>
       ),
     },
     { field: "name", headerName: "Name", align: "left", flex: 2 },
-    // { field: "alias", headerName: "Alias", align: "left" },
+    { field: "alias", headerName: "Alias", align: "left" },
     { field: "url", headerName: "url", align: "left" },
     { field: "description", headerName: "description", align: "left" },
     { field: "category", headerName: "category", align: "left" },
@@ -108,19 +111,20 @@ export function RestaurantList() {
       {/* {JSON.stringify(restaurants)} */}
       <DBContentInfoWrap>
         <DataTable>
+          {/* <Box sx={{ height: 520, width: "100%" }}> */}
           <DataGrid
-            // checkboxSelection
+            checkboxSelection
+            // disableSelectionOnClick
             columnVisibilityModel={columnVisibility}
             onColumnVisibilityModelChange={(newModel) =>
               setColumnVisibility(newModel)
             }
-            // getRowId={(row) => row.id}
-            disableSelectionOnClick
             rows={restaurants}
             columns={columns}
             pageSize={5}
             rowsPerPageOptions={[5]}
           />
+          {/* </Box> */}
         </DataTable>
       </DBContentInfoWrap>
     </>

@@ -8,6 +8,7 @@ import {
   Form,
   FlexGroup,
   FlexItem,
+  FlexImageGroup,
   FlexItemGroup,
   Image,
   Label,
@@ -22,7 +23,6 @@ export const NewDish = () => {
     imagePreviewUrl: "",
     imageFile: null,
   });
-  // const fileInput = useRef();
 
   const dispatch = useDispatch();
   const restaurants = useSelector((state) => state.restaurant?.restaurants);
@@ -53,10 +53,8 @@ export const NewDish = () => {
     const dataValues = Object.fromEntries(data);
     dataValues.username = user.username;
 
-    // console.log(user);
     newDish(dispatch, {
       data: JSON.stringify(dataValues),
-      // image: document.querySelector("#image").files[0],
       image: image.imageFile,
     });
 
@@ -67,7 +65,6 @@ export const NewDish = () => {
     <>
       <DBSectionHeader>
         <h3>New Dish</h3>
-        {/* {JSON.stringify(restaurants)} */}
       </DBSectionHeader>
 
       <Form
@@ -77,26 +74,20 @@ export const NewDish = () => {
       >
         <FlexGroup>
           <FlexItemGroup>
-            <Label>image:</Label>
-
             {image.imageFile === null ? (
               <Image />
             ) : (
-              <Image
-                style={{ width: 200, height: 200, border: "3px solid black" }}
-                src={image.imagePreviewUrl}
-                alt="..."
-              />
+              <Image src={image.imagePreviewUrl} alt="..." />
             )}
             <Input
               id="image"
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              // ref={fileInput}
             />
           </FlexItemGroup>
           <FlexItemGroup>
+            {/* <FlexItemColumn> */}
             <Label>dish name</Label>
             <Input
               required
@@ -106,16 +97,15 @@ export const NewDish = () => {
               type="text"
               placeholder="Fire Beans"
             />
-            {JSON.stringify(restaurants)}
             <Label>select restaurant:</Label>
             <Select id="phone" name={"phone"}>
-              {/* {restaurants?.map((restaurant) => {
+              {restaurants?.map((restaurant, index) => {
                 return (
                   <SelectOption name={"phone"} key={restaurant.id}>
                     {restaurant.phone}{" "}
                   </SelectOption>
                 );
-              })} */}
+              })}
             </Select>
             <Label>price </Label>
             <Input
@@ -134,6 +124,7 @@ export const NewDish = () => {
               type="text"
               placeholder="Beans"
             />
+            {/* </FlexItemColumn> */}
           </FlexItemGroup>
         </FlexGroup>
         <FlexGroup>

@@ -20,4 +20,6 @@ public interface IRestaurantRepo extends JpaRepository<Restaurant, UUID> {
     Optional<Restaurant> findByPhone(String phone);
     Set<Restaurant> findFirst5ByUserUsername(String username);
     Set<Restaurant> findFirst5ByUserUuid(UUID uuid);
+
+    Set<Restaurant> findByUserUuid(UUID uuid);
 }

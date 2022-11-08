@@ -37,7 +37,7 @@ const restaurantSlice = createSlice({
     },
     getRestaurantSuccess: (state, action) => {
       state.restaurants = action.payload;
-      console.log(state.restaurants);
+      console.log("restaurant - ", state.restaurants);
       state.isFetching = false;
       state.isSuccess = true;
       state.isApiError = false;

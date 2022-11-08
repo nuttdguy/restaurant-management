@@ -15,6 +15,16 @@ import {
 
 import { authorizedRequest } from "../../api/apiResource";
 
+const getRestaurants = async (dispatch) => {
+  dispatch(getRestaurantStart());
+  try {
+    const res = await authorizedRequest.get(`/restaurant`);
+    dispatch(getRestaurantSuccess(res.data));
+  } catch (err) {
+    dispatch(getRestaurantFailure(err.response?.data?.message));
+  }
+};
+
 const registerRestaurant = async (dispatch, restaurant) => {
   dispatch(registerStart());
   try {
@@ -25,18 +35,8 @@ const registerRestaurant = async (dispatch, restaurant) => {
     );
     dispatch(registerSuccess(res.data));
   } catch (err) {
+    console.log("Error registering restaurant ... ", err.response);
     dispatch(registerFailure(err.response?.data?.message));
-  }
-};
-
-const getRestaurants = async (dispatch) => {
-  dispatch(getRestaurantStart());
-  try {
-    const res = await authorizedRequest.get(`/restaurant`);
-    // console.log("Done fetching list of restaurants ", res.data);
-    dispatch(getRestaurantSuccess(res.data));
-  } catch (err) {
-    dispatch(getRestaurantFailure(err.response?.data?.message));
   }
 };
 

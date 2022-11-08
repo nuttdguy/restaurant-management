@@ -60,8 +60,10 @@ public class RestaurantService {
     public Set<VwDish> getAllDishesByOwnerName(String username) {
         log.trace("RestaurantService - getAllDishesByOwnerName");
 
+        User user = userRepo.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException(format(NOT_FOUND, username)));
         log.trace("Finding all restaurants owned by {}", username);
-        Set<Restaurant> restaurants = restaurantRepo.findByUserUsername(username);
+        Set<Restaurant> restaurants = restaurantRepo.findByUserUuid(user.getUuid());
 
         Set<Dish> dishes = new HashSet<>();
         restaurants.forEach(rest -> dishes.addAll(rest.getDishes()));
@@ -75,16 +77,18 @@ public class RestaurantService {
                 .orElseThrow(() -> new EntityNotFoundException(format("Restaurant not found for id %s", uuid)));
     }
 
-    public VwRestaurant registerRestaurant(TCreateRestaurant tCreateRestaurant, MultipartFile license) throws IOException {
+    public VwRestaurant registerRestaurant(TCreateRestaurant tCreateRestaurant, MultipartFile license, String username, String photoResourceUri) throws IOException {
         log.trace("Restaurant Service - registerRestaurant");
 
-        log.trace("Fetching {}", tCreateRestaurant.user().username());
-        Optional<User> user = userRepo.findByUsername(tCreateRestaurant.user().username());
+        log.trace("Fetching {}", username);
+        Optional<User> user = userRepo.findByUsername(username);
         if (user.isEmpty()) {
             throw new UserNotFoundException("The restaurant owner's username is a required field");
         }
 
         Restaurant restaurant = toRestaurantFrom(tCreateRestaurant, user.get());
+
+        // todo add file resource uri
         License safetyLicense = License.builder()
                 .name(license.getOriginalFilename())
                 .type(license.getContentType())
@@ -100,11 +104,11 @@ public class RestaurantService {
         return toRestaurantViewFrom(restaurant);
     }
 
-    public VwRestaurant createRestaurant(TCreateRestaurant tCreateRestaurant) {
+    public VwRestaurant createRestaurant(TCreateRestaurant tCreateRestaurant, String username) {
         log.trace("Restaurant Service - TCreateRestaurant {}", tCreateRestaurant);
 
-        log.trace("Fetching {}", tCreateRestaurant.user().username());
-        Optional<User> user = userRepo.findByUsername(tCreateRestaurant.user().username());
+        log.trace("Fetching {}", username);
+        Optional<User> user = userRepo.findByUsername(username);
         if (user.isPresent()) {
 
             log.trace("Found {}, creating restaurant", user.get().getUsername());
@@ -112,7 +116,7 @@ public class RestaurantService {
             restaurant = restaurantRepo.save(restaurant);
             return toRestaurantViewFrom(restaurant);
         }
-        throw new UserNotFoundException(format("Failed to create Restaurant. %s is not valid user", tCreateRestaurant.user().username()));
+        throw new UserNotFoundException(format("Failed to create Restaurant. %s is not valid user", username));
     }
 
     public VwRestaurant editRestaurant(String restaurantJson, MultipartFile restaurantPhoto) throws JsonProcessingException {
@@ -133,7 +137,7 @@ public class RestaurantService {
         return toRestaurantViewFrom(restaurant);
     }
 
-    public VwDish createDish(String dishJson, MultipartFile photoFile) {
+    public VwDish createDish(String dishJson, MultipartFile photoFile, String photoResourceUri) {
         log.trace("RestaurantService - createDish");
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -157,7 +161,7 @@ public class RestaurantService {
         try {
             // process the image
             log.trace("start processing photo");
-            Photo photo = documentService.processPhoto(photoFile, PhotoType.DISH);
+            Photo photo = documentService.processPhoto(photoFile, PhotoType.DISH, photoResourceUri);
 
             restaurant.addDish(dish);
             restaurant.addPhoto(photo);

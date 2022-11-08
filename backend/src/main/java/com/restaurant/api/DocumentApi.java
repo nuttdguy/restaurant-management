@@ -14,8 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.Set;
 import java.util.UUID;
+
+import static java.lang.String.format;
 
 
 @Slf4j
@@ -24,6 +25,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class DocumentApi {
 
+    private static final String URL_FORMAT_STRING = "http://%s:%s%s";
     private final DocumentService documentService;
 
     @PostMapping("/upload/license")
@@ -39,11 +41,16 @@ public class DocumentApi {
     @RolesAllowed({RoleType.REGISTERED_USER, RoleType.RESTAURANT_OPERATOR})
     public ResponseEntity<Object> uploadImage(@RequestPart("image") MultipartFile imageFile,
                                               @RequestPart("restaurantId") String restaurantId,
-                                              HttpServletRequest request) {
+                                              HttpServletRequest httpServletRequest) {
         log.trace("DocumentApi - uploadImage");
+        String photoResourceUri = format(URL_FORMAT_STRING,
+                httpServletRequest.getServerName(),
+                httpServletRequest.getServerPort(),
+                httpServletRequest.getContextPath(),
+                "/images");
 
         try {
-            return ResponseEntity.ok(documentService.savePhoto(imageFile, UUID.fromString(restaurantId)));
+            return ResponseEntity.ok(documentService.savePhoto(imageFile, UUID.fromString(restaurantId), photoResourceUri));
         } catch (IOException ex) {
             log.trace(ex.getLocalizedMessage());
         }
@@ -60,21 +67,19 @@ public class DocumentApi {
 //    }
 
 
-    @GetMapping("/download/images/id/{restaurantId}")
-    @RolesAllowed({RoleType.REGISTERED_USER, RoleType.RESTAURANT_OPERATOR})
-    public ResponseEntity<Object> getPhotosByRestaurantId(@PathVariable("restaurantId") UUID restaurantId) {
-        log.trace("DocumentApi - getImageByRestaurantId");
+    @GetMapping("/images/id/{imageId}")
+    public ResponseEntity<Object> getPhotoById(@PathVariable("imageId") Long imageId) {
+        log.trace("DocumentApi - getPhotoById");
 
-        Set<Photo> photos = documentService.getImageByRestaurantId(restaurantId);
-        return ResponseEntity.ok().body(photos);
+        return ResponseEntity.ok()
+                .body(documentService.getImageById(imageId));
     }
 
-    @GetMapping("/download/images/name/{imageName}")
-    @RolesAllowed({RoleType.REGISTERED_USER, RoleType.RESTAURANT_OPERATOR})
-    public ResponseEntity<Object> getPhotoByName(@PathVariable("imageName") String imageName) {
-        log.trace("DocumentApi - getImageByRestaurantName");
+    @GetMapping("/images/{photoUrl}")
+    public ResponseEntity<Object> getPhotoByUrl(@PathVariable("photoUrl") String photoUrl) {
+        log.trace("DocumentApi - getPhotoByUrl");
 
-        Photo photo = documentService.getByPhotoName(imageName);
+        Photo photo = documentService.getByPhotoUrl(photoUrl);
         return ResponseEntity.ok()
                 .contentType(MediaType.valueOf(photo.getType()))
                 .body(FileUtil.decompressData(photo.getFile()));

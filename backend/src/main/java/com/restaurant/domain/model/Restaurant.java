@@ -1,6 +1,5 @@
 package com.restaurant.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.*;
@@ -51,10 +50,12 @@ public class Restaurant implements Serializable {
 
     @JoinColumn(name = "license_id")
     @OneToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private License license;
 
     @JoinColumn(name = "user_uuid")
     @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private User user;
 
     @Fetch(value = FetchMode.SUBSELECT)

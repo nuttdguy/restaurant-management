@@ -17,9 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -70,13 +68,13 @@ public class DocumentService {
     }
 
 
-    public String savePhoto(MultipartFile photoFile, UUID restaurantId) throws IOException {
+    public String savePhoto(MultipartFile photoFile, UUID restaurantId, String photoResourceUri) throws IOException {
 
         log.trace("Document Service - saveImage");
         Restaurant restaurant = restaurantRepo.findById(restaurantId)
                 .orElseThrow(() -> new EntityNotFoundException("Restaurant not found - cannot save image"));
 
-        Photo photo = processPhoto(photoFile, PhotoType.PRIMARY);
+        Photo photo = processPhoto(photoFile, PhotoType.PRIMARY, photoResourceUri);
         photo.setRestaurant(restaurant);
 
         photoRepo.save(photo);
@@ -84,42 +82,30 @@ public class DocumentService {
         return "File was successfully saved";
     }
 
-    public Photo processPhoto(MultipartFile photoFile, PhotoType photoType) throws IOException {
+    public Photo processPhoto(MultipartFile photoFile, PhotoType photoType, String photoResourceUri) throws IOException {
         log.trace("DocumentService - processPhoto {}", photoFile);
+        String fileURL = UUID.randomUUID().toString();
+        String fileType = photoFile.getContentType() != null ? photoFile.getContentType().split("/")[1] : ".png";
         return Photo.builder()
                 .name(photoFile.getOriginalFilename())
                 .type(photoFile.getContentType())
                 .photoType(photoType)
-                .photoUrl(format("/download/%s/%s", photoFile.getName(), photoFile.getOriginalFilename()))
+                .photoUrl(format("%s/%s.%s", photoResourceUri, fileURL, fileType))
                 .file(FileUtil.compressData(photoFile.getBytes()))
                 .build();
     }
 
-    public Set<Photo> getImageByRestaurantId(UUID restaurantId) {
-        log.trace("Document Service - getImageByRestaurantId {}", restaurantId);
-        Set<Photo> photos = photoRepo.findByRestaurantUuid(restaurantId)
+    public Photo getImageById(Long imageId) {
+        log.trace("Document Service - getImageById {}", imageId);
+        return photoRepo.findById(imageId)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        format("Did not find any photos for restaurant id %s", restaurantId)));
-
-        log.trace("decompressing photos");
-        return photos.stream().map(photo -> Photo.builder()
-                .id(photo.getId())
-                .name(photo.getName())
-                .type(photo.getType())
-                .photoType(photo.getPhotoType())
-                .restaurant(photo.getRestaurant())
-                .file(FileUtil.decompressData(photo.getFile()))
-                .build()).collect(Collectors.toSet());
+                        format("Did not find any photos for restaurant id %s", imageId)));
+    }
+    
+    public Photo getByPhotoUrl(String photoUrl) {
+        log.trace("fetching photo {}", photoUrl);
+        return photoRepo.findByPhotoUrlContains(photoUrl)
+                .orElseThrow(() -> new EntityNotFoundException(format("%s not found", photoUrl)));
     }
 
-
-    public Photo getByPhotoName(String imageName) {
-        return photoRepo.findByName(imageName)
-                .orElseThrow(() -> new EntityNotFoundException(format("%s not found", imageName)));
-    }
-
-
-//    public Set<Photo> getImageById(Long imageId) {
-//        return null;
-//    }
 }

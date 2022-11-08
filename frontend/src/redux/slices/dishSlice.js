@@ -18,6 +18,7 @@ const dishSlice = createSlice({
     },
     getDishesSuccess: (state, action) => {
       state.dishes = action.payload;
+      console.log("dishSlice - ", state.dishes);
       state.isFetching = false;
       state.isSuccess = true;
       state.isError = false;

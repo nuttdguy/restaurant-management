@@ -36,8 +36,9 @@ public class DishMapper {
                 .description(dish.getDescription())
                 .ingredients(dish.getIngredients())
                 .tags(dish.getTags())
-                .photos(dish.getPhotos().stream().map(photo ->
-                        VwPhoto.builder()
+                .photos(dish.getPhotos()
+                        .stream()
+                        .map(photo -> VwPhoto.builder()
                                 .id(photo.getId())
                                 .name(photo.getName())
                                 .type(photo.getType())
@@ -51,7 +52,9 @@ public class DishMapper {
 
     public static Set<VwDish> toCreateDishSetFrom(Set<Dish> dishes) {
         log.trace("toCreateDishSetFrom {}", dishes);
-        return dishes.stream().map(DishMapper::toCreateDishFrom).collect(Collectors.toSet());
+        return dishes.stream()
+                .map(DishMapper::toCreateDishFrom)
+                .collect(Collectors.toSet());
     }
 
 

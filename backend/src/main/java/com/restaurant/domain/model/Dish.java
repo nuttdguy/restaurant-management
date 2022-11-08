@@ -17,6 +17,7 @@ import java.util.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
+@ToString
 @Builder
 public class Dish implements Serializable {
 
@@ -37,10 +38,12 @@ public class Dish implements Serializable {
 
     @JoinColumn(name = "restaurant_uuid")
     @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Restaurant restaurant;
 
     @Fetch(value = FetchMode.SUBSELECT) // one query mode
     @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private Set<Photo> photos = new HashSet<>();
 
     public void addPhoto(Photo photo) {

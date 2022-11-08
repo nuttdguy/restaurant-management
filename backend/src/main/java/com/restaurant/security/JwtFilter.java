@@ -90,6 +90,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // do not use the jwt filter for register or verify routes
         return uri.startsWith("/v1/api/auth/register") || uri.startsWith("/v1/api/auth/verify") ||
-                uri.startsWith("/v1/api/auth/password") || uri.startsWith("/v1/api/auth/login");
+                uri.startsWith("/v1/api/auth/password") || uri.startsWith("/v1/api/auth/login") ||
+                uri.startsWith("/v1/api/images");
     }
 }

@@ -7,7 +7,6 @@ import com.restaurant.domain.dto.response.VwLink;
 import com.restaurant.domain.model.*;
 import com.restaurant.event.SendEmailEvent;
 import com.restaurant.exception.*;
-import com.restaurant.repository.IRoleRepo;
 import com.restaurant.repository.IUserRepo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.validation.ValidationException;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,24 +35,26 @@ public class UserService implements UserDetailsService {
 
     private static final String URL_STRING = "%s/%s";
     private final TokenService tokenService;
-    private final IRoleRepo roleRepo;
+
     private final IUserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public User loadUserByUsername(String username) {
+        log.trace("UserService - loadUserByUsername");
         return userRepo.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(format(NOT_FOUND, username)));
     }
 
     public User findById(UUID id) {
+        log.trace("UserService - findById");
         return userRepo.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(format(NOT_FOUND, id)));
     }
 
     public VwLink registerNewUser(TRegisterUser tRegisterUser, String urlLink) {
-        log.trace("UserService - TRegisterUser");
+        log.trace("UserService - registerNewUser");
 
         User newUser = createNewUserOrThrow(tRegisterUser);
 
@@ -80,12 +80,9 @@ public class UserService implements UserDetailsService {
         log.trace("Extracting the user owning this registration token={}", theToken);
         User user = uniqueToken.getUser();
 
-        log.trace("Enabling and updating the user {}", user);
+        log.trace("Enabling, updating and adding role to the user {}", user);
         user.setEnabled(true);
         user.addRole(new Role(RoleType.REGISTERED_USER));
-//        List<Role> roles = roleRepo.findAll();
-//        user.getAuthorities().add(roles.get(0));
-//        user.getAuthorities().add(roles.get(1));
         userRepo.save(user);
 
         log.trace("Deleting the registration token {}", theToken);
@@ -109,7 +106,7 @@ public class UserService implements UserDetailsService {
     }
 
     public String forgotPassword(TPasswordForgot tPasswordForgot, String urlLink) {
-        log.trace("User Service - forgotPassword");
+        log.trace("UserService - forgotPassword");
 
         log.trace("Finding user by username " );
         User user = userRepo.findByUsername(tPasswordForgot.username())
@@ -125,7 +122,7 @@ public class UserService implements UserDetailsService {
     }
 
     public String resetPassword(TPasswordReset tPasswordReset, UUID thePwdResetToken) {
-        log.trace("User Service - changePassword");
+        log.trace("UserService - resetPassword");
 
         UniqueToken passwordResetToken =  tokenService.findByToken(thePwdResetToken)
                 .orElseThrow(() -> new NotFoundException(format(ENTITY_NOT_EXISTS, thePwdResetToken)));
@@ -148,6 +145,7 @@ public class UserService implements UserDetailsService {
     }
 
     public String deleteUser(UUID uuid) {
+        log.trace("UserService - deleteUser");
         userRepo.delete(userRepo.findById(uuid)
                 .orElseThrow(() -> new UsernameNotFoundException(format(DELETE_FAILURE, uuid))));
         return "Success";
@@ -171,7 +169,7 @@ public class UserService implements UserDetailsService {
     }
 
     private User createNewUserOrThrow(TRegisterUser tRegisterUser) {
-        log.trace("UserService - extractUserThrowIfFound");
+        log.trace("UserService - createNewUserOrThrow");
 
         if (!tRegisterUser.password().equals(tRegisterUser.confirmPassword())) {
             throw new ValidationException(format(VALIDATION_FAILURE, "password", tRegisterUser.password(), "must match"));

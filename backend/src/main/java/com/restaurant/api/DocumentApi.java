@@ -25,7 +25,7 @@ import static java.lang.String.format;
 @AllArgsConstructor
 public class DocumentApi {
 
-    private static final String URL_FORMAT_STRING = "http://%s:%s%s";
+    private static final String URL_FORMAT_STRING = "http://%s:%s%s%s";
     private final DocumentService documentService;
 
     @PostMapping("/upload/license")
@@ -33,7 +33,7 @@ public class DocumentApi {
     public ResponseEntity<Object> uploadLicense(@RequestPart("license") MultipartFile licenseDocument,
                                                 @RequestPart("restaurantId") String restaurantId) throws IOException {
         log.trace("DocumentApi - uploadLicense");
-        log.trace("{} ", licenseDocument);
+
         return ResponseEntity.ok().body(documentService.saveLicense(licenseDocument, UUID.fromString(restaurantId)));
     }
 
@@ -43,6 +43,7 @@ public class DocumentApi {
                                               @RequestPart("restaurantId") String restaurantId,
                                               HttpServletRequest httpServletRequest) {
         log.trace("DocumentApi - uploadImage");
+
         String photoResourceUri = format(URL_FORMAT_STRING,
                 httpServletRequest.getServerName(),
                 httpServletRequest.getServerPort(),
@@ -52,7 +53,7 @@ public class DocumentApi {
         try {
             return ResponseEntity.ok(documentService.savePhoto(imageFile, UUID.fromString(restaurantId), photoResourceUri));
         } catch (IOException ex) {
-            log.trace(ex.getLocalizedMessage());
+            log.error(ex.getLocalizedMessage());
         }
         return ResponseEntity.badRequest().body("File could not be saved");
     }
@@ -62,8 +63,7 @@ public class DocumentApi {
     public ResponseEntity<Object> getPhotoById(@PathVariable("imageId") Long imageId) {
         log.trace("DocumentApi - getPhotoById");
 
-        return ResponseEntity.ok()
-                .body(documentService.getImageById(imageId));
+        return ResponseEntity.ok().body(documentService.getImageById(imageId));
     }
 
     @GetMapping("/images/{photoUrl}")

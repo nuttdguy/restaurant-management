@@ -43,60 +43,55 @@ public class RestaurantService {
     private final IDishRepo dishRepo;
     private final IUserRepo userRepo;
 
-    public Set<VwRestaurant> getRestaurantsByOwnerName(String username) {
-        log.trace("RestaurantService - getRestaurantsByOwnerName");
-        User user = userRepo.findByUsername(username)
-                .orElseThrow(() -> new NotFoundException(format(NOT_FOUND, username)));
-        Set<Restaurant> restaurants = restaurantRepo.findFirst5ByUserUuid(user.getUuid());
 
-        return toRestaurantSetViewFrom(restaurants);
+    //============ RESTAURANT METHODS =======================//
+    //=======================================================//
+
+    //==== GET / RETRIEVE
+    public Restaurant getRestaurantById(UUID uuid) {
+        log.trace("RestaurantService - getRestaurantById");
+        return restaurantRepo.findById(uuid)
+                .orElseThrow(() -> new EntityNotFoundException(format(NOT_FOUND, uuid)));
     }
 
     public Set<VwRestaurant> getRestaurantsByName(String restaurantName) {
         log.trace("RestaurantService - getRestaurantsByName");
+
         return toRestaurantSetViewFrom(restaurantRepo.findAllByName(restaurantName));
     }
 
-    public Set<VwDish> getAllDishesByOwnerName(String username) {
-        log.trace("RestaurantService - getAllDishesByOwnerName");
+    public Set<VwRestaurant> getRestaurantsByUsername(String username) {
+        log.trace("RestaurantService - getRestaurantsByUsername");
 
         User user = userRepo.findByUsername(username)
                 .orElseThrow(() -> new NotFoundException(format(NOT_FOUND, username)));
-        log.trace("Finding all restaurants owned by {}", username);
-        Set<Restaurant> restaurants = restaurantRepo.findByUserUuid(user.getUuid());
 
-        Set<Dish> dishes = new HashSet<>();
-        restaurants.forEach(rest -> dishes.addAll(rest.getDishes()));
-        log.trace("Restaurants found {}", restaurants);
-        log.trace("Dishes found {}", dishes);
-        return toCreateDishSetFrom(dishes);
+        Set<Restaurant> restaurants = restaurantRepo.findFirst5ByUserUuid(user.getUuid());
+        return toRestaurantSetViewFrom(restaurants);
     }
 
-    public Restaurant getRestaurantById(UUID uuid) {
-        return restaurantRepo.findById(uuid)
-                .orElseThrow(() -> new EntityNotFoundException(format("Restaurant not found for id %s", uuid)));
-    }
-
+    //==== CREATE
     public VwRestaurant registerRestaurant(TCreateRestaurant tCreateRestaurant, MultipartFile license, String username, String photoResourceUri) throws IOException {
         log.trace("Restaurant Service - registerRestaurant");
 
-        log.trace("Fetching {}", username);
+
         Optional<User> user = userRepo.findByUsername(username);
         if (user.isEmpty()) {
+            log.error("{} not found", username);
             throw new UserNotFoundException("The restaurant owner's username is a required field");
         }
 
         Restaurant restaurant = toRestaurantFrom(tCreateRestaurant, user.get());
 
-        // todo add file resource uri
+        // todo complete and verify download url with download route
         License safetyLicense = License.builder()
                 .name(license.getOriginalFilename())
                 .type(license.getContentType())
+                .fileUrl(photoResourceUri)
                 .restaurant(restaurant)
                 .file(FileUtil.compressData(license.getBytes()))
                 .build();
 
-        log.trace("Done creating restaurant and safety license objects");
         safetyLicenseRepo.save(safetyLicense);
         restaurantRepo.save(restaurant);
 
@@ -105,20 +100,20 @@ public class RestaurantService {
     }
 
     public VwRestaurant createRestaurant(TCreateRestaurant tCreateRestaurant, String username) {
-        log.trace("Restaurant Service - TCreateRestaurant {}", tCreateRestaurant);
+        log.trace("Restaurant Service - createRestaurant {}", tCreateRestaurant);
 
-        log.trace("Fetching {}", username);
+
         Optional<User> user = userRepo.findByUsername(username);
-        if (user.isPresent()) {
-
-            log.trace("Found {}, creating restaurant", user.get().getUsername());
-            Restaurant restaurant = toRestaurantFrom(tCreateRestaurant, user.get());
-            restaurant = restaurantRepo.save(restaurant);
-            return toRestaurantViewFrom(restaurant);
+        if (user.isEmpty()) {
+            throw new UserNotFoundException(format(NOT_FOUND, username));
         }
-        throw new UserNotFoundException(format("Failed to create Restaurant. %s is not valid user", username));
+
+        Restaurant restaurant = restaurantRepo.saveAndFlush(toRestaurantFrom(tCreateRestaurant, user.get()));
+        return toRestaurantViewFrom(restaurant);
     }
 
+
+    //==== EDIT / UPDATE
     public VwRestaurant editRestaurant(String restaurantJson, MultipartFile restaurantPhoto) throws JsonProcessingException {
         log.trace("Restaurant Service - TEditRestaurant");
 
@@ -130,13 +125,50 @@ public class RestaurantService {
                 .findById(tEditRestaurant.id())
                 .orElseThrow(() -> new EntityNotFoundException(format("%s not found", tEditRestaurant.restaurantName())));
 
-        log.trace("Preparing to update");
+        // todo process image
         restaurantRepo.save(updateRestaurantProperties(tEditRestaurant, restaurant));
 
         log.trace("Done updating the restaurant");
         return toRestaurantViewFrom(restaurant);
     }
 
+    //==== DELETE
+    public String removeRestaurant(UUID restaurantId) {
+        log.trace("Restaurant Service - removeRestaurant id {}", restaurantId);
+
+        Restaurant restaurant = restaurantRepo.findById(restaurantId)
+                .orElseThrow(() -> new EntityNotFoundException(format(NOT_FOUND, restaurantId)));
+
+        restaurantRepo.delete(restaurant);
+        return "SUCCESS";
+    }
+
+
+    //============ DISH METHODS =======================//
+    //=================================================//
+
+    //==== GET / RETRIEVE
+    public Set<Dish> getDishesByRestaurantId(UUID restaurantId) {
+        log.trace("Restaurant Service - getDishesByRestaurantId {}", restaurantId);
+        return dishRepo.findByRestaurantUuid(restaurantId);
+    }
+
+    public Set<VwDish> getAllDishesByUsername(String username) {
+        log.trace("RestaurantService - getAllDishesByUsername");
+
+        User user = userRepo.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException(format(NOT_FOUND, username)));
+
+        Set<Restaurant> restaurants = restaurantRepo.findByUserUuid(user.getUuid());
+        Set<Dish> dishes = new HashSet<>();
+        restaurants.forEach(rest -> dishes.addAll(rest.getDishes()));
+
+        log.trace("Dishes found {}", dishes);
+        return toCreateDishSetFrom(dishes);
+    }
+
+
+    //==== CREATE
     public VwDish createDish(String dishJson, MultipartFile photoFile, String photoResourceUri) {
         log.trace("RestaurantService - createDish");
 
@@ -144,15 +176,15 @@ public class RestaurantService {
         TCreateDish dto = null;
         try {
             dto = objectMapper.readValue(dishJson, TCreateDish.class);
-            log.trace("dto {}", dto);
+
         } catch (JsonProcessingException ex) {
-            log.trace(ex.getLocalizedMessage());
+            log.error(ex.getLocalizedMessage());
             throw new ValidationException("Invalid format " + ex.getLocalizedMessage());
         }
 
         log.trace("Finding the restaurant by phone {}", dto.phone());
         Restaurant restaurant = restaurantRepo.findByPhone(dto.phone())
-                .orElseThrow(() -> new EntityNotFoundException("Restaurant not found for phone"));
+                .orElseThrow(() -> new EntityNotFoundException(format(NOT_FOUND, "phone")));
 
 
         Dish dish = toDishFrom(dto);
@@ -173,7 +205,7 @@ public class RestaurantService {
             dish = dishRepo.saveAndFlush(dish);
             log.trace("done saving the dish {} ", dish);
 
-            // save / update the restaurant entity
+
             restaurantRepo.save(restaurant);
             log.trace("Done updating the restaurant .. ");
 
@@ -185,10 +217,13 @@ public class RestaurantService {
         return toCreateDishFrom(dish);
     }
 
+
+    //==== EDIT / UPDATE
     public Object editDish(UUID restaurantId, TEditDish tEditDish) {
-        log.trace("Restaurant Service - TEditDish");
+        log.trace("Restaurant Service - editDish");
+
         Dish dish = dishRepo.findById(tEditDish.id())
-                .orElseThrow(() -> new EntityNotFoundException(format("Cannot update - dish id %s was not found", tEditDish.id())));
+                .orElseThrow(() -> new EntityNotFoundException(format(NOT_FOUND, tEditDish.id())));
 
         log.trace("Updating fields {}", tEditDish);
         if (tEditDish.name() != null && !tEditDish.name().isBlank()) {
@@ -206,26 +241,14 @@ public class RestaurantService {
         return dishRepo.save(dish);
     }
 
-    public Set<Dish> getRestaurantItems(UUID restaurantId) {
-        return dishRepo.findByRestaurantUuid(restaurantId);
-    }
 
-    public String removeRestaurant(UUID restaurantId) {
-        log.trace("Removing restaurant of ID == {}", restaurantId);
-
-        log.trace("Fetching restaurant {} to delete", restaurantId);
-        Restaurant restaurant = restaurantRepo.findById(restaurantId)
-                .orElseThrow(() -> new EntityNotFoundException(format("Cannot delete, unable to locate restaurant id %s", restaurantId)));
-        restaurantRepo.delete(restaurant);
-        return "SUCCESS";
-    }
-
+    //==== DELETE
     public String removeDish(Long dishId) {
-        log.trace("Restaurant Service - removeDish");
+        log.trace("RestaurantService - removeDish {}", dishId);
 
-        log.trace("Fetching dish {} to delete", dishId);
         Dish dish = dishRepo.findById(dishId)
                 .orElseThrow(() -> new EntityNotFoundException(format("Cannot delete, unable to locate dish id %s", dishId)));
+
         dishRepo.delete(dish);
         return "SUCCESS";
     }

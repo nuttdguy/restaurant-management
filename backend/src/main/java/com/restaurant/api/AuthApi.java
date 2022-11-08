@@ -77,6 +77,7 @@ public class AuthApi {
     public ResponseEntity<Object> resetPassword(@RequestBody @Validated TPasswordReset tPasswordReset,
                                                 @PathVariable("thePwdResetToken") UUID thePwdResetToken) {
         log.trace("Auth Api - resetPassword");
+
         return ResponseEntity.ok(userService.resetPassword(tPasswordReset, thePwdResetToken));
     }
 

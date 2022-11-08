@@ -19,6 +19,7 @@ import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.util.UUID;
 
+import static com.restaurant.exception.ExceptionMessage.*;
 import static java.lang.String.format;
 
 @Slf4j
@@ -36,24 +37,25 @@ public class DocumentService {
 
         String fileName = licenseDocument.getOriginalFilename();
         if (fileName == null ) {
-            throw new FileFormatException("File was not attached or was not acceptable");
+            log.error("File was not attached or was not acceptable");
+            throw new FileFormatException(format(NOT_ACCEPTABLE_FORMAT, "File"));
         }
 
-        log.trace("file not null, do file extension validation");
-        String[] fileParts = fileName.split("\\.");
 
+        String[] fileParts = fileName.split("\\.");
         if (fileParts.length > 0 ) {
             String ext = fileParts[fileParts.length - 1].toLowerCase().trim();
             log.trace("file name {} :: ext {}", fileName, ext);
 
             if (!ext.equals("pdf") && !ext.equals("doc") && !ext.equals("docx")) {
-                throw new FileFormatException("Unacceptable document format - please try again with .pdf, .doc or .docx file");
+                log.error("File was not attached or was not acceptable");
+                throw new FileFormatException(format(REQUIRED_FILE_FORMAT, ".pdf, .doc or .docx file"));
             }
         }
 
 
         Restaurant restaurant = restaurantRepo.findById(restaurantId)
-                .orElseThrow(() -> new EntityNotFoundException(format("Restaurant %s not found", restaurantId)));
+                .orElseThrow(() -> new EntityNotFoundException(format(NOT_FOUND, restaurantId)));
 
         log.trace("Saving the license agreement");
         safetyLicense.save(License.builder()
@@ -69,10 +71,10 @@ public class DocumentService {
 
 
     public String savePhoto(MultipartFile photoFile, UUID restaurantId, String photoResourceUri) throws IOException {
+        log.trace("Document Service - savePhoto");
 
-        log.trace("Document Service - saveImage");
         Restaurant restaurant = restaurantRepo.findById(restaurantId)
-                .orElseThrow(() -> new EntityNotFoundException("Restaurant not found - cannot save image"));
+                .orElseThrow(() -> new EntityNotFoundException(format(NOT_FOUND, restaurantId)));
 
         Photo photo = processPhoto(photoFile, PhotoType.PRIMARY, photoResourceUri);
         photo.setRestaurant(restaurant);
@@ -85,25 +87,29 @@ public class DocumentService {
     public Photo processPhoto(MultipartFile photoFile, PhotoType photoType, String photoResourceUri) throws IOException {
         log.trace("DocumentService - processPhoto {}", photoFile);
         String fileURL = UUID.randomUUID().toString();
-        String fileType = photoFile.getContentType() != null ? photoFile.getContentType().split("/")[1] : ".png";
+        String fileType = photoFile.getContentType();
+
         return Photo.builder()
                 .name(photoFile.getOriginalFilename())
                 .type(photoFile.getContentType())
                 .photoType(photoType)
-                .photoUrl(format("%s/%s.%s", photoResourceUri, fileURL, fileType))
+                .photoUrl(format("%s/%s.%s", photoResourceUri,
+                        fileURL, fileType == null ? ".png" : fileType.split("/")[1]))
                 .file(FileUtil.compressData(photoFile.getBytes()))
                 .build();
     }
 
     public Photo getImageById(Long imageId) {
         log.trace("Document Service - getImageById {}", imageId);
+
         return photoRepo.findById(imageId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         format("Did not find any photos for restaurant id %s", imageId)));
     }
-    
+
     public Photo getByPhotoUrl(String photoUrl) {
-        log.trace("fetching photo {}", photoUrl);
+        log.trace("Document Service - getByPhotoUrl {}", photoUrl);
+
         return photoRepo.findByPhotoUrlContains(photoUrl)
                 .orElseThrow(() -> new EntityNotFoundException(format("%s not found", photoUrl)));
     }

@@ -21,4 +21,5 @@ Users can perform simple operations for getting, creating, updating and deleting
   - mySql
  
  
-![restaurant-collage](https://user-images.githubusercontent.com/6646024/199547988-2624af29-c259-4fa1-b23b-957e4d21345d.png)
+ 
+![restauran-collage](https://user-images.githubusercontent.com/6646024/200644304-ec719089-8e17-4e97-ad94-10dd2b87ad07.png)

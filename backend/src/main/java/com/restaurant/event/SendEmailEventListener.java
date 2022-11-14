@@ -1,6 +1,6 @@
 package com.restaurant.event;
 
-import com.restaurant.domain.model.TokenType;
+import com.restaurant.domain.dto.enums.TokenType;
 import com.restaurant.domain.model.User;
 import com.restaurant.email.Email;
 import com.restaurant.email.EmailCredential;

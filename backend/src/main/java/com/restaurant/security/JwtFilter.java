@@ -66,7 +66,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // create new simple granted authority instances for each role / authorization claim
         Set<SimpleGrantedAuthority> authorities = roles.stream()
-                .map(role -> "ROLE_"+role)  // append ROLE_ b/c spring prefixes roles
+//                .map(role -> "ROLE_"+role)  // append ROLE_ b/c spring prefixes roles
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toSet());
 

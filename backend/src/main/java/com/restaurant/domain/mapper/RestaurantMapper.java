@@ -3,7 +3,7 @@ package com.restaurant.domain.mapper;
 import com.restaurant.domain.dto.request.TCreateRestaurant;
 import com.restaurant.domain.dto.request.TEditRestaurant;
 import com.restaurant.domain.dto.response.*;
-import com.restaurant.domain.model.PhotoType;
+import com.restaurant.domain.dto.enums.PhotoType;
 import com.restaurant.domain.model.Restaurant;
 import com.restaurant.domain.model.User;
 import lombok.extern.slf4j.Slf4j;

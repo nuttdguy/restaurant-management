@@ -1,5 +1,6 @@
 package com.restaurant.domain.model;
 
+import com.restaurant.domain.dto.enums.TokenType;
 import lombok.*;
 import org.hibernate.annotations.Type;
 import org.springframework.beans.factory.annotation.Value;

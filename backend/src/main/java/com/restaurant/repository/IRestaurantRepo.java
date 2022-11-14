@@ -13,13 +13,8 @@ import java.util.UUID;
 @Transactional
 public interface IRestaurantRepo extends JpaRepository<Restaurant, UUID> {
 
-    void deleteByName(String name);
-    boolean existsByName(String name);
     Set<Restaurant> findAllByName(String name);
-    Set<Restaurant> findByUserUsername(String username);
     Optional<Restaurant> findByPhone(String phone);
-    Set<Restaurant> findFirst5ByUserUsername(String username);
     Set<Restaurant> findFirst5ByUserUuid(UUID uuid);
-
     Set<Restaurant> findByUserUuid(UUID uuid);
 }

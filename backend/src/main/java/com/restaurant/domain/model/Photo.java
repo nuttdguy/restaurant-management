@@ -1,5 +1,6 @@
 package com.restaurant.domain.model;
 
+import com.restaurant.domain.dto.enums.PhotoType;
 import lombok.*;
 import org.hibernate.Hibernate;
 

@@ -1,5 +1,7 @@
 package com.restaurant;
 
+import com.restaurant.domain.dto.enums.PhotoType;
+import com.restaurant.domain.dto.enums.RoleType;
 import com.restaurant.domain.model.*;
 import com.restaurant.repository.*;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +15,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Slf4j
 @Component

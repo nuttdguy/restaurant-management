@@ -1,4 +1,4 @@
-package com.restaurant.domain.model;
+package com.restaurant.domain.dto.enums;
 
 
 public enum TokenType {

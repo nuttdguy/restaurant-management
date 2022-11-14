@@ -1,7 +1,7 @@
 package com.restaurant.service;
 
 import com.restaurant.domain.model.Photo;
-import com.restaurant.domain.model.PhotoType;
+import com.restaurant.domain.dto.enums.PhotoType;
 import com.restaurant.domain.model.Restaurant;
 import com.restaurant.domain.model.License;
 import com.restaurant.exception.FileFormatException;

@@ -12,10 +12,5 @@ import java.util.UUID;
 @Transactional
 public interface IUserRepo extends JpaRepository<User, UUID> {
     Optional<User> findByUsername(String theUsername);
-    Optional<User> getReferenceByUsername(Class<User> userClass, String username);
-
     boolean existsByUsername(String username);
-    void deleteByUsername(String username);
-
-
 }

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.restaurant.domain.dto.request.TCreateRestaurant;
 import com.restaurant.domain.dto.request.TEditDish;
 import com.restaurant.domain.dto.response.VwRestaurant;
-import com.restaurant.domain.model.RoleType;
+import com.restaurant.domain.dto.enums.RoleType;
 import com.restaurant.service.RestaurantService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

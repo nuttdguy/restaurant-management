@@ -1,7 +1,7 @@
 package com.restaurant.api;
 
 import com.restaurant.domain.model.Photo;
-import com.restaurant.domain.model.RoleType;
+import com.restaurant.domain.dto.enums.RoleType;
 import com.restaurant.service.DocumentService;
 import com.restaurant.util.FileUtil;
 import lombok.AllArgsConstructor;

@@ -12,7 +12,5 @@ import java.util.UUID;
 @Repository
 @Transactional
 public interface IPhotoRepo extends JpaRepository<Photo, Long> {
-    Optional<Set<Photo>> findByRestaurantUuid(UUID restaurantId);
-
     Optional<Photo> findByPhotoUrlContains(String photoUrl);
 }

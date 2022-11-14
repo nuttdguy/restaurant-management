@@ -1,5 +1,7 @@
 package com.restaurant.service;
 
+import com.restaurant.domain.dto.enums.RoleType;
+import com.restaurant.domain.dto.enums.TokenType;
 import com.restaurant.domain.dto.request.TPasswordForgot;
 import com.restaurant.domain.dto.request.TRegisterUser;
 import com.restaurant.domain.dto.request.TPasswordReset;
@@ -35,7 +37,6 @@ public class UserService implements UserDetailsService {
 
     private static final String URL_STRING = "%s/%s";
     private final TokenService tokenService;
-
     private final IUserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher applicationEventPublisher;

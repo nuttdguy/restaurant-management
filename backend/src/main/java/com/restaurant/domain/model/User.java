@@ -62,7 +62,7 @@ public class User implements UserDetails, Serializable {
     @Fetch(value = FetchMode.SUBSELECT)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude
-    public  Set<Restaurant> restaurants = new HashSet<>();
+    private  Set<Restaurant> restaurants = new HashSet<>();
 
     @Fetch(value = FetchMode.SUBSELECT)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -98,24 +98,24 @@ public class User implements UserDetails, Serializable {
         this.tokens.remove(token);
     }
 
-    public User(UUID uuid, String username, String password, Set<Role> authorities) {
-        this.uuid = uuid;
-        this.username = username;
-        this.password = password;
-        this.authorities = authorities;
-    }
+//    public User(UUID uuid, String username, String password, Set<Role> authorities) {
+//        this.uuid = uuid;
+//        this.username = username;
+//        this.password = password;
+//        this.authorities = authorities;
+//    }
 
-    public static User build(User user) {
-        Set<Role> authorities = user.getAuthorities().stream()
-                .map(role -> new Role(role.getAuthority()))
-                .collect(Collectors.toSet());
-
-        return new User(
-                user.getUuid(),
-                user.getUsername(),
-                user.getPassword(),
-                authorities);
-    }
+//    public static User build(User user) {
+//        Set<Role> authorities = user.getAuthorities().stream()
+//                .map(role -> new Role(role.getAuthority()))
+//                .collect(Collectors.toSet());
+//
+//        return new User(
+//                user.getUuid(),
+//                user.getUsername(),
+//                user.getPassword(),
+//                authorities);
+//    }
 
     @Column(name = "enabled")
     private boolean enabled = false;

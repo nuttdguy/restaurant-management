@@ -14,4 +14,6 @@ public class ExceptionMessage {
     public static final String NOT_ACCEPTABLE_FORMAT = "%s not in acceptable format.";
     public static final String REQUIRED_FILE_FORMAT  = "File must be one of the following %s";
 
+    public static final String DATA_INTEGRITY_FAILURE = "%s";
+
 }

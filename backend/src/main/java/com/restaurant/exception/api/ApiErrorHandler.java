@@ -104,6 +104,13 @@ public class ApiErrorHandler extends ResponseEntityExceptionHandler {
                 .body(new ApiError<>(ex.getLocalizedMessage()));
     }
 
+    @ExceptionHandler(DataIntegrityException.class)
+    public ResponseEntity<ApiError<String>> handleDataIntegrityException(WebRequest request, DataIntegrityException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ApiError<>(ex.getLocalizedMessage()));
+    }
+
     @ExceptionHandler({ExpiredException.class})
     public ResponseEntity<ApiError<String>> handleExpiredException(WebRequest request, ExpiredException ex) {
         return ResponseEntity

@@ -36,7 +36,7 @@ public class UniqueToken {
     @Column(name = "expiration")
     private Instant expiration;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_uuid")
     @ToString.Exclude
     private User user;

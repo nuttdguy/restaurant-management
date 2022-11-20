@@ -71,8 +71,8 @@ public class UserService implements UserDetailsService {
     public String verifyUserRegistration(UUID theToken) {
         log.trace("UserService - verifyRegistrationToken");
 
-        UniqueToken uniqueToken = tokenService.findByToken(theToken)
-                .orElseThrow(() -> new NotFoundException(format(NOT_FOUND, theToken)));
+        UniqueToken uniqueToken = tokenService.findByToken(theToken);
+//                .orElseThrow(() -> new NotFoundException(format(NOT_FOUND, theToken)));
 
         if (uniqueToken.getExpiration().compareTo(Instant.now()) < 0) {
             throw new ExpiredException(format(EXPIRED_TOKEN, uniqueToken.getToken()));
@@ -94,8 +94,8 @@ public class UserService implements UserDetailsService {
     public VwLink resendToken(UUID oldToken, String verifyURL) {
         log.trace("UserService - resendToken");
 
-        UniqueToken uniqueToken = tokenService.findByToken(oldToken)
-                .orElseThrow(() -> new NotFoundException(format(NOT_FOUND, oldToken)));
+        UniqueToken uniqueToken = tokenService.findByToken(oldToken);
+//                .orElseThrow(() -> new NotFoundException(format(NOT_FOUND, oldToken)));
 
         UUID newToken = UUID.randomUUID();
         log.trace("Updating the registration token {}", oldToken);
@@ -125,8 +125,8 @@ public class UserService implements UserDetailsService {
     public String resetPassword(TPasswordReset tPasswordReset, UUID thePwdResetToken) {
         log.trace("UserService - resetPassword");
 
-        UniqueToken passwordResetToken =  tokenService.findByToken(thePwdResetToken)
-                .orElseThrow(() -> new NotFoundException(format(ENTITY_NOT_EXISTS, thePwdResetToken)));
+        UniqueToken passwordResetToken =  tokenService.findByToken(thePwdResetToken);
+//                .orElseThrow(() -> new NotFoundException(format(ENTITY_NOT_EXISTS, thePwdResetToken)));
 
         if (passwordResetToken.getExpiration().compareTo(Instant.now()) < 0) {
             log.trace("Deleting the password reset token b/c it is expired");

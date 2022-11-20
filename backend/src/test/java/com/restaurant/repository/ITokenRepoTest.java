@@ -9,10 +9,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.junit.jupiter.api.AfterEach;
 
 import java.time.Instant;
-import java.util.Optional;
 import java.util.UUID;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 class ITokenRepoTest {
@@ -45,10 +45,10 @@ class ITokenRepoTest {
         // given
         tokenRepo.save(tokenUnderTest);
         // when
-        Optional<UniqueToken> expected = tokenRepo.findByToken(tokenUnderTest.getToken());
+        UniqueToken expected = tokenRepo.findByToken(tokenUnderTest.getToken());
         // then
-        assertThat(expected).isNotEmpty();
-        assertThat(expected.get().getToken()).isEqualTo(tokenValueUnderTest);
+        assertNotNull(expected);
+        assertThat(expected.getToken()).isEqualTo(tokenValueUnderTest);
     }
 
 

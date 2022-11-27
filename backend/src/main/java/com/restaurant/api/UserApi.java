@@ -18,8 +18,8 @@ public class UserApi {
 
     private UserService userService;
 
-    @GetMapping(value = {"/username/{username}"})
-    public ResponseEntity<Object> findUserByUsername(@PathVariable("username") String username) {
+    @GetMapping(value = {"/userName/{userName}"})
+    public ResponseEntity<Object> findUserByUsername(@PathVariable("userName") String username) {
         log.trace("UserApi- findUserByUsername={}", username);
 
         return ResponseEntity.status(HttpStatus.OK).body(userService.loadUserByUsername(username));

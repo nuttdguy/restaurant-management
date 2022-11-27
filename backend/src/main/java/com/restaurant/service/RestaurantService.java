@@ -79,7 +79,7 @@ public class RestaurantService {
         Optional<User> user = userRepo.findByUsername(username);
         if (user.isEmpty()) {
             log.error("{} not found", username);
-            throw new UserNotFoundException("The restaurant owner's username is a required field");
+            throw new UserNotFoundException("The restaurant owner's userName is a required field");
         }
 
         Restaurant restaurant = toRestaurantFrom(tCreateRestaurant, user.get());

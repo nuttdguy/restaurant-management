@@ -32,7 +32,7 @@ public class User implements UserDetails, Serializable {
     @Column(name = "user_uuid")
     private UUID uuid;
 
-    @Column(name = "username", unique = true)
+    @Column(name = "userName", unique = true)
     private String username;
 
     @Column(name = "password")
@@ -71,6 +71,9 @@ public class User implements UserDetails, Serializable {
 
 
     public void addRole(Role role) {
+        if (this.authorities == null) {
+            this.authorities = new HashSet<>();
+        }
         this.authorities.add(role);
         role.getUsers().add(this);
     }
@@ -98,9 +101,9 @@ public class User implements UserDetails, Serializable {
         this.tokens.remove(token);
     }
 
-//    public User(UUID uuid, String username, String password, Set<Role> authorities) {
+//    public User(UUID uuid, String userName, String password, Set<Role> authorities) {
 //        this.uuid = uuid;
-//        this.username = username;
+//        this.userName = userName;
 //        this.password = password;
 //        this.authorities = authorities;
 //    }

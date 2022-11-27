@@ -24,7 +24,7 @@ public class AuthApiTestExt {
 //    @Test
     public void resisterNewUserTest() {
         TRegisterUser tRegisterUser = new TRegisterUser(
-                "username@test.com",
+                "userName@test.com",
                 "firstName",
                 "lastName",
                 "password",

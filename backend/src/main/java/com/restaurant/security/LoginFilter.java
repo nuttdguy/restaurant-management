@@ -35,19 +35,19 @@ public class LoginFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.trace("LoginFilter - doInternalFilter");
 
-        // extract the username + password from the header
-        String username = request.getHeader("username");
+        // extract the userName + password from the header
+        String username = request.getHeader("userName");
         String password = request.getHeader("password");
 
         log.trace("authenticating the user {} with password {}", username, password);
-        // authenticate the user with the supplied username + password
+        // authenticate the user with the supplied userName + password
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
         );
 
         // set the jwt header
         response.setHeader(HttpHeaders.AUTHORIZATION, createJwtToken(authentication));
-        response.addHeader("username", username);
+        response.addHeader("userName", username);
         log.trace("response {}", response.getHeader(HttpHeaders.AUTHORIZATION));
     }
 

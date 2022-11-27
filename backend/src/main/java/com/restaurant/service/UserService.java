@@ -9,6 +9,7 @@ import com.restaurant.domain.dto.response.VwLink;
 import com.restaurant.domain.model.*;
 import com.restaurant.event.SendEmailEvent;
 import com.restaurant.exception.*;
+import com.restaurant.repository.IRoleRepo;
 import com.restaurant.repository.IUserRepo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +39,7 @@ public class UserService implements UserDetailsService {
     private static final String URL_STRING = "%s/%s";
     private final TokenService tokenService;
     private final IUserRepo userRepo;
+    private final IRoleRepo roleRepo;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -62,7 +64,7 @@ public class UserService implements UserDetailsService {
         log.trace("Generating the registration token and publishing the email event");
         UniqueToken token = createAndSaveToken(newUser, TokenType.REGISTRATION);
 
-        publishEmailEventTo(newUser, urlLink, token.getToken(), token.getTokenType());
+//        publishEmailEventTo(newUser, urlLink, token.getToken(), token.getTokenType());
         log.trace("Async - done publishing async event");
 
         return new VwLink(format(URL_STRING, urlLink, token.getToken()));
@@ -109,7 +111,7 @@ public class UserService implements UserDetailsService {
     public String forgotPassword(TPasswordForgot tPasswordForgot, String urlLink) {
         log.trace("UserService - forgotPassword");
 
-        log.trace("Finding user by username " );
+        log.trace("Finding user by userName " );
         User user = userRepo.findByUsername(tPasswordForgot.username())
                 .orElseThrow(() -> new NotFoundException(format(NOT_FOUND, tPasswordForgot.username())));
 
@@ -176,18 +178,21 @@ public class UserService implements UserDetailsService {
             throw new ValidationException(format(VALIDATION_FAILURE, "password", tRegisterUser.password(), "must match"));
         }
 
-        Optional<User> user = userRepo.findByUsername(tRegisterUser.username());
+        Optional<User> user = userRepo.findByUsername(tRegisterUser.userName());
         log.trace("Checking if user is present {}", user);
         if (user.isPresent()) {
             if (!user.get().isEnabled()) {
-                throw new NotActiveException(format(NOT_VERIFIED, tRegisterUser.username()));
+                throw new NotActiveException(format(NOT_VERIFIED, tRegisterUser.userName()));
             }
-            throw new UserExistsException(format(ENTITY_EXISTS, tRegisterUser.username(), " Login instead."));
+            throw new UserExistsException(format(ENTITY_EXISTS, tRegisterUser.userName(), " Login instead."));
         }
 
         User newUser = toUserFrom(tRegisterUser);
+        Role role = roleRepo.findByName(RoleType.PUBLIC_USER);
+        log.trace("{}", role);
         newUser.setPassword(passwordEncoder.encode(tRegisterUser.password()));
-        newUser.addRole(new Role(RoleType.PUBLIC_USER));
+        newUser.addRole(role);
+
         return newUser;
     }
 

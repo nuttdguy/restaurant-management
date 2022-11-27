@@ -25,7 +25,7 @@ public class Role implements GrantedAuthority {
     @Column(name = "role_id")
     private Long id;
 
-    @Column(length = 20, unique = true)
+    @Column(length = 40, unique = true)
     private String name;
 
     @ManyToMany(mappedBy = "authorities", fetch = FetchType.LAZY)

@@ -12,7 +12,7 @@ public class UserMapper {
 
     public static User toUserFrom(TRegisterUser tRegisterUser) {
         return User.builder()
-                .username(tRegisterUser.username())
+                .username(tRegisterUser.userName())
                 .firstName(tRegisterUser.firstName())
                 .lastName(tRegisterUser.lastName())
                 .password(tRegisterUser.password())

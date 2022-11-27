@@ -23,6 +23,7 @@ import static java.lang.String.format;
 public class AuthApi {
 
     private static final String URL_FORMAT_STRING = "http://%s:%s%s%s";
+
     private UserService userService;
 
     // moved the login route into the spring security filter chain process
@@ -33,7 +34,7 @@ public class AuthApi {
 
         String verifyURL = format(URL_FORMAT_STRING,
                 httpServletRequest.getServerName(),
-                httpServletRequest.getServerPort(),
+                httpServletRequest.getLocalPort(),
                 httpServletRequest.getContextPath(),
                 "/auth/verify");
 
@@ -52,7 +53,7 @@ public class AuthApi {
 
         String verifyURL = format(URL_FORMAT_STRING,
                 httpServletRequest.getServerName(),
-                httpServletRequest.getServerPort(),
+                httpServletRequest.getLocalPort(),
                 httpServletRequest.getContextPath(),
                 "/auth/verify");
 
@@ -66,7 +67,7 @@ public class AuthApi {
 
         String resetURL = format(URL_FORMAT_STRING,
                 httpServletRequest.getServerName(),
-                httpServletRequest.getServerPort(),
+                httpServletRequest.getLocalPort(),
                 httpServletRequest.getContextPath(),
                 "/auth/password/reset");
 

@@ -8,4 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 public interface IRoleRepo extends JpaRepository<Role, Long> {
+    Role findByName(String publicUser);
+
 }
